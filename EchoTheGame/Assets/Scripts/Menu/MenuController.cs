@@ -9,7 +9,7 @@ namespace Project.Echo.Menu
 
 		private void Awake()
 		{
-			_loadOperation = SceneManager.LoadSceneAsync(1, LoadSceneMode.Single);
+			_loadOperation = SceneManager.LoadSceneAsync(3, LoadSceneMode.Single);
 			_loadOperation.completed += OnSceneLoaded;
 		}
 
