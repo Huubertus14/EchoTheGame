@@ -1,0 +1,27 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace Project.Echo.Menu.Test
+{
+	[RequireComponent(typeof(Button))]
+	public abstract class BaseGameButton : MonoBehaviour
+	{
+		private Button _button;
+
+		private void Awake()
+		{
+			_button = gameObject.GetComponent<Button>();
+			_button.onClick.AddListener(OnClick);
+		}
+
+		protected abstract void OnClick();
+		
+
+		private void OnDestroy()
+		{
+			_button.onClick.RemoveListener(OnClick);
+		}
+	}
+}
