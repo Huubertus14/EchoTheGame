@@ -3,6 +3,7 @@ using Fusion.Sockets;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Project.Echo.Player.Controls;
 
 namespace Project.Echo.Networking.Handlers
 {
@@ -10,11 +11,13 @@ namespace Project.Echo.Networking.Handlers
 	{
         private NetworkPrefabRef _playerPrefab;
         private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters;
+        private PlayerMovementController _movementController;
 
         internal void Init(NetworkPrefabRef prefab)
         {
             _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
             _playerPrefab = prefab;
+            _movementController = new PlayerMovementController();
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
@@ -37,7 +40,11 @@ namespace Project.Echo.Networking.Handlers
             }
         }
 
-        public void OnInput(NetworkRunner runner, NetworkInput input) { }
+        public void OnInput(NetworkRunner runner, NetworkInput input) 
+        {
+            var data = _movementController.GetInput();
+            input.Set(data);
+        }
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
         public void OnConnectedToServer(NetworkRunner runner) { }

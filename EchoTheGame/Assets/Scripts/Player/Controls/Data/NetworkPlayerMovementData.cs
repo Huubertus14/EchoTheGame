@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Project.Echo.Player.Input.Data
+namespace Project.Echo.Player.Controls.Data
 {
 	public struct NetworkPlayerMovementData : INetworkInput
 	{

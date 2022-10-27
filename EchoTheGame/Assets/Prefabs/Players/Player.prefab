@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1265456750276898290}
   - component: {fileID: 1265456750276898301}
+  - component: {fileID: 4470286565510768565}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -54,8 +55,35 @@ MonoBehaviour:
   NetworkGuid:
     RawGuidValue: 00105ba9e1cfd0c40a1872732151ecc3
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: 4470286565510768565}
   SimulationBehaviours: []
+--- !u!114 &4470286565510768565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1265456750276898291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e47a19fd91e75224687f11f6200d4e5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
+  InterpolationSpace: 0
+  InterpolationTarget: {fileID: 1265456750298655130}
+  InterpolateErrorCorrection: 1
+  InterpolatedErrorCorrectionSettings:
+    MinRate: 3.3
+    MaxRate: 10
+    PosBlendStart: 0.25
+    PosBlendEnd: 1
+    PosMinCorrection: 0.025
+    PosTeleportDistance: 2
+    RotBlendStart: 0.1
+    RotBlendEnd: 0.5
+    RotTeleportRadians: 1.5
 --- !u!1 &1265456750298655131
 GameObject:
   m_ObjectHideFlags: 0
