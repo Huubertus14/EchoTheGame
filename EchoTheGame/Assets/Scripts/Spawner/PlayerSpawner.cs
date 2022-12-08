@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Project.Echo.Spawner
@@ -44,5 +45,5 @@ namespace Project.Echo.Spawner
 			//TODO check if a spawnpoint is available
 			return _allSpawnPoints[Random.Range(0, _allSpawnPoints.Length)].transform.position;
 		}
-    }
+	}
 }

@@ -12,9 +12,7 @@ namespace Project.Echo.Networking
     public class NetworkController : MonoBehaviour
     {
         public static NetworkController Instance { get; private set; }
-
-        public bool NetworkLoaded { get; private set; }
-
+        public static bool NetworkLoaded { get; private set; }
         public NetworkRunner Runner { get; private set; }
         private NetworkEventHandler _eventHandler;
 
@@ -30,7 +28,7 @@ namespace Project.Echo.Networking
                     return;
 				}
                 Instance = this;
-
+                Loading.LoadScreenController.SetLoadingText("Setting up session");
                 SessionSettings sessionSettings = Settings.Session;
 				if (sessionSettings == null)
 				{
@@ -38,11 +36,13 @@ namespace Project.Echo.Networking
                     return;
 				}
 
+                Loading.LoadScreenController.SetLoadingText("Session setup");
+
                 _eventHandler = gameObject.AddComponent<NetworkEventHandler>();
                 _eventHandler.Init(_spawner);
                 Runner = gameObject.AddComponent<NetworkRunner>();
                 Runner.ProvideInput = true;
-
+                Loading.LoadScreenController.SetLoadingText("Runner created and starting a game");
                 await Runner.StartGame(new StartGameArgs()
                 {
                     GameMode = sessionSettings.Mode,
@@ -50,13 +50,16 @@ namespace Project.Echo.Networking
                     Scene = SceneManager.GetActiveScene().buildIndex,
                     SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
                 });
-
+                Loading.LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
+                
                 NetworkLoaded = true;
             }
 			catch (Exception e)
 			{
+                Loading.LoadScreenController.SetLoadingText($"Something went wrong starting the network {e}");
                 Debug.LogException(e);
 				throw;
 			}
 		}
-	} }
+	} 
+}

@@ -6,6 +6,9 @@ namespace Project.Echo.Loading
 {
     public class LoadScreenController : MonoBehaviour
     {
+        public static void SetLoadingText(string message)
+		{
 
+		}
     }
 }

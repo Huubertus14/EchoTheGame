@@ -17,6 +17,7 @@ namespace Project.Echo.Networking.Handlers
         {
             _playerSpawner = spawner;
             _movementController = new PlayerMovementController();
+            Loading.LoadScreenController.SetLoadingText("Initialized the networkEventHandler");
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
@@ -24,6 +25,7 @@ namespace Project.Echo.Networking.Handlers
             if (runner.IsServer) //TODO change this to a spawner script
             {
                 _playerSpawner.SpawnPlayer(runner,player);
+               
             }
         }
 
