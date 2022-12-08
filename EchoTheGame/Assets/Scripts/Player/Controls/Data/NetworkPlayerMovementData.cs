@@ -7,6 +7,8 @@ namespace Project.Echo.Player.Controls.Data
 {
 	public struct NetworkPlayerMovementData : INetworkInput
 	{
-		public Vector2 Direction;
+		//TODO change to int if possible
+		public float Speed;
+		public float Rotation;
 	}
 }

@@ -10,15 +10,24 @@ namespace Project.Echo.Networking
 {
     public class NetworkController : MonoBehaviour
     {
-        [SerializeField]private NetworkPrefabRef _playerPrefab;
+        public static NetworkController Instance { get; private set; }
 
-        private NetworkRunner _runner;
+        public bool NetworkLoaded { get; private set; }
+
+        public NetworkRunner Runner { get; private set; }
         private NetworkEventHandler _eventHandler;
 
         private async void Awake()
 		{
 			try
 			{
+				if (Instance != null)
+				{
+                    Debug.LogError($"Multiple instances of {typeof(NetworkController)} found");
+                    return;
+				}
+                Instance = this;
+
                 SessionSettings sessionSettings = Settings.Session;
 				if (sessionSettings == null)
 				{
@@ -27,11 +36,11 @@ namespace Project.Echo.Networking
 				}
 
                 _eventHandler = gameObject.AddComponent<NetworkEventHandler>();
-                _eventHandler.Init(_playerPrefab);
-                _runner = gameObject.AddComponent<NetworkRunner>();
-                _runner.ProvideInput = true;
+                _eventHandler.Init();
+                Runner = gameObject.AddComponent<NetworkRunner>();
+                Runner.ProvideInput = true;
 
-                await _runner.StartGame(new StartGameArgs()
+                await Runner.StartGame(new StartGameArgs()
                 {
                     GameMode = sessionSettings.Mode,
                     SessionName = sessionSettings.LobbyName,
@@ -39,6 +48,7 @@ namespace Project.Echo.Networking
                     SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
                 });
 
+                NetworkLoaded = true;
             }
 			catch (Exception e)
 			{

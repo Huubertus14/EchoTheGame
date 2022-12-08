@@ -6,16 +6,19 @@ using UnityEngine;
 
 namespace Project.Echo.Player
 {
-    public class PlayerMovement : NetworkTransform
+    public class PlayerMovement : NetworkPositionRotation
     {
+     
         public override void FixedUpdateNetwork()
 		{
-            if (GetInput(out NetworkPlayerMovementData data))
+           if (GetInput(out NetworkPlayerMovementData data))
             {
-				Vector3 e = Transform.position;
-                e.x += data.Direction.x;
-                e.z += data.Direction.y;
-                Transform.position = e;
+				Vector3 e = transform.position;
+                var q = transform.rotation.eulerAngles;
+                q.y += data.Rotation + Runner.DeltaTime;
+                e += transform.forward * data.Speed * Runner.DeltaTime;
+
+                transform.SetPositionAndRotation(e,Quaternion.Euler(q));
             }
         }
     }
