@@ -5,6 +5,7 @@ using Fusion;
 using Project.Echo.Networking;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using System;
 
 namespace Project.Echo.Player.Cameras
 {
@@ -17,37 +18,43 @@ namespace Project.Echo.Player.Cameras
 
 		private async void Awake()
 		{
-			enabled = false;
-			Debug.Log("a"); 
-			while (NetworkController.Instance==null )
-			{
-				await UniTask.NextFrame();
-			}
-			Debug.Log("b");
-			while ( !NetworkController.Instance.NetworkLoaded)
-			{
-				await UniTask.NextFrame();
-			}
-			Debug.Log("c");
-			while (_runner == null)
-			{
-				await UniTask.NextFrame();
-				_runner = NetworkController.Instance.Runner;
-
-			}
-			Debug.Log("d");
-			while (_playerTransform == null)
-			{
-				await UniTask.NextFrame();
-
-				var localPlayer = _runner.GetPlayerObject(_runner.LocalPlayer);
-				if (localPlayer != null)
+			try {
+				enabled = false;
+				Debug.Log("a");
+				while (NetworkController.Instance == null)
 				{
-					_playerTransform = localPlayer.transform;
+					await UniTask.NextFrame();
 				}
+				Debug.Log("b");
+				while (!NetworkController.Instance.NetworkLoaded)
+				{
+					await UniTask.NextFrame();
+				}
+				Debug.Log("c");
+				while (_runner == null)
+				{
+					await UniTask.NextFrame();
+					_runner = NetworkController.Instance.Runner;
+
+				}
+				Debug.Log("d");
+				while (_playerTransform == null)
+				{
+					await UniTask.NextFrame();
+
+					var localPlayer = _runner.GetPlayerObject(_runner.LocalPlayer);
+					if (localPlayer != null)
+					{
+						_playerTransform = localPlayer.transform;
+					}
+				}
+				Debug.Log("e");
+				enabled = true;
 			}
-			Debug.Log("e");
-			enabled = true;
+			catch(Exception e) {
+				Debug.LogError(e);
+			}
+			
 		}
 
 		private void Update()

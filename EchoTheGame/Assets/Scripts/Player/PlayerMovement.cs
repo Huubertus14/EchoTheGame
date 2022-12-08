@@ -8,7 +8,6 @@ namespace Project.Echo.Player
 {
     public class PlayerMovement : NetworkPositionRotation
     {
-     
         public override void FixedUpdateNetwork()
 		{
            if (GetInput(out NetworkPlayerMovementData data))

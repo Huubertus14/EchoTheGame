@@ -2,6 +2,7 @@ using UnityEngine;
 using Fusion;
 using System;
 using Project.Echo.Setting;
+using Project.Echo.Spawner;
 using Project.Echo.Setting.Session;
 using UnityEngine.SceneManagement;
 using Project.Echo.Networking.Handlers;
@@ -16,6 +17,8 @@ namespace Project.Echo.Networking
 
         public NetworkRunner Runner { get; private set; }
         private NetworkEventHandler _eventHandler;
+
+        [SerializeField] private PlayerSpawner _spawner;
 
         private async void Awake()
 		{
@@ -36,7 +39,7 @@ namespace Project.Echo.Networking
 				}
 
                 _eventHandler = gameObject.AddComponent<NetworkEventHandler>();
-                _eventHandler.Init();
+                _eventHandler.Init(_spawner);
                 Runner = gameObject.AddComponent<NetworkRunner>();
                 Runner.ProvideInput = true;
 

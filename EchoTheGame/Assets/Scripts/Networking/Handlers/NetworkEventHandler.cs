@@ -10,12 +10,12 @@ namespace Project.Echo.Networking.Handlers
 {
 	public class NetworkEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
-       
         private PlayerMovementController _movementController;
         private PlayerSpawner _playerSpawner;
 
-        internal void Init()
+        internal void Init(PlayerSpawner spawner)
         {
+            _playerSpawner = spawner;
             _movementController = new PlayerMovementController();
         }
 
