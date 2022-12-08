@@ -10,7 +10,9 @@ namespace Project.Echo.Player.Visuals
     public class PlayerVisualController : MonoBehaviour
     {
 		PlayerController _playerController;
-		
+
+		private Renderer[] _renderers;
+
 		private async void Awake()
 		{
 			await UniTask.WaitUntil(() => NetworkController.NetworkLoaded);
@@ -18,15 +20,24 @@ namespace Project.Echo.Player.Visuals
 			_playerController = GetComponentInParent<PlayerController>();
 			await UniTask.WaitUntil(()=> _playerController.IsPlayerInitialized);
 
+			_renderers = GetComponentsInChildren<Renderer>();
+
 			if (_playerController.IsLocalPlayer)
 			{
-				Debug.Log("Im my own");
+				SetColor(Color.blue);
 			}
 			else
 			{
-				Debug.Log("Not my own");
+				SetColor(Color.red);
 			}
-		
+		}
+
+		private void SetColor(Color col)
+		{
+			foreach (var ren in _renderers)
+			{
+				ren.material.color = col;
+			}
 		}
 	}
 }
