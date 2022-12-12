@@ -1,4 +1,5 @@
 using Fusion;
+using Project.Echo.Caches;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,10 +10,10 @@ namespace Project.Echo.Contexts
     [System.Serializable]
     public class SceneContext 
     {
+		public ObjectCache ObjectCache;
+
 		[HideInInspector]
 		public NetworkRunner Runner;
-
-		// Player
 
 		[HideInInspector]
 		public PlayerRef LocalPlayerRef;
