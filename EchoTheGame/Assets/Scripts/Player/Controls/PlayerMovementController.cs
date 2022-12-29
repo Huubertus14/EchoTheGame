@@ -30,6 +30,8 @@ namespace Project.Echo.Player.Controls
                 data.Speed = -_movement;
             }
 
+            data.IsShooting = Input.GetKey(KeyCode.Space);
+
             return data;
 		}
     }

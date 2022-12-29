@@ -12,9 +12,7 @@ namespace Project.Echo.Projectiles.Contexts
 		public PlayerRef InputAuthority;
 		public int OwnerObjectInstanceID;
 
-		// Barrel transform represents position from which projectile visuals should fly out
-		// (actual projectile fire calculations are usually done from different point, for example camera)
-		public Transform BarrelTransform;
+		public Transform BulletBegin;
 
 		public float FloatTick;
 		public bool Interpolate;

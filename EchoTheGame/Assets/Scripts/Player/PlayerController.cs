@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
 using Fusion;
 using Project.Echo.Networking;
+using Project.Echo.Player.Visuals;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Project.Echo.Player { 
@@ -28,5 +30,6 @@ public class PlayerController : MonoBehaviour
 			IsLocalPlayer = _myNetworkObject.Id == GetComponent<NetworkObject>().Id;
 			IsPlayerInitialized = true;
 		}
+
 	}
 }

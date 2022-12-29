@@ -1,11 +1,10 @@
-using Project.Echo.Core;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Project.Echo.Caches
 {
-	public class ObjectCache : SceneService
+	public class ObjectCache : MonoBehaviour
 	{
 		// PUBLIC MEMBERS
 
@@ -45,7 +44,7 @@ namespace Project.Echo.Caches
 
 		public GameObject Get(GameObject prefab, Transform parent, bool activate = true, bool createIfEmpty = true)
 		{
-			if (_cached.TryGetValue(prefab, out Stack<GameObject> stack) == false)
+			if (!_cached.TryGetValue(prefab, out Stack<GameObject> stack))
 			{
 				stack = new Stack<GameObject>();
 				_cached[prefab] = stack;
@@ -151,7 +150,7 @@ namespace Project.Echo.Caches
 
 		// SceneService INTERFACE
 
-		protected override void OnInitialize()
+		public void Initialize()
 		{
 			foreach (CacheObject cacheObject in _precacheObjects)
 			{
@@ -164,7 +163,7 @@ namespace Project.Echo.Caches
 			}
 		}
 
-		protected override void OnDeinitialize()
+		public  void Deinitialize()
 		{
 			foreach (var item in _borrowed)
 			{
@@ -198,7 +197,7 @@ namespace Project.Echo.Caches
 			_all.Clear();
 		}
 
-		protected override void OnTick()
+		protected  void OnTick()
 		{
 			for (int i = _deferred.Count; i-- > 0;)
 			{

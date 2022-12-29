@@ -3,18 +3,31 @@ using System.Collections.Generic;
 using Project.Echo.Player.Controls.Data;
 using Fusion;
 using UnityEngine;
+using System;
+using Project.Echo.Spawner;
 
 namespace Project.Echo.Player.Controls
 {
     public class PlayerMovement : NetworkPositionRotation
     {
         private Rigidbody _rigidBody;
+        private PlayerNetworkedController _playerNetworkedController;
 
 		public override void Spawned()
 		{
 			base.Spawned();
             _rigidBody = GetComponent<Rigidbody>();
+            _playerNetworkedController = GetComponent<PlayerNetworkedController>();
+            _playerNetworkedController.OnPlayerDied += PlayerDied;
     }
+
+		private void PlayerDied()
+		{
+            //look for new position
+            var pos =PlayerSpawner.GetAvailableSpawnPosition();
+            SetEnginePosition(pos);
+            
+		}
 
 		public override void FixedUpdateNetwork()
 		{
@@ -30,5 +43,11 @@ namespace Project.Echo.Player.Controls
                 SetEngineRotation(Quaternion.Euler(q));
             }
         }
-    }
+
+		public override void Despawned(NetworkRunner runner, bool hasState)
+		{
+			base.Despawned(runner, hasState);
+            _playerNetworkedController.OnPlayerDied -= PlayerDied;
+        }
+	}
 }

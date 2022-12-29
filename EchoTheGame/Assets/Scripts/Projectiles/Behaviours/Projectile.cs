@@ -86,6 +86,8 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		protected void SpawnImpactVisual(ProjectileContext context, ref ProjectileData data)
 		{
+			return;
+
 			if (context.Runner.Stage != default)
 			{
 				Debug.LogError("Call SpawnImpactVisual only from render method");

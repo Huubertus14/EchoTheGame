@@ -10,5 +10,6 @@ namespace Project.Echo.Player.Controls.Data
 		//TODO change to int if possible
 		public float Speed;
 		public float Rotation;
+		public bool IsShooting;
 	}
 }

@@ -13,7 +13,7 @@ namespace Project.Echo.Projectiles.Behaviours
     public class SimpleKinematicProjectile : KinematicProjectile
 {
 		[SerializeField]
-		private float _damage = 10f;
+		private int _damage = 10;
 		[SerializeField]
 		private ProjectileHitType _hitType = ProjectileHitType.Projectile;
 		[SerializeField]
@@ -41,9 +41,14 @@ namespace Project.Echo.Projectiles.Behaviours
 
 			if (ProjectileUtility.ProjectileCast(context.Runner, context.InputAuthority, previousPosition, direction, distance, _hitMask, out LagCompensatedHit hit) == true)
 			{
-				HitUtility.ProcessHit(context.InputAuthority, direction, hit, _damage, _hitType);
-
 				SpawnImpact(context, ref data, hit.Point, (hit.Normal + -direction) * 0.5f);
+
+				var healthController = hit.GameObject.transform.root.GetComponentInChildren<PlayerHealthController>();
+
+				if (healthController != null)
+				{
+					healthController.HitPlayer(_damage);
+				}
 
 				data.IsFinished = true;
 			}

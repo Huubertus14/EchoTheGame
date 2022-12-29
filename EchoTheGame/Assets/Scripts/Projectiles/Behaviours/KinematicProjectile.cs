@@ -61,10 +61,10 @@ namespace Project.Echo.Projectiles.Behaviours
 		{
 			base.OnActivated(context, ref data);
 
-			transform.position = context.BarrelTransform.position;
+			transform.position = context.BulletBegin.position;
 			transform.rotation = Quaternion.LookRotation(data.FireVelocity);
 
-			_startOffset = context.BarrelTransform.position - data.FirePosition;
+			_startOffset = context.BulletBegin.position - data.FirePosition;
 			_interpolationTime = 0f;
 		}
 

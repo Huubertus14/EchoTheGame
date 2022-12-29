@@ -8,12 +8,17 @@ namespace Project.Echo.Spawner
 {
     public class PlayerSpawner : MonoBehaviour
 	{
+		private static PlayerSpawner _instance;
 		private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters;
 		[SerializeField]private NetworkPrefabRef _playerPrefab;
 		SpawnPoint[] _allSpawnPoints;
 
 		private void Awake()
 		{
+			if (_instance == null)
+			{
+				_instance = this;
+			}
 			_allSpawnPoints = gameObject.GetComponentsInChildren<SpawnPoint>();
 			_spawnedCharacters = new();
 		}
@@ -35,15 +40,10 @@ namespace Project.Echo.Spawner
 			}
 		}
 
-        public void RespawnPlayer(object playerObject)
-		{
-			SpawnPoint _spawnPoint = _allSpawnPoints[Random.Range(0,_allSpawnPoints.Length-1)];
-		}
-
-		public Vector3 GetAvailableSpawnPosition()
+		public static Vector3 GetAvailableSpawnPosition() //TODO make this so it returns a spawnpoint with rotation etc
 		{
 			//TODO check if a spawnpoint is available
-			return _allSpawnPoints[Random.Range(0, _allSpawnPoints.Length)].transform.position;
+			return _instance._allSpawnPoints[Random.Range(0, _instance._allSpawnPoints.Length)].transform.position;
 		}
 	}
 }

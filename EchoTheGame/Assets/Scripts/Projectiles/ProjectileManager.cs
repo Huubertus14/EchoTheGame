@@ -1,35 +1,44 @@
 using Fusion;
-using Project.Echo.Contexts;
+using Project.Echo.Caches;
 using Project.Echo.Projectiles.Behaviours;
 using Project.Echo.Projectiles.Contexts;
 using Project.Echo.Projectiles.Structs;
+using Project.Echo.Weapons;
 using System;
 using UnityEngine;
 
 namespace Project.Echo.Projectiles
 {
-	public class ProjectileManager : ContextBehaviour
+	public class ProjectileManager : NetworkBehaviour
 	{
 		[SerializeField]
 		private bool _fullProxyPrediction = false;
 		[SerializeField]
 		private Projectile[] _projectilePrefabs;
+		[SerializeField] private BasicCannonBehaviour _cannon;
 
 		[Networked, Capacity(96)]
 		private NetworkArray<ProjectileData> _projectiles { get; }
 		[Networked]
-		private int _projectileCount { get; set; }
+		[SerializeField] private int _projectileCount { get; set; }
 
-		private Projectile[] _visibleProjectiles = new Projectile[128];
-		private int _visibleProjectileCount;
+		[SerializeField] private Projectile[] _visibleProjectiles = new Projectile[128];
+		[SerializeField] private int _visibleProjectileCount;
+		[SerializeField] private ProjectileContext _projectileContext;
+		[SerializeField] private RawInterpolator _projectilesInterpolator;
+		[SerializeField] private ObjectCache _objectCache;
 
-		private ProjectileContext _projectileContext;
-
-		private RawInterpolator _projectilesInterpolator;
-
-		public void AddProjectile(Projectile projectilePrefab, Vector3 firePosition, Vector3 direction, byte weaponAction = 0)
+		public override void Spawned()
 		{
-			var fireData = projectilePrefab.GetFireData(Runner, firePosition, direction);
+			base.Spawned();
+			_objectCache = GameReferenceManager.GetObjectCache;
+			_cannon = GetComponent<BasicCannonBehaviour>();
+			OnSpawned();
+		}
+
+		public void AddProjectile(Projectile projectilePrefab, byte weaponAction = 0)
+		{
+			var fireData = projectilePrefab.GetFireData(Runner, _cannon.GetBulletTransform.position, _cannon.GetBulletTransform.forward);
 			AddProjectile(projectilePrefab, fireData, weaponAction);
 		}
 
@@ -68,18 +77,19 @@ namespace Project.Echo.Projectiles
 			_projectileContext = new ProjectileContext()
 			{
 				Runner = Runner,
-				Cache = Context.ObjectCache,
-				InputAuthority = Object.InputAuthority,
+				Cache =_objectCache,
+				InputAuthority = Object.InputAuthority, 
+				BulletBegin = _cannon.GetBulletTransform,
 				OwnerObjectInstanceID = gameObject.GetInstanceID(),
 			};
 
 			_projectilesInterpolator = GetInterpolator(nameof(_projectiles));
 		}
 
-		public void OnFixedUpdate()
+		public override void FixedUpdateNetwork()
 		{
-			// Projectile calculations are processed only on input or state authority
-			// unless full proxy prediction is turned on
+			base.FixedUpdateNetwork();// Projectile calculations are processed only on input or state authority
+									  // unless full proxy prediction is turned on
 			if (IsProxy == true && _fullProxyPrediction == false)
 				return;
 
@@ -87,12 +97,14 @@ namespace Project.Echo.Projectiles
 
 			for (int i = 0; i < _projectiles.Length; i++)
 			{
+				
 				var projectileData = _projectiles[i];
 
 				if (projectileData.IsActive == false)
 					continue;
 				if (projectileData.IsFinished == true)
 					continue;
+
 
 				var prefab = _projectilePrefabs[projectileData.PrefabId];
 				prefab.OnFixedUpdate(_projectileContext, ref projectileData);
@@ -101,15 +113,15 @@ namespace Project.Echo.Projectiles
 			}
 		}
 
-		public void OnRender(Transform[] weaponBarrelTransforms)
+		public void OnRender( )
 		{
 			// Visuals are not spawned on dedicated server at all
 			if (Runner.Mode == SimulationModes.Server)
 				return;
 
-			RenderProjectiles(weaponBarrelTransforms);
+			RenderProjectiles();
 		}
-		private void RenderProjectiles(Transform[] weaponBarrelTransforms)
+		private void RenderProjectiles()
 		{
 			_projectilesInterpolator.TryGetArray(_projectiles, out var fromProjectiles, out var toProjectiles, out float interpolationAlpha);
 
@@ -126,7 +138,6 @@ namespace Project.Echo.Projectiles
 				_projectileContext.FloatTick = simulation.Tick + simulation.StateAlpha;
 			}
 
-			int barrelTransformCount = weaponBarrelTransforms.Length;
 			int bufferLength = _projectiles.Length;
 
 			// Our predicted projectiles were not confirmed by the server, let's discard them
@@ -162,13 +173,8 @@ namespace Project.Echo.Projectiles
 				}
 
 				byte weaponAction = projectileData.WeaponAction;
-				if (weaponAction >= barrelTransformCount)
-				{
-					Debug.LogError($"Create: Barrel transform with index {weaponAction} not present");
-					weaponAction = 0;
-				}
+				
 
-				_projectileContext.BarrelTransform = weaponBarrelTransforms[weaponAction];
 				_visibleProjectiles[index] = CreateProjectile(_projectileContext, ref projectileData);
 			}
 
@@ -207,8 +213,7 @@ namespace Project.Echo.Projectiles
 
 					// If barrel transform is not available anymore (e.g. weapon was switched before projectile finished)
 					// let's use at least some dummy (first) one. Doesn't matter at this point much.
-					int barrelTransformIndex = data.WeaponAction < barrelTransformCount ? data.WeaponAction : 0;
-					_projectileContext.BarrelTransform = weaponBarrelTransforms[barrelTransformIndex];
+					//_projectileContext.BulletBegin = weaponBarrelTransforms[barrelTransformIndex]; //TOdo set on place
 
 					projectile.OnRender(_projectileContext, ref data);
 				}
@@ -225,7 +230,7 @@ namespace Project.Echo.Projectiles
 
 		private Projectile CreateProjectile(ProjectileContext context, ref ProjectileData data)
 		{
-			var projectile = Context.ObjectCache.Get(_projectilePrefabs[data.PrefabId]);
+			var projectile = _objectCache.Get(_projectilePrefabs[data.PrefabId]);
 
 			Runner.MoveToRunnerScene(projectile);
 
@@ -238,7 +243,7 @@ namespace Project.Echo.Projectiles
 		{
 			projectile.Deactivate(_projectileContext);
 
-			Context.ObjectCache.Return(projectile.gameObject);
+			_objectCache.Return(projectile.gameObject);
 		}
 
 		private void LogMessage(string message)

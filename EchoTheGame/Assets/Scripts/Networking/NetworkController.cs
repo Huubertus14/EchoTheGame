@@ -40,6 +40,7 @@ namespace Project.Echo.Networking
 
                 _eventHandler = gameObject.AddComponent<NetworkEventHandler>();
                 _eventHandler.Init(_spawner);
+
                 Runner = gameObject.AddComponent<NetworkRunner>();
                 Runner.ProvideInput = true;
                 Loading.LoadScreenController.SetLoadingText("Runner created and starting a game");
