@@ -54,7 +54,7 @@ MonoBehaviour:
   _maxTime: 15
   _interpolationDuration: 0.3
   _interpolationEase: 3
-  _damage: 10
+  _damage: 60
   _hitType: 1
   _hitMask:
     serializedVersion: 2

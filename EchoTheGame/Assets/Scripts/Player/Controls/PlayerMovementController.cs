@@ -29,6 +29,10 @@ namespace Project.Echo.Player.Controls
             {
                 data.Speed = -_movement;
             }
+			if (Input.GetKey(KeyCode.LeftShift))
+			{
+                data.Speed *= 4;
+			}
 
             data.IsShooting = Input.GetKey(KeyCode.Space);
 

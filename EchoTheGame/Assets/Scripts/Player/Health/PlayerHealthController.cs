@@ -12,7 +12,7 @@ public class PlayerHealthController : NetworkBehaviour
 {
     [SerializeField]private GameObject _healthBarPrefab;
 
-    [Networked]
+    [Networked(OnChanged = nameof(UpdateHealthBar))]
     public int PlayerHealth { get; set; }
 
 	private int _maxHealth = 100;
@@ -41,17 +41,21 @@ public class PlayerHealthController : NetworkBehaviour
 	public void HitPlayer(int damage)
 	{
 		PlayerHealth -= damage;
-		
-		if (PlayerHealth > 0)
+	}
+
+	public static void UpdateHealthBar(Changed<PlayerHealthController> changed)
+	{
+		var thisObject = changed.Behaviour;
+
+		thisObject._healthBarSlider.UpdateSlider(changed.Behaviour.PlayerHealth);
+
+		if (thisObject.PlayerHealth < 0)
 		{
-			_healthBarSlider.UpdateSlider(PlayerHealth);
+			thisObject._healthBarSlider.gameObject.SetActive(false);
+			thisObject._playerNetworkController.DisablePlayer();
+			thisObject._playerNetworkController.RespawnPlayer(2.5f);
 		}
-		else
-		{
-			_healthBarSlider.gameObject.SetActive(false);
-			_playerNetworkController.DisablePlayer();
-			_playerNetworkController.RespawnPlayer(2.5f);
-		}
+
 	}
 
 	public override void FixedUpdateNetwork()

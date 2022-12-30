@@ -47,6 +47,7 @@ namespace Project.Echo.Projectiles.Behaviours
 
 				if (healthController != null)
 				{
+								
 					healthController.HitPlayer(_damage);
 				}
 

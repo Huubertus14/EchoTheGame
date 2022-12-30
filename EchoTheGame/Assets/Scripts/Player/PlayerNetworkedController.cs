@@ -10,15 +10,15 @@ namespace Project.Echo.Player
 {
     public class PlayerNetworkedController : NetworkBehaviour
     {
-        [Networked]
+        [Networked(OnChanged = nameof(ActivePlayerChanged))]
         public bool IsPlayerActive { get; set; }
-        private bool _localStatusActive;
 
 		public Action OnPlayerDied;
 		public Action OnRespawned;
 
 		private PlayerVisualController _visualController;
-		private TickTimer _respawnTimer;
+		[Networked]
+		private TickTimer _respawnTimer { get; set; }
 
 		public override void Spawned()
 		{
@@ -26,33 +26,32 @@ namespace Project.Echo.Player
 			_respawnTimer = TickTimer.None;
 			_visualController = GetComponentInChildren<PlayerVisualController>();
 			IsPlayerActive = true;
-			_localStatusActive = true; 
 		}
 
 		private void EnablePlayer()
 		{
-			_localStatusActive = true;
+			IsPlayerActive = true;
+		}
+
+		public static void ActivePlayerChanged(Changed<PlayerNetworkedController> changed)
+		{
+			var beh = changed.Behaviour;
+			beh._visualController.gameObject.SetActive(beh.IsPlayerActive);
 		}
 
 		public override void FixedUpdateNetwork()
 		{
-			base.FixedUpdateNetwork();
-			if (_localStatusActive != IsPlayerActive)
-			{
-				_visualController.gameObject.SetActive(_localStatusActive);
-				IsPlayerActive = _localStatusActive;
-			}
-
-			if (!_localStatusActive && _respawnTimer.ExpiredOrNotRunning(Runner))
+			if (_respawnTimer.Expired(Runner))
 			{
 				EnablePlayer();
 				OnRespawned?.Invoke();
+				_respawnTimer = TickTimer.None;
 			}
 		}
 
 		public void DisablePlayer()
 		{
-			_localStatusActive = false;
+			IsPlayerActive = false;
 		}
 
 		public void RespawnPlayer(float delaySeconds)
