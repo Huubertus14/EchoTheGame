@@ -23,7 +23,7 @@ namespace Project.Echo.Spawner
 			_spawnedCharacters = new();
 		}
 
-		public void SpawnPlayer(NetworkRunner runner, PlayerRef player) 
+		public void SpawnPlayer(NetworkRunner runner, PlayerRef player) //TODO use the callback methods
 		{
 			Vector3 spawnPosition = GetAvailableSpawnPosition();
 			NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);

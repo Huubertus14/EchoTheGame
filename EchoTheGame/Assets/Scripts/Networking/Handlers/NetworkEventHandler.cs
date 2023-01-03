@@ -13,6 +13,9 @@ namespace Project.Echo.Networking.Handlers
         private PlayerMovementController _movementController;
         private PlayerSpawner _playerSpawner;
 
+        public static Action<NetworkRunner, PlayerRef> PlayerJoined;
+        public static Action<NetworkRunner, PlayerRef> PlayerLeft;
+
         internal void Init(PlayerSpawner spawner)
         {
             _playerSpawner = spawner;
@@ -25,13 +28,15 @@ namespace Project.Echo.Networking.Handlers
             if (runner.IsServer) //TODO change this to a spawner script
             {
                 _playerSpawner.SpawnPlayer(runner,player);
-               
             }
+
+            PlayerJoined?.Invoke(runner, player);  
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
             _playerSpawner.OnPlayerLeft(runner,player);
+            PlayerLeft?.Invoke(runner, player);
         }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) 

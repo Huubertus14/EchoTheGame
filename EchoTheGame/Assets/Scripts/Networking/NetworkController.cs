@@ -6,14 +6,15 @@ using Project.Echo.Spawner;
 using Project.Echo.Setting.Session;
 using UnityEngine.SceneManagement;
 using Project.Echo.Networking.Handlers;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Project.Echo.Networking
 {
     public class NetworkController : MonoBehaviour
     {
         public static NetworkController Instance { get; private set; }
-        public static bool NetworkLoaded { get; private set; }
-        public NetworkRunner Runner { get; private set; }
+        private NetworkRunner _runner;// { get; private set; }
         private NetworkEventHandler _eventHandler;
 
         [SerializeField] private PlayerSpawner _spawner;
@@ -35,25 +36,30 @@ namespace Project.Echo.Networking
                     Debug.LogError("Sessions settings not set in menu"); //TODO return to menu here
                     return;
 				}
-
+                
                 Loading.LoadScreenController.SetLoadingText("Session setup");
 
+               
                 _eventHandler = gameObject.AddComponent<NetworkEventHandler>();
                 _eventHandler.Init(_spawner);
 
-                Runner = gameObject.AddComponent<NetworkRunner>();
-                Runner.ProvideInput = true;
+                _runner = gameObject.AddComponent<NetworkRunner>();
+                _runner.ProvideInput = true;
                 Loading.LoadScreenController.SetLoadingText("Runner created and starting a game");
-                await Runner.StartGame(new StartGameArgs()
+                await _runner.StartGame(new StartGameArgs()
                 {
                     GameMode = sessionSettings.Mode,
                     SessionName = sessionSettings.LobbyName,
                     Scene = SceneManager.GetActiveScene().buildIndex,
                     SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
                 });
-                Loading.LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
                 
-                NetworkLoaded = true;
+                Loading.LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
+
+                //TODO wait here for player to be spawned
+
+                //get all objects of interface in scene and init them
+               
             }
 			catch (Exception e)
 			{

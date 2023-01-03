@@ -4,32 +4,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using System.Threading.Tasks;
 
 namespace Project.Echo.Player.Visuals
 {
-    public class PlayerVisualController : MonoBehaviour
+    public class PlayerVisualController : SimulationBehaviour , IAfterSpawned
     {
-		PlayerController _playerController;
-
 		private Renderer[] _renderers;
 
-		private async void Awake()
+		public void AfterSpawned()
 		{
-			await UniTask.WaitUntil(() => NetworkController.NetworkLoaded);
-			
-			_playerController = GetComponentInParent<PlayerController>();
-			await UniTask.WaitUntil(()=> _playerController.IsPlayerInitialized);
+			//_renderers = GetComponentsInChildren<Renderer>();
+//
+			//if (Runner.GetPlayerObject(Runner.LocalPlayer).HasInputAuthority)
+		//	{
+			//	Debug.Log("Set to blue");
+			//	SetColor(Color.blue);
+			//}
 
-			_renderers = GetComponentsInChildren<Renderer>();
-
-			if (_playerController.IsLocalPlayer)
-			{
-				SetColor(Color.blue);
-			}
-			else
-			{
-				SetColor(Color.red);
-			}
+			//Debug.Log("Set to red");
+		//	SetColor(Color.red);
 		}
 
 		private void SetColor(Color col)

@@ -13,6 +13,13 @@ namespace Project.Echo.Setting
 		}
 		private SessionSettings _session;
 
+		public static PlayerSettings Player
+		{
+			get { return _instance._player; }
+			set { _instance._player = value; }
+		}
+		private PlayerSettings _player;
+
 		private void Awake()
 		{
 			if (_instance!=null)

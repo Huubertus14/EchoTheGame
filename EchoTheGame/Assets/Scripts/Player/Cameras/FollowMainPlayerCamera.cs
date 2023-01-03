@@ -9,52 +9,49 @@ using System;
 
 namespace Project.Echo.Player.Cameras
 {
-    public class FollowMainPlayerCamera : MonoBehaviour
+    public class FollowMainPlayerCamera : MonoBehaviour, IPlayerJoinedInitialization
     {
         NetworkRunner _runner; //TODO find my runner?
 		Transform _playerTransform;
 
 		[SerializeField] private Vector3 _offset = new Vector3(0,30,0);
 
-		private async void Awake()
+		private void Awake()
 		{
-			try {
-				enabled = false;
-				while (!NetworkController.NetworkLoaded)
-				{
-					await UniTask.Yield();
-				}
-					
-				_runner = NetworkController.Instance.Runner;
-				Loading.LoadScreenController.SetLoadingText("Finding own player");
-				_playerTransform = await GetOwnPlayerTransform();
-				Loading.LoadScreenController.SetLoadingText("Found own player");
-				enabled = true;
-			}
-			catch(Exception e) {
-				Debug.LogError(e);
-			}
+			enabled = false;
 		}
 
-		private async Task<Transform> GetOwnPlayerTransform()
+		public Task Init(NetworkRunner runner)
+		{
+			_runner = runner;
+			Loading.LoadScreenController.SetLoadingText("Finding own player");
+			Loading.LoadScreenController.SetLoadingText("Found own player");
+			enabled = true;
+			return Task.CompletedTask;
+		}
+
+		private Transform GetOwnPlayerTransform()
 		{
 			Transform myPlayer = null;
-			while (myPlayer == null)
+			
+			NetworkObject localPlayer = _runner.GetPlayerObject(_runner.LocalPlayer);
+			if (localPlayer != null)
 			{
-				await UniTask.NextFrame();
-
-				NetworkObject localPlayer = _runner.GetPlayerObject(_runner.LocalPlayer);
-				if (localPlayer != null)
-				{
-					myPlayer = localPlayer.transform;
-				}
+				myPlayer = localPlayer.transform;
 			}
 			return myPlayer;
 		}
 
 		private void Update()
 		{
-			transform.position = _playerTransform.position + _offset;
+			if (_playerTransform != null)
+			{
+				transform.position = _playerTransform.position + _offset;
+			}
+			else
+			{
+				_playerTransform = GetOwnPlayerTransform();
+			}
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace Project.Echo.Player.Controls
 			base.Spawned();
             _rigidBody = GetComponent<Rigidbody>();
             _playerNetworkedController = GetComponent<PlayerNetworkedController>();
-            _playerNetworkedController.OnPlayerDied += PlayerDied;
+            _playerNetworkedController.OnRespawned += PlayerDied;
     }
 
 		private void PlayerDied()
@@ -26,7 +26,6 @@ namespace Project.Echo.Player.Controls
             //look for new position
             var pos =PlayerSpawner.GetAvailableSpawnPosition();
             SetEnginePosition(pos);
-            
 		}
 
 		public override void FixedUpdateNetwork()
@@ -47,7 +46,7 @@ namespace Project.Echo.Player.Controls
 		public override void Despawned(NetworkRunner runner, bool hasState)
 		{
 			base.Despawned(runner, hasState);
-            _playerNetworkedController.OnPlayerDied -= PlayerDied;
+            _playerNetworkedController.OnRespawned -= PlayerDied;
         }
 	}
 }

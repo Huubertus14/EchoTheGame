@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4266526075452256101}
   - component: {fileID: 4326061683278514817}
   - component: {fileID: 7101726924133065784}
-  - component: {fileID: 7754349069591463866}
   - component: {fileID: 2776263020286569639}
   - component: {fileID: 2189349644602464357}
   - component: {fileID: 3197701202181744951}
@@ -68,7 +67,8 @@ MonoBehaviour:
   - {fileID: 2776263020286569639}
   - {fileID: 2189349644602464357}
   - {fileID: 3197701202181744951}
-  SimulationBehaviours: []
+  SimulationBehaviours:
+  - {fileID: 8379249022556376020}
 --- !u!54 &4266526075452256101
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -111,20 +111,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  _IsPlayerActive: 0
---- !u!114 &7754349069591463866
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1265456750276898291}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ac34af120cf2e446ba41f582a16fc9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _myNetworkObject: {fileID: 0}
+  _PlayerName:
+    _length: 0
+    _data:
+      Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 --- !u!114 &2776263020286569639
 MonoBehaviour:
   m_ObjectHideFlags: 0

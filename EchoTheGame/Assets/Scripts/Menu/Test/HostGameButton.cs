@@ -13,6 +13,8 @@ namespace Project.Echo.Menu.Test
 		protected override void OnClick()
 		{
 			Settings.Session = new SessionSettings("TestGame", GameMode.Host);
+			Settings.Player = new();
+			Settings.Player.PlayerName = $"Host {Random.value:00}";
 			_loadGameScene = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
 			_loadGameScene.completed += OnGameSceneLoaded;
 		}

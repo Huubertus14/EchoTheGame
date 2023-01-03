@@ -21,7 +21,6 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 
 	public void UpdateSlider(int health)
 	{
-		Debug.Log($"{health}");
 		_healthSlider.value = health;
 	}
 
