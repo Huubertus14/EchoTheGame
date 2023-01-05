@@ -1,4 +1,5 @@
 using Fusion;
+using Project.Echo.Player;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,20 +24,21 @@ namespace Project.Echo.Spawner
 			_spawnedCharacters = new();
 		}
 
-		public void SpawnPlayer(NetworkRunner runner, PlayerRef player) //TODO use the callback methods
+		public static PlayerNetworkedController SpawnPlayer(NetworkRunner runner, PlayerRef player) //TODO use the callback methods
 		{
 			Vector3 spawnPosition = GetAvailableSpawnPosition();
-			NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-			_spawnedCharacters.Add(player, networkPlayerObject);
+			NetworkObject networkPlayerObject = runner.Spawn(_instance._playerPrefab, spawnPosition, Quaternion.identity, player);
+			_instance._spawnedCharacters.Add(player, networkPlayerObject);
 			runner.SetPlayerObject(player, networkPlayerObject);
+			 return networkPlayerObject.GetComponent<PlayerNetworkedController>();
 		}
 
-		public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+		public static void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
 		{
-			if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
+			if (_instance._spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
 			{
 				runner.Despawn(networkObject);
-				_spawnedCharacters.Remove(player);
+				_instance._spawnedCharacters.Remove(player);
 			}
 		}
 

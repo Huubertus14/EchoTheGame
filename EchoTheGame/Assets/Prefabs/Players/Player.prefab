@@ -67,8 +67,8 @@ MonoBehaviour:
   - {fileID: 2776263020286569639}
   - {fileID: 2189349644602464357}
   - {fileID: 3197701202181744951}
-  SimulationBehaviours:
   - {fileID: 8379249022556376020}
+  SimulationBehaviours: []
 --- !u!54 &4266526075452256101
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -406,6 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bc59457f07d5fe4490f903435faa0e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _interpolationDataSource: 0
 --- !u!1 &7352386885938876590
 GameObject:
   m_ObjectHideFlags: 0

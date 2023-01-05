@@ -6,67 +6,144 @@ using Project.Echo.Spawner;
 using Project.Echo.Setting.Session;
 using UnityEngine.SceneManagement;
 using Project.Echo.Networking.Handlers;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Project.Echo.Player.Controls;
+using Project.Echo.Loading;
+using Project.Echo.Player;
 
 namespace Project.Echo.Networking
 {
     public class NetworkController : MonoBehaviour
     {
+        [SerializeField] private NetworkRunner _networkRunnerPrefab;
+        private NetworkRunner _runner;
+
         public static NetworkController Instance { get; private set; }
-        private NetworkRunner _runner;// { get; private set; }
+
         private NetworkEventHandler _eventHandler;
+        private INetworkSceneManager _networkSceneManager;
 
         [SerializeField] private PlayerSpawner _spawner;
+
+        public static Action<NetworkRunner> OnHostMigrationDone;
 
         private async void Awake()
 		{
 			try
 			{
+                name = "Network Runner";
 				if (Instance != null)
 				{
                     Debug.LogError($"Multiple instances of {typeof(NetworkController)} found");
                     return;
 				}
                 Instance = this;
-                Loading.LoadScreenController.SetLoadingText("Setting up session");
+               // LoadScreenController.SetLoadingText("Setting up session");
                 SessionSettings sessionSettings = Settings.Session;
 				if (sessionSettings == null)
 				{
                     Debug.LogError("Sessions settings not set in menu"); //TODO return to menu here
                     return;
 				}
-                
-                Loading.LoadScreenController.SetLoadingText("Session setup");
 
-               
-                _eventHandler = gameObject.AddComponent<NetworkEventHandler>();
-                _eventHandler.Init(_spawner);
+                _runner = Instantiate(_networkRunnerPrefab);
+                _runner.name = "Network Runner";
 
-                _runner = gameObject.AddComponent<NetworkRunner>();
+                _networkSceneManager = GetNetworkSceneManager();
+
                 _runner.ProvideInput = true;
-                Loading.LoadScreenController.SetLoadingText("Runner created and starting a game");
+                _eventHandler = FindObjectOfType<NetworkEventHandler>();
+                // LoadScreenController.SetLoadingText("Runner created and starting a game");
+
                 await _runner.StartGame(new StartGameArgs()
                 {
                     GameMode = sessionSettings.Mode,
                     SessionName = sessionSettings.LobbyName,
                     Scene = SceneManager.GetActiveScene().buildIndex,
-                    SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+                    SceneManager = _networkSceneManager,
+                    Initialized = OnRunnerInitialized,
+                    ConnectionToken = GameManager.GetConnectionToken()
                 });
-                
-                Loading.LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
-
-                //TODO wait here for player to be spawned
-
-                //get all objects of interface in scene and init them
-               
             }
 			catch (Exception e)
 			{
-                Loading.LoadScreenController.SetLoadingText($"Something went wrong starting the network {e}");
+                LoadScreenController.SetLoadingText($"Something went wrong starting the network {e}");
                 Debug.LogException(e);
 				throw;
 			}
+		}
+
+        private INetworkSceneManager GetNetworkSceneManager()
+		{
+            var sceneManager =_runner.GetComponent<INetworkSceneManager>();
+
+			if (sceneManager == null)
+			{
+                sceneManager = _runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+			}
+
+            return sceneManager;
+		}
+
+		private void OnRunnerInitialized(NetworkRunner obj)
+		{
+            Loading.LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
+        }
+
+		private async Task InitializeNetworkRunnerHostMigration(NetworkRunner runner, HostMigrationToken token)
+		{
+            await _runner.StartGame(new StartGameArgs()
+            {
+                SceneManager = _networkSceneManager,
+                HostMigrationToken = token,
+                HostMigrationResume = OnHostMigrationResumed
+            });
+        }
+
+        private void OnHostMigrationResumed(NetworkRunner obj)
+        {
+            Debug.Log("Start Host migration Resume");
+
+			foreach (NetworkObject resumeObject in _runner.GetResumeSnapshotNetworkObjects())
+			{
+				if (resumeObject.TryGetBehaviour<PlayerMovement>(out var playerNetworked))
+				{
+                    obj.Spawn(resumeObject, playerNetworked.ReadPosition(), playerNetworked.ReadRotation(), onBeforeSpawned: (obj,newNetworkObject) =>
+					{
+                        newNetworkObject.CopyStateFrom(resumeObject);
+
+						if (resumeObject.TryGetBehaviour<PlayerMovement>(out var oldMovement))
+						{
+                            PlayerMovement newMovement = newNetworkObject.GetComponent<PlayerMovement>();
+                            newMovement.CopyStateFrom(oldMovement);
+						}
+
+                        if (resumeObject.TryGetBehaviour<PlayerNetworkedController>(out var oldNetworkController))
+                        {
+                            _eventHandler.SetConnectionTokenMapping(oldNetworkController.Token, newNetworkObject.GetComponent<PlayerNetworkedController>());
+                        }
+                    });
+				}
+			}
+
+            OnHostMigrationDone?.Invoke(_runner);
+            _eventHandler.OnHostMigrationCleanup();
+            Debug.Log("Done Host migration Resume");
+        }
+
+        public void StartHostMigration(HostMigrationToken migrationToken)
+		{
+            _runner =Instantiate(_networkRunnerPrefab);
+            _networkSceneManager = GetNetworkSceneManager();
+            _eventHandler = FindObjectOfType<NetworkEventHandler>();
+
+            var clientTask= InitializeNetworkRunnerHostMigration(_runner, migrationToken);
+            Debug.Log("Host migration started");
+        }
+
+        public void LeaveGame()
+		{
+            _runner.Shutdown(true, ShutdownReason.Ok);
 		}
 	} 
 }

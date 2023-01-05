@@ -8,22 +8,26 @@ using System.Threading.Tasks;
 
 namespace Project.Echo.Player.Visuals
 {
-    public class PlayerVisualController : SimulationBehaviour , IAfterSpawned
+    public class PlayerVisualController : NetworkBehaviour 
     {
 		private Renderer[] _renderers;
 
-		public void AfterSpawned()
-		{
-			//_renderers = GetComponentsInChildren<Renderer>();
-//
-			//if (Runner.GetPlayerObject(Runner.LocalPlayer).HasInputAuthority)
-		//	{
-			//	Debug.Log("Set to blue");
-			//	SetColor(Color.blue);
-			//}
+		[Networked]
+		private Color _color { get; set; }
 
-			//Debug.Log("Set to red");
-		//	SetColor(Color.red);
+		public override void Spawned()
+		{
+			_renderers = GetComponentsInChildren<Renderer>();
+
+			if (Object.HasInputAuthority)
+			{
+				_color = Color.blue;
+			}
+			else
+			{
+				_color = Color.red;
+			}
+			SetColor(_color);
 		}
 
 		private void SetColor(Color col)

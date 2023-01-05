@@ -12,7 +12,7 @@ namespace Project.Echo.Player
     public class PlayerNetworkedController : NetworkBehaviour
     {
 		public static PlayerNetworkedController LocalPlayer;
-
+		public static Action<NetworkRunner> LocalPlayerSpawned;
 		public PlayerStats PlayerStats { get; private set; }
 		public PlayerSettings PlayerSettings => Settings.Player;
 
@@ -25,31 +25,25 @@ namespace Project.Echo.Player
 		[Networked]
 		private TickTimer _respawnTimer { get; set; }
 
+		[Networked]
+		public int Token { get; set; }
+
 		public Action OnPlayerDied;
-		public Action OnRespawned;
 
 		private PlayerVisualController _visualController;
-		
-		public async override void Spawned()
+		private IRespawnAble[] _respawnAbles;
+
+		public override void Spawned()
 		{
 			if (Object.HasInputAuthority)
 			{
 				LocalPlayer = this;
-				RPC_SetName(PlayerSettings.PlayerName); 
-				List<Task> initTasks = new();
-				var scene = SceneManager.GetActiveScene();
-				foreach (GameObject root in scene.GetRootGameObjects())
-				{
-					foreach (var item in root.GetComponentsInChildren<IPlayerJoinedInitialization>(true))
-					{
-						initTasks.Add(item.Init(Runner));
-					}
-				}
-
-				await Task.WhenAll(initTasks);
+				RPC_SetName(PlayerSettings.PlayerName);
+				LocalPlayerSpawned?.Invoke(Runner);
 			}
 			
-			PlayerStats = new PlayerStats();
+			_respawnAbles = GetComponentsInChildren<IRespawnAble>();
+			PlayerStats = new PlayerStats(); //TODO this needs to be synced. Will be overwriten by host migration now
 
 			_respawnTimer = TickTimer.None;
 			_visualController = GetComponentInChildren<PlayerVisualController>();
@@ -64,7 +58,7 @@ namespace Project.Echo.Player
 		[Rpc(sources: RpcSources.InputAuthority, RpcTargets.StateAuthority)]
 		private void RPC_SetName(string Name)
 		{
-			PlayerName = PlayerSettings.PlayerName;
+			PlayerName = Name;
 		}
 
 		public static void ActivePlayerChanged(Changed<PlayerNetworkedController> changed)
@@ -78,7 +72,11 @@ namespace Project.Echo.Player
 			if (_respawnTimer.Expired(Runner))
 			{
 				_respawnTimer = TickTimer.None;
-				OnRespawned?.Invoke();
+
+				foreach (IRespawnAble respawnObject in _respawnAbles)
+				{
+					respawnObject.Respawn();
+				}
 				EnablePlayer();
 			}
 		}

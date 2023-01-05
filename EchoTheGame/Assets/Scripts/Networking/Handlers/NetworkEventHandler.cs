@@ -5,38 +5,71 @@ using UnityEngine;
 using System;
 using Project.Echo.Player.Controls;
 using Project.Echo.Spawner;
+using Project.Echo.Player;
+using System.Threading.Tasks;
 
 namespace Project.Echo.Networking.Handlers
 {
 	public class NetworkEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
         private PlayerMovementController _movementController;
-        private PlayerSpawner _playerSpawner;
+        Dictionary<int, PlayerNetworkedController> _mapTokenIDWithNetworkPlayer;
 
-        public static Action<NetworkRunner, PlayerRef> PlayerJoined;
-        public static Action<NetworkRunner, PlayerRef> PlayerLeft;
-
-        internal void Init(PlayerSpawner spawner)
-        {
-            _playerSpawner = spawner;
+		private void Awake()
+		{
             _movementController = new PlayerMovementController();
-            Loading.LoadScreenController.SetLoadingText("Initialized the networkEventHandler");
+            _mapTokenIDWithNetworkPlayer = new Dictionary<int, PlayerNetworkedController>();
         }
+
+        private int GetPlayerToken(NetworkRunner runner, PlayerRef player)
+		{
+			if (runner.LocalPlayer == player)
+			{
+                return ConnectionTokenUtils.HashToken(GameManager.GetConnectionToken());
+			}
+
+			byte[] token = runner.GetPlayerConnectionToken(player);
+            if (token != null)
+			{
+                return ConnectionTokenUtils.HashToken(token);
+			}
+
+            return -1;//invalid
+		}
+
+        public void SetConnectionTokenMapping(int token, PlayerNetworkedController playerController)
+		{
+            _mapTokenIDWithNetworkPlayer.Add(token, playerController);
+		}
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
         {
             if (runner.IsServer) //TODO change this to a spawner script
             {
-                _playerSpawner.SpawnPlayer(runner,player);
-            }
+                int playerToken = GetPlayerToken(runner,player);
 
-            PlayerJoined?.Invoke(runner, player);  
+				if (_mapTokenIDWithNetworkPlayer.TryGetValue(playerToken, out PlayerNetworkedController playerNetworkController))
+				{
+                    Loading.LoadScreenController.SetLoadingText($"Found a referenced player. Assign authority over this object {playerToken}");
+                    playerNetworkController.GetComponent<NetworkObject>().AssignInputAuthority(player);
+
+					foreach (var item in playerNetworkController.GetComponentsInChildren<NetworkBehaviour>())
+					{
+                        item.Spawned();
+					}
+                    return;
+				}
+
+                Loading.LoadScreenController.SetLoadingText($"Could not find a current player, spawning a new one {playerToken}");
+				PlayerNetworkedController spawnedObject = PlayerSpawner.SpawnPlayer(runner,player);
+                spawnedObject.Token = playerToken;
+                _mapTokenIDWithNetworkPlayer[playerToken] = spawnedObject;
+            }
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
-            _playerSpawner.OnPlayerLeft(runner,player);
-            PlayerLeft?.Invoke(runner, player);
+            PlayerSpawner.OnPlayerLeft(runner,player);
         }
 
         public void OnInput(NetworkRunner runner, NetworkInput input) 
@@ -53,9 +86,45 @@ namespace Project.Echo.Networking.Handlers
         public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
         public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
         public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
-        public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+        public async void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) 
+        {
+			try
+			{
+                Debug.Log("OnHost migration Started");
+                await runner.Shutdown(shutdownReason: ShutdownReason.HostMigration);
+                NetworkController.Instance.StartHostMigration(hostMigrationToken);
+            }
+			catch (Exception e)
+			{
+                Debug.LogError(e);
+				throw;
+			}
+        }
+
         public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data) { }
         public void OnSceneLoadDone(NetworkRunner runner) { }
         public void OnSceneLoadStart(NetworkRunner runner) { }
+
+        public async void OnHostMigrationCleanup()
+		{
+            await Task.Delay(500);
+
+            int tokenToRemove=0;
+			foreach (var entry in _mapTokenIDWithNetworkPlayer)
+			{
+                NetworkObject networkObjectInDictionary = entry.Value.GetComponent<NetworkObject>();
+
+                if (networkObjectInDictionary.InputAuthority.IsNone)
+				{
+                    networkObjectInDictionary.Runner.Despawn(networkObjectInDictionary);
+                    tokenToRemove = entry.Key;
+                    break;
+				}
+			}
+            if (tokenToRemove != 0)
+            {
+                _mapTokenIDWithNetworkPlayer.Remove(tokenToRemove);
+            }
+		}
     }
 }

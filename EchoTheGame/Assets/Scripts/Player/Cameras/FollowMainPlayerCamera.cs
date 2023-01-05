@@ -9,35 +9,42 @@ using System;
 
 namespace Project.Echo.Player.Cameras
 {
-    public class FollowMainPlayerCamera : MonoBehaviour, IPlayerJoinedInitialization
+    public class FollowMainPlayerCamera : MonoBehaviour
     {
-        NetworkRunner _runner; //TODO find my runner?
-		Transform _playerTransform;
+       [SerializeField] NetworkRunner _runner; //TODO find my runner?
+		[SerializeField]Transform _playerTransform;
 
 		[SerializeField] private Vector3 _offset = new Vector3(0,30,0);
 
 		private void Awake()
 		{
 			enabled = false;
+			PlayerNetworkedController.LocalPlayerSpawned += OnLocalPlayerSpawned;
+			NetworkController.OnHostMigrationDone += OnHostMigrated;
 		}
 
-		public Task Init(NetworkRunner runner)
+		private void OnHostMigrated(NetworkRunner obj)
 		{
-			_runner = runner;
-			Loading.LoadScreenController.SetLoadingText("Finding own player");
-			Loading.LoadScreenController.SetLoadingText("Found own player");
+			Debug.Log("host is migrated ofzo?");
+			_runner = obj;
+			_playerTransform= GetOwnPlayerTransform();
 			enabled = true;
-			return Task.CompletedTask;
+		}
+
+		private void OnLocalPlayerSpawned(NetworkRunner obj)
+		{
+			PlayerNetworkedController.LocalPlayerSpawned -= OnLocalPlayerSpawned;
+			_runner = obj;
+			_playerTransform = GetOwnPlayerTransform();
+			enabled = true;
 		}
 
 		private Transform GetOwnPlayerTransform()
 		{
 			Transform myPlayer = null;
-			
-			NetworkObject localPlayer = _runner.GetPlayerObject(_runner.LocalPlayer);
-			if (localPlayer != null)
+			if (PlayerNetworkedController.LocalPlayer!=null)
 			{
-				myPlayer = localPlayer.transform;
+				myPlayer = PlayerNetworkedController.LocalPlayer.transform;
 			}
 			return myPlayer;
 		}
@@ -52,6 +59,11 @@ namespace Project.Echo.Player.Cameras
 			{
 				_playerTransform = GetOwnPlayerTransform();
 			}
+		}
+
+		private void OnDestroy()
+		{
+			NetworkController.OnHostMigrationDone -= OnHostMigrated;
 		}
 	}
 }

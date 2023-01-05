@@ -8,27 +8,22 @@ using Project.Echo.Spawner;
 
 namespace Project.Echo.Player.Controls
 {
-    public class PlayerMovement : NetworkPositionRotation
+    public class PlayerMovement : NetworkPositionRotation, IRespawnAble
     {
         private Rigidbody _rigidBody;
-        private PlayerNetworkedController _playerNetworkedController;
 
 		public override void Spawned()
 		{
-			base.Spawned();
             _rigidBody = GetComponent<Rigidbody>();
-            _playerNetworkedController = GetComponent<PlayerNetworkedController>();
-            _playerNetworkedController.OnRespawned += PlayerDied;
-    }
+        }
 
-		private void PlayerDied()
-		{
-            //look for new position
-            var pos =PlayerSpawner.GetAvailableSpawnPosition();
+        public void Respawn()
+        {
+            var pos = PlayerSpawner.GetAvailableSpawnPosition();
             SetEnginePosition(pos);
-		}
+        }
 
-		public override void FixedUpdateNetwork()
+        public override void FixedUpdateNetwork()
 		{
            if (GetInput(out NetworkPlayerMovementData data))
             {
@@ -41,12 +36,6 @@ namespace Project.Echo.Player.Controls
                 SetEnginePosition(e);
                 SetEngineRotation(Quaternion.Euler(q));
             }
-        }
-
-		public override void Despawned(NetworkRunner runner, bool hasState)
-		{
-			base.Despawned(runner, hasState);
-            _playerNetworkedController.OnRespawned -= PlayerDied;
         }
 	}
 }

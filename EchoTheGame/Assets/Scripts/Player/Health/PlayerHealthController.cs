@@ -7,13 +7,17 @@ using Project.Echo.Projectiles.Enums;
 using Project.Echo.Player.Visuals;
 using Project.Echo.Player;
 using System;
+using Cysharp.Threading.Tasks;
 
-public class PlayerHealthController : NetworkBehaviour
+public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 {
-    [SerializeField]private GameObject _healthBarPrefab;
+	[SerializeField] private GameObject _healthBarPrefab;
 
-    [Networked(OnChanged = nameof(UpdateHealthBar))]
-    public int PlayerHealth { get; set; }
+	[Networked(OnChanged = nameof(UpdateHealthBar))]
+	public int PlayerHealth { get; set; }
+
+	[Networked(OnChanged =nameof(OnAliveChanged))]
+	public NetworkBool Alive {get;set;}
 
 	private int _maxHealth = 100;
 	private HealthBarPositionBehaviour _healthBarSlider;
@@ -26,12 +30,11 @@ public class PlayerHealthController : NetworkBehaviour
 		PlayerHealth = _maxHealth;
 
 		_playerNetworkController = GetComponentInChildren<PlayerNetworkedController>();
-		_playerNetworkController.OnRespawned += Respawned;
 		_healthBarSlider = Instantiate(_healthBarPrefab).GetComponentInChildren<HealthBarPositionBehaviour>();
 		_healthBarSlider.Init(transform, _maxHealth);
 	}
 
-	private void Respawned()
+	public void Respawn()
 	{
 		_healthBarSlider.gameObject.SetActive(true);
 		PlayerHealth = _maxHealth;
@@ -43,19 +46,28 @@ public class PlayerHealthController : NetworkBehaviour
 		PlayerHealth -= damage;
 	}
 
+	private void UpdateHealth()
+{
+		_healthBarSlider.UpdateSlider(PlayerHealth);
+
+		if (PlayerHealth < 0)
+		{
+			Alive = false;
+			_healthBarSlider.gameObject.SetActive(false);
+			_playerNetworkController.DisablePlayer();
+			_playerNetworkController.RespawnPlayer(2.5f);
+		}
+	}
+
 	public static void UpdateHealthBar(Changed<PlayerHealthController> changed)
 	{
 		var thisObject = changed.Behaviour;
+		thisObject.UpdateHealth();
+	}
 
-		thisObject._healthBarSlider.UpdateSlider(changed.Behaviour.PlayerHealth);
-
-		if (thisObject.PlayerHealth < 0)
-		{
-			thisObject._healthBarSlider.gameObject.SetActive(false);
-			thisObject._playerNetworkController.DisablePlayer();
-			thisObject._playerNetworkController.RespawnPlayer(2.5f);
-		}
-
+	private static void OnAliveChanged(Changed<PlayerHealthController> changed)
+	{
+		
 	}
 
 	public override void FixedUpdateNetwork()
@@ -66,8 +78,10 @@ public class PlayerHealthController : NetworkBehaviour
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
-		_playerNetworkController.OnRespawned -= Respawned;
-		Destroy(_healthBarSlider.gameObject);
+		if (_healthBarSlider != null)
+		{
+			Destroy(_healthBarSlider.gameObject);
+		}
 		base.Despawned(runner, hasState);
 	}
 }

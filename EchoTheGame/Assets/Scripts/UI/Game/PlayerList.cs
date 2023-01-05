@@ -1,38 +1,35 @@
-using Project.Echo.Networking;
 using UnityEngine;
 using Fusion;
 using Project.Echo.Player;
-using Cysharp.Threading.Tasks;
-using System.Linq;
 using Project.Echo.Networking.Handlers;
-using System.ComponentModel;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
-public class PlayerList : MonoBehaviour, IPlayerJoinedInitialization
+public class PlayerList : MonoBehaviour
 {
     [SerializeField] private PlayerListItem _playerItemTemplate;
 
 	private List<PlayerListItem> _trackedPlayers;
 	private NetworkRunner _networkRunner;
 
-	public Task Init(NetworkRunner runner)
+	private void Awake()
 	{
-		_networkRunner = runner;
+
 		_trackedPlayers = new List<PlayerListItem>();
+		_playerItemTemplate.gameObject.SetActive(false);
+		PlayerNetworkedController.LocalPlayerSpawned += OnSpawned; 
+		
+	}
 
-		NetworkEventHandler.PlayerJoined += OnPlayerJoined;
-		NetworkEventHandler.PlayerLeft += OnPlayerLeft;
+	private void OnSpawned(NetworkRunner obj)
+	{
+		PlayerNetworkedController.LocalPlayerSpawned -= OnSpawned;
+		_networkRunner = obj;
+		var allActivePlayers = obj.ActivePlayers;
 
-		var allActivePlayers = runner.ActivePlayers;
-
-		foreach (PlayerRef activePlay in allActivePlayers)
-		{
-			Debug.Log($"{activePlay.PlayerId} -");
-			AddPlayer(GetPlayerName(activePlay));
-		}
-		return Task.CompletedTask;
+		//foreach (PlayerRef activePlay in allActivePlayers)
+		//{
+		//	AddPlayer(GetPlayerName(activePlay));
+		//}
 	}
 
 	private void AddPlayer(string name)
@@ -70,15 +67,9 @@ public class PlayerList : MonoBehaviour, IPlayerJoinedInitialization
 			PlayerNetworkedController q = _networkRunner.TryGetNetworkedBehaviourFromNetworkedObjectRef<PlayerNetworkedController>(networkObject.Id);
 			if (q != null)
 			{
-				return q.PlayerSettings.PlayerName;
+				return q.PlayerName.ToString();
 			}
 		}
 		return "Unknown?";
-	}
-
-	private void OnDestroy()
-{
-		NetworkEventHandler.PlayerJoined -= OnPlayerJoined;
-		NetworkEventHandler.PlayerLeft -= OnPlayerLeft; 
 	}
 }

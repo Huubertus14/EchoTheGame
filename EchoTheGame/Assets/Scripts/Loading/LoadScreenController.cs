@@ -8,7 +8,7 @@ namespace Project.Echo.Loading
     {
         public static void SetLoadingText(string message)
 		{
-
+            Debug.Log(message);
 		}
     }
 }
