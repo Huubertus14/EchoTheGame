@@ -11,7 +11,6 @@ namespace Project.Echo.Player.Cameras
 {
     public class FollowMainPlayerCamera : MonoBehaviour
     {
-       [SerializeField] NetworkRunner _runner; //TODO find my runner?
 		[SerializeField]Transform _playerTransform;
 
 		[SerializeField] private Vector3 _offset = new Vector3(0,30,0);
@@ -23,18 +22,15 @@ namespace Project.Echo.Player.Cameras
 			NetworkController.OnHostMigrationDone += OnHostMigrated;
 		}
 
-		private void OnHostMigrated(NetworkRunner obj)
+		private void OnHostMigrated(NetworkRunner _)
 		{
-			Debug.Log("host is migrated ofzo?");
-			_runner = obj;
 			_playerTransform= GetOwnPlayerTransform();
 			enabled = true;
 		}
 
-		private void OnLocalPlayerSpawned(NetworkRunner obj)
+		private void OnLocalPlayerSpawned(NetworkRunner _)
 		{
 			PlayerNetworkedController.LocalPlayerSpawned -= OnLocalPlayerSpawned;
-			_runner = obj;
 			_playerTransform = GetOwnPlayerTransform();
 			enabled = true;
 		}

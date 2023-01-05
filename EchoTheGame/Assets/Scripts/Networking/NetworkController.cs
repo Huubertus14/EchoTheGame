@@ -112,6 +112,7 @@ namespace Project.Echo.Networking
 					{
                         newNetworkObject.CopyStateFrom(resumeObject);
 
+                        //TODo see if this can be made more
 						if (resumeObject.TryGetBehaviour<PlayerMovement>(out var oldMovement))
 						{
                             PlayerMovement newMovement = newNetworkObject.GetComponent<PlayerMovement>();
@@ -121,6 +122,13 @@ namespace Project.Echo.Networking
                         if (resumeObject.TryGetBehaviour<PlayerNetworkedController>(out var oldNetworkController))
                         {
                             _eventHandler.SetConnectionTokenMapping(oldNetworkController.Token, newNetworkObject.GetComponent<PlayerNetworkedController>());
+                        }
+
+						if (resumeObject.TryGetBehaviour<PlayerHealthController>(out var oldHealth))
+						{
+                            PlayerHealthController newHealth =newNetworkObject.GetComponent<PlayerHealthController>();
+                            newHealth.CopyStateFrom(oldHealth);
+                            newHealth.SkipInit = true;
                         }
                     });
 				}
@@ -141,9 +149,13 @@ namespace Project.Echo.Networking
             Debug.Log("Host migration started");
         }
 
-        public void LeaveGame()
+        public async Task LeaveGame()
 		{
-            _runner.Shutdown(true, ShutdownReason.Ok);
+            if (_runner.IsServer)
+            {
+                await _runner.PushHostMigrationSnapshot();
+            }
+           _runner.Shutdown();
 		}
 	} 
 }

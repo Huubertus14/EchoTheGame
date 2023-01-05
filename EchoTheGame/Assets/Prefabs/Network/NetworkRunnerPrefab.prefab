@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1057387523404447538}
   - component: {fileID: 1057387523404447539}
   - component: {fileID: 1057387523404447564}
-  - component: {fileID: -2451712276759825168}
+  - component: {fileID: 1774183237400337936}
   m_Layer: 0
   m_Name: NetworkRunnerPrefab
   m_TagString: Untagged
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowHierarchyWindowOverlay: 1
   PostLoadDelayFrames: 1
---- !u!114 &-2451712276759825168
+--- !u!114 &1774183237400337936
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

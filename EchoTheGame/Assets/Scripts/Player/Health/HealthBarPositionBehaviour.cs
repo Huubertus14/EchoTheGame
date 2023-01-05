@@ -7,11 +7,12 @@ using System;
 
 public class HealthBarPositionBehaviour : MonoBehaviour
 {
+	public byte[] connectionToken { get; private set; }
 	private Transform _followTarget;
 	private Slider _healthSlider;
 	[SerializeField] private Vector3 _positionOffset;
 
-	public void Init(Transform target, int maxHealth)
+	public void Init(byte[] connectionToken,Transform target, int maxHealth)
 	{
 		_followTarget = target;
 		_healthSlider = GetComponentInChildren<Slider>();

@@ -22,16 +22,20 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	private int _maxHealth = 100;
 	private HealthBarPositionBehaviour _healthBarSlider;
 	private PlayerNetworkedController _playerNetworkController;
+	public bool SkipInit = false;
 
 	public override void Spawned()
 	{
 		base.Spawned();
 
-		PlayerHealth = _maxHealth;
+		if (!SkipInit)
+		{
+			PlayerHealth = _maxHealth;
+		}
 
 		_playerNetworkController = GetComponentInChildren<PlayerNetworkedController>();
 		_healthBarSlider = Instantiate(_healthBarPrefab).GetComponentInChildren<HealthBarPositionBehaviour>();
-		_healthBarSlider.Init(transform, _maxHealth);
+		_healthBarSlider.Init(GameManager.GetConnectionToken(),transform, _maxHealth);
 	}
 
 	public void Respawn()
@@ -82,6 +86,18 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 		{
 			Destroy(_healthBarSlider.gameObject);
 		}
-		base.Despawned(runner, hasState);
+		else
+		{
+			//Not possible // Find healthbar
+			var healthbars = FindObjectsOfType<HealthBarPositionBehaviour>();
+			foreach (var bar in healthbars)
+			{
+				if (bar.connectionToken == GameManager.GetConnectionToken())
+				{
+					Destroy(bar);
+					break;
+				}
+			}
+		}
 	}
 }
