@@ -11,11 +11,11 @@ public class PlayerScoreboardController : NetworkBehaviour
 	// if host do same but also receive rpc to clients to update score
 	[SerializeField]private string _myName;
 	[SerializeField]private List<string> _playerNames;
-	private PlayerList _playerList;
+	//private PlayerList _playerList; //TODO find this object in scene and let that keep the list
 
 	public override void Spawned()
 	{
-		_playerList = GetComponentInChildren<PlayerList>();
+		//_playerList = GetComponentInChildren<PlayerList>();
 		_playerNames = new List<string>();
 		if (HasInputAuthority)
 		{
@@ -25,7 +25,7 @@ public class PlayerScoreboardController : NetworkBehaviour
 		else
 		{
 			Debug.Log("Not local player spawned");
-			_playerList.gameObject.SetActive(false);
+			//_playerList.gameObject.SetActive(false);
 		}
 	}
 
