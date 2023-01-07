@@ -6,19 +6,30 @@ public class PlayerList : MonoBehaviour
 {
 	public static PlayerList Instance;
 
-	[SerializeField]private PlayerListItem _listItemTemplate;
-	[SerializeField]private Canvas _canvas;
+	public string[] GetCurrentPlayers => _playerNames.ToArray();
 
-	private List<PlayerListItem> _currentPlayers;
+	[SerializeField]private PlayerListItem _listItemTemplate;
+
+	[SerializeField] private List<PlayerListItem> _currentPlayers;
+	[SerializeField] private List<string> _playerNames;
 
 	private void Awake()
 	{
+		if(Instance == null)
+		{
+			Instance = this;
+		}
+		else
+		{
+			Destroy(gameObject);
+		}
+
+		_playerNames = new List<string>();
 		_currentPlayers = new List<PlayerListItem>();
-		_canvas.worldCamera = Camera.main;
 		_listItemTemplate.gameObject.SetActive(false);
 	}
 
-	public void UpdateList(IReadOnlyList<string> nameCollection)
+	public void UpdateList(IReadOnlyCollection<string> nameCollection)
 	{
 		foreach (var sendName in nameCollection)
 		{
@@ -31,6 +42,8 @@ public class PlayerList : MonoBehaviour
 
 	public void AddName(string name)
 	{
+		_playerNames.Add(name);
+
 		PlayerListItem newItem = Instantiate(_listItemTemplate, transform);
 		newItem.Init(name);
 		newItem.gameObject.SetActive(true);
