@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Project.Echo.Setting;
+using System;
 
 public class PlayerScoreboardController : NetworkBehaviour
 {
-	//When spawn set own name and send rpc to host
+	[Networked(OnChanged =nameof(OnKillsChanged))]
+	private int _matchKils { get; set; }
 
-	// if host do same but also receive rpc to clients to update score
+	[Networked(OnChanged = nameof(OnDeathsChanged))]
+	private int _matchDeaths { get; set; }
+
+	[Networked(OnChanged = nameof(OnScoreChanged))]
+	private int _matchScore { get; set; }
+
 	[SerializeField]private string _myName;
-	//private PlayerList _playerList; //TODO find this object in scene and let that keep the list
 
 	public override void Spawned()
 	{
@@ -32,16 +38,49 @@ public class PlayerScoreboardController : NetworkBehaviour
 		//if local player joined. update host with my new name
 		_myName = name;
 		PlayerList.Instance.AddName(_myName);
-		RPC_ReceiveNewName(PlayerList.Instance.GetCurrentPlayers);
+		RPC_UpdatePlayerList(PlayerList.Instance.GetCurrentPlayers);
 	}
 
 	[Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
-	private void RPC_ReceiveNewName(string[] newNames) 
+	private void RPC_UpdatePlayerList(string[] newNames) 
 	{
 		//Host receives new name and tells everyone to update their list
 		//Debug.Log($"name received. Add to collection and send new list to clients {newName}");
 		PlayerList.Instance.UpdateList(newNames);
 	}
 
+	private static void OnKillsChanged(Changed<PlayerScoreboardController> changed)
+	{
+		
+	}
 
+	private static void OnDeathsChanged(Changed<PlayerScoreboardController> changed)
+	{
+
+	}
+
+	private static void OnScoreChanged(Changed<PlayerScoreboardController> changed)
+	{
+
+	}
+
+	private void UpdateKillsUI()
+	{
+
+	}
+
+	private void UpdateDeathsUI()
+	{
+
+	}
+
+	private void UpdateScoreUI()
+	{
+
+	}
+
+	public override void Despawned(NetworkRunner runner, bool hasState)
+	{
+		PlayerList.Instance.RemoveName(_myName);
+	}
 }

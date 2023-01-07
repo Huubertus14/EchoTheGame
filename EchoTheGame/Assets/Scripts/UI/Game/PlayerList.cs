@@ -10,7 +10,7 @@ public class PlayerList : MonoBehaviour
 
 	[SerializeField]private PlayerListItem _listItemTemplate;
 
-	[SerializeField] private List<PlayerListItem> _currentPlayers;
+	 private Dictionary<string,PlayerListItem> _currentPlayers;
 	[SerializeField] private List<string> _playerNames;
 
 	private void Awake()
@@ -25,7 +25,7 @@ public class PlayerList : MonoBehaviour
 		}
 
 		_playerNames = new List<string>();
-		_currentPlayers = new List<PlayerListItem>();
+		_currentPlayers = new Dictionary<string, PlayerListItem>();
 		_listItemTemplate.gameObject.SetActive(false);
 	}
 
@@ -33,9 +33,18 @@ public class PlayerList : MonoBehaviour
 	{
 		foreach (var sendName in nameCollection)
 		{
-			if (!_currentPlayers.Select(q=>q.PlayerName).Contains(sendName))
+			if(!_currentPlayers.ContainsKey(sendName))
 			{
 				AddName(sendName);
+			}
+		}
+
+		foreach(var item in _currentPlayers)
+		{
+			if(!nameCollection.Contains(item.Key))
+			{
+				Destroy(item.Value.gameObject);
+				_currentPlayers.Remove(item.Key);
 			}
 		}
 	}
@@ -47,11 +56,17 @@ public class PlayerList : MonoBehaviour
 		PlayerListItem newItem = Instantiate(_listItemTemplate, transform);
 		newItem.Init(name);
 		newItem.gameObject.SetActive(true);
-		_currentPlayers.Add(newItem);
+		_currentPlayers.Add(name,newItem);
 	}
 
 	public void RemoveName(string nameToRemove)
 	{
+		_playerNames.Remove(nameToRemove);
 
+		if(_currentPlayers.TryGetValue(nameToRemove, out var itemToDeleteAndRemove))
+		{
+			Destroy(itemToDeleteAndRemove.gameObject);
+			_currentPlayers.Remove(nameToRemove);
+		}
 	}
 }
