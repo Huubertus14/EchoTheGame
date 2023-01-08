@@ -35,7 +35,7 @@ namespace Project.Echo.Player.Controls
 			}
 
             data.IsShooting = Input.GetKey(KeyCode.Space);
-
+            data.IsPing = Input.GetKey(KeyCode.LeftControl);
             return data;
 		}
     }

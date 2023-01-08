@@ -7,7 +7,7 @@ public class KillFeedItem : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI _feedText;
 
-	public void Init(string message)
+	public void SetText(string message)
 	{
 		_feedText.text = message;
 	}

@@ -6,9 +6,8 @@ public class KillFeedController : MonoBehaviour
 {
 	private static KillFeedController _instance;
 
-	[SerializeField] private KillFeedItem _killfeedTemplate;
-
-	private Queue<KillFeedItem> _killFeedQueue;
+	private KillFeedItem[] _killFeedItems;
+	private int _feedindex;
 
 	private void Awake()
 	{
@@ -21,13 +20,17 @@ public class KillFeedController : MonoBehaviour
 			Destroy(gameObject);
 		}
 
-		_killfeedTemplate.gameObject.SetActive(false);
-		_killFeedQueue = new Queue<KillFeedItem>();
+		_killFeedItems = GetComponentsInChildren<KillFeedItem>(true);
+		foreach(var item in _killFeedItems)
+		{
+			item.SetText("");
+		}
 	}
 
 	public static void SetKillFeed(string message)
 	{
-		var newItem = Instantiate(_instance._killfeedTemplate, _instance.transform);
+		int index = _instance._feedindex++ % _instance._killFeedItems.Length;
+		_instance._killFeedItems[index].SetText(message);
 
 	}
 

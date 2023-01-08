@@ -18,6 +18,8 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	[SerializeField]private string _myName;
 
+	public string GetPlayerName => _myName;
+
 	public override void Spawned()
 	{
 		if (HasInputAuthority)
@@ -28,24 +30,21 @@ public class PlayerScoreboardController : NetworkBehaviour
 		else
 		{
 			Debug.Log("Not local player spawned");
-			//_playerList.gameObject.SetActive(false);
 		}
 	}
 
 	[Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
 	private void RPC_SendNameToHost(string name)
 	{
-		//if local player joined. update host with my new name
 		_myName = name;
 		PlayerList.Instance.AddName(_myName);
-		RPC_UpdatePlayerList(PlayerList.Instance.GetCurrentPlayers);
+		RPC_UpdatePlayerList(_myName,PlayerList.Instance.GetCurrentPlayers);
 	}
 
 	[Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
-	private void RPC_UpdatePlayerList(string[] newNames) 
+	private void RPC_UpdatePlayerList(string newPlayer,string[] newNames) 
 	{
-		//Host receives new name and tells everyone to update their list
-		//Debug.Log($"name received. Add to collection and send new list to clients {newName}");
+		KillFeedController.SetKillFeed($"<b>{newPlayer}</b> Joined the game");
 		PlayerList.Instance.UpdateList(newNames);
 	}
 
@@ -81,6 +80,7 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
+		KillFeedController.SetKillFeed($"<b>{_myName}</b> left the game");
 		PlayerList.Instance.RemoveName(_myName);
 	}
 }

@@ -11,5 +11,6 @@ namespace Project.Echo.Player.Controls.Data
 		public float Speed;
 		public float Rotation;
 		public bool IsShooting;
+		public bool IsPing;
 	}
 }
