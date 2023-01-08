@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer))]
-public class SonarObject : MonoBehaviour
+public class SonarObject : MonoBehaviour, IHitSonarAble
 {
 	MeshRenderer _meshRenderer;
 
 	private Color _hitColor;
 	private Color _offColor;
-	private Color _objectColor;
+
+	private float _lerpedValue;
+	private Color _lerpedColor;
+
+	private IEnumerator _faceCoroutine;
 
 	private void Awake()
 	{
@@ -18,24 +22,41 @@ public class SonarObject : MonoBehaviour
 		_offColor = Color.black;
 	}
 
+	public void HitBySonar(Vector3 firstHitPosition)
+	{
+		Debug.Log($"Hit {firstHitPosition}");
+	}
+
 	private void OnParticleCollision(GameObject other)
 	{
-		Debug.Log($"Hit {other.name}", other);
-		StartCoroutine(ObjectHitEffect());
+		//Debug.Log($"Hit {other.name}", other);
+		return; //TODO add logic not in this method
+		if(_faceCoroutine == null)
+		{
+			_faceCoroutine = ObjectHitEffect();
+			StartCoroutine(ObjectHitEffect());
+		}
+		else
+		{
+			_lerpedValue = 1;
+		}
 	}
 
 	private IEnumerator ObjectHitEffect()
 	{
-		var q = _hitColor;
 		_meshRenderer.material.color = _hitColor;
-
+		_lerpedColor = _hitColor;
 		float duration = 1.5f;
-		var startTime = Time.time;
+		_lerpedValue = 1;
 
-		yield return new WaitForSeconds(1);
+		while(_lerpedValue >= 0)
+		{
+			_lerpedValue -= Time.deltaTime / duration;
+			_lerpedColor = Color.Lerp(_offColor, _hitColor, _lerpedValue);
+			_meshRenderer.material.color = _lerpedColor;
+			yield return 0;
+		}
 		_meshRenderer.material.color = _offColor;
-		
-
-		yield return 0;
+		_faceCoroutine = null;
 	}
 }

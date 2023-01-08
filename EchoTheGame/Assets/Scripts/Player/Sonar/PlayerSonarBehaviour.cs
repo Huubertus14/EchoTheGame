@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
@@ -9,10 +9,13 @@ public class PlayerSonarBehaviour : NetworkBehaviour
     private ParticleSystem _sonarParticleSystem;
 
 	private TickTimer _localTickTimer;
+
+	private List<ParticleCollisionEvent> _hitEvents;	
+
 	public override void Spawned()
 	{
 		_sonarParticleSystem = GetComponent<ParticleSystem>();
-		
+		_hitEvents = new List<ParticleCollisionEvent>();
 		_localTickTimer = TickTimer.None;
 
 		ParticleSystem.MainModule particleSettings = _sonarParticleSystem.main;
@@ -37,11 +40,15 @@ public class PlayerSonarBehaviour : NetworkBehaviour
 		}
 	}
 
-	//TODO check if we want to do something with this
-	//private void OnParticleCollision(GameObject other)
-	//{
-		
-	//}
+	private void OnParticleCollision(GameObject other)
+	{
+		_sonarParticleSystem.GetCollisionEvents(other, _hitEvents);
+
+		if(other.TryGetComponent<IHitSonarAble>(out var sonar))
+		{
+			sonar.HitBySonar(_hitEvents.FirstOrDefault().intersection);
+		}
+	}
 
 	[Rpc(sources:RpcSources.InputAuthority, RpcTargets.All)]
 	private void RPC_PlayParticleEffect()
