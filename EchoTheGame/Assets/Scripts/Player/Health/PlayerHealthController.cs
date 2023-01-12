@@ -59,11 +59,10 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 	public void HitPlayer(int damage, string hitByPlayer)
 	{
-		if (Alive)
-		{
+		if (!HasStateAuthority || !Alive) return;
+
 			PlayerHealth -= damage;
 			_lastHitByPlayer = hitByPlayer;
-		}
 	}
 
 	private void UpdateHealth()
@@ -73,6 +72,11 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 		if (PlayerHealth < 0)
 		{
 			Alive = false;
+			if (HasStateAuthority)
+			{
+				Debug.Log("send from here", gameObject);
+				_killFeedController.SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}");
+			}
 		}
 	}
 
@@ -101,8 +105,9 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	{
 		if (HasStateAuthority)
 		{
+			
 			//_killFeedController.SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}");
-			_playerNetworkController.GetComponent<NetworkedKillFeedController>().SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}"); //TODO check why this is called twice
+			//_playerNetworkController.GetComponent<NetworkedKillFeedController>().SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}"); //TODO check why this is called twice
 		}
 		_healthBarSlider.gameObject.SetActive(false);
 		_playerNetworkController.DisablePlayer();
