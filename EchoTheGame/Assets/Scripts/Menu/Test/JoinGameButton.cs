@@ -15,7 +15,7 @@ namespace Project.Echo.Menu.Test
 			Settings.Session = new SessionSettings("TestGame", GameMode.Client);
 
 			Settings.Player = new();
-			Settings.Player.PlayerName = $"Client {Random.value:00}";
+			Settings.Player.PlayerName = $"Client {Random.value}";
 
 			_loadGameScene = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
 			_loadGameScene.completed += OnGameSceneLoaded;

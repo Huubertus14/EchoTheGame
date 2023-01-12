@@ -7,6 +7,8 @@ using System;
 
 public class PlayerScoreboardController : NetworkBehaviour
 {
+	private NetworkedKillFeedController _killFeedController;
+
 	[Networked(OnChanged =nameof(OnKillsChanged))]
 	private int _matchKils { get; set; }
 
@@ -16,9 +18,17 @@ public class PlayerScoreboardController : NetworkBehaviour
 	[Networked(OnChanged = nameof(OnScoreChanged))]
 	private int _matchScore { get; set; }
 
-	[SerializeField]private string _myName;
+	[Networked(OnChanged = nameof(OnNameChanged))]
+	private NetworkString<_32> _playerName { get; set; }
 
-	public string GetPlayerName => _myName;
+	private bool _isNameMessageSend;
+
+	public string GetPlayerName => _playerName.ToString();
+
+	private void Awake()
+	{
+		_killFeedController = GetComponent<NetworkedKillFeedController>();
+	}
 
 	public override void Spawned()
 	{
@@ -36,15 +46,21 @@ public class PlayerScoreboardController : NetworkBehaviour
 	[Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
 	private void RPC_SendNameToHost(string name)
 	{
-		_myName = name;
-		PlayerList.Instance.AddName(_myName);
-		RPC_UpdatePlayerList(_myName,PlayerList.Instance.GetCurrentPlayers);
+		_playerName = name;
+		var stringName = _playerName.ToString();
+		PlayerList.Instance.AddName(stringName);
+		RPC_UpdatePlayerList( PlayerList.Instance.GetCurrentPlayers);
+
+		if (!_isNameMessageSend)
+		{
+			_killFeedController.SetKillFeed(stringName, "Joined the game");
+			_isNameMessageSend = true;
+		}
 	}
 
 	[Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
-	private void RPC_UpdatePlayerList(string newPlayer,string[] newNames) 
+	private void RPC_UpdatePlayerList(string[] newNames) 
 	{
-		KillFeedController.SetKillFeed($"<b>{newPlayer}</b> Joined the game");
 		PlayerList.Instance.UpdateList(newNames);
 	}
 
@@ -56,6 +72,11 @@ public class PlayerScoreboardController : NetworkBehaviour
 	private static void OnDeathsChanged(Changed<PlayerScoreboardController> changed)
 	{
 
+	}
+
+	private static void OnNameChanged(Changed<PlayerScoreboardController> changed)
+	{
+		
 	}
 
 	private static void OnScoreChanged(Changed<PlayerScoreboardController> changed)
@@ -80,7 +101,7 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
-		KillFeedController.SetKillFeed($"<b>{_myName}</b> left the game");
-		PlayerList.Instance.RemoveName(_myName);
+		_killFeedController?.SetKillFeed(GetPlayerName,"left the game"); //TODO change this code to something has left?
+		PlayerList.Instance.RemoveName(GetPlayerName);
 	}
 }

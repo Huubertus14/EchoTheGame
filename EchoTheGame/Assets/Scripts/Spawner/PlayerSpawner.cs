@@ -29,7 +29,7 @@ namespace Project.Echo.Spawner
 			Vector3 spawnPosition = GetAvailableSpawnPosition();
 			NetworkObject networkPlayerObject = runner.Spawn(_instance._playerPrefab, spawnPosition, Quaternion.identity, player);
 			_instance._spawnedCharacters.Add(player, networkPlayerObject);
-			runner.SetPlayerObject(player, networkPlayerObject);
+			//runner.SetPlayerObject(player, networkPlayerObject);
 			 return networkPlayerObject.GetComponent<PlayerNetworkedController>();
 		}
 

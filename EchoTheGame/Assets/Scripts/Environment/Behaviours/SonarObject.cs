@@ -15,6 +15,8 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 
 	private IEnumerator _faceCoroutine;
 
+	private bool ishit;
+
 	private void Awake()
 	{
 		_meshRenderer = GetComponent<MeshRenderer>();
@@ -24,7 +26,16 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 
 	public void HitBySonar(Vector3 firstHitPosition)
 	{
-		Debug.Log($"Hit {firstHitPosition}");
+		if (!ishit)
+		{
+			ishit = true;
+
+			//Do fancy transition thing
+		}
+		else
+		{
+			//Update color and reset lerped reset thing
+		}
 	}
 
 	private void OnParticleCollision(GameObject other)
@@ -48,6 +59,10 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 		_lerpedColor = _hitColor;
 		float duration = 1.5f;
 		_lerpedValue = 1;
+
+		//todo lerp the fade in to whole object
+
+		//if fadein is done fade out  u8*
 
 		while(_lerpedValue >= 0)
 		{

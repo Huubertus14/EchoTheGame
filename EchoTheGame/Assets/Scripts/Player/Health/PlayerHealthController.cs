@@ -19,13 +19,15 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	[Networked(OnChanged =nameof(OnAliveChanged))]
 	public NetworkBool Alive {get;set;}
 
+	private string _lastHitByPlayer;
+
 	private int _maxHealth = 100;
 	private HealthBarPositionBehaviour _healthBarSlider;
 	private PlayerNetworkedController _playerNetworkController;
+	private NetworkedKillFeedController _killFeedController;
 	[SerializeField]private PlayerScoreboardController _playerScoreBoard;
 	public bool SkipInit = false;
-	private string _lastHitByPlayer;
-
+	
 	public override void Spawned()
 	{
 		base.Spawned();
@@ -35,6 +37,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 			PlayerHealth = _maxHealth;
 		}
 
+		_killFeedController = GetComponent<NetworkedKillFeedController>();
 		_playerScoreBoard = GetComponent<PlayerScoreboardController>();
 		_playerNetworkController = GetComponentInChildren<PlayerNetworkedController>();
 		_healthBarSlider = Instantiate(_healthBarPrefab).GetComponentInChildren<HealthBarPositionBehaviour>();
@@ -56,8 +59,11 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 	public void HitPlayer(int damage, string hitByPlayer)
 	{
-		PlayerHealth -= damage;
-		_lastHitByPlayer = hitByPlayer;
+		if (Alive)
+		{
+			PlayerHealth -= damage;
+			_lastHitByPlayer = hitByPlayer;
+		}
 	}
 
 	private void UpdateHealth()
@@ -78,6 +84,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 	private static void OnAliveChanged(Changed<PlayerHealthController> changed)
 	{
+		changed.LoadNew();
 		var newValue = changed.Behaviour.Alive;
 
 		if(newValue)
@@ -92,24 +99,16 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 	private void PlayerDied()
 	{
-		if(HasStateAuthority)
+		if (HasStateAuthority)
 		{
-			RPC_SendKillMessageToServer(Runner,_playerScoreBoard.GetPlayerName, _lastHitByPlayer);
+			//_killFeedController.SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}");
+			_playerNetworkController.GetComponent<NetworkedKillFeedController>().SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}"); //TODO check why this is called twice
 		}
 		_healthBarSlider.gameObject.SetActive(false);
 		_playerNetworkController.DisablePlayer();
 		_playerNetworkController.RespawnPlayer(2.5f);
 	}
-
 	
-	private static void RPC_SendKillMessageToServer(NetworkRunner runner,string killer, string victim)
-	{
-		if(PlayerNetworkedController.LocalPlayer.HasInputAuthority)
-		{
-			KillFeedController.SetKillFeed($"<b>{killer}</b> killed <b>{victim}</b>");
-		}
-	}
-
 	public override void FixedUpdateNetwork()
 	{
 		base.FixedUpdateNetwork();
@@ -120,7 +119,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	{
 		if (_healthBarSlider != null)
 		{
-			Destroy(_healthBarSlider.gameObject);
+			DestroyImmediate(_healthBarSlider.gameObject);
 		}
 		else
 		{

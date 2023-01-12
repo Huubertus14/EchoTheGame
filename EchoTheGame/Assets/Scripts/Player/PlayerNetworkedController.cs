@@ -32,16 +32,27 @@ namespace Project.Echo.Player
 
 		private PlayerVisualController _visualController;
 		private IRespawnAble[] _respawnAbles;
+		private Canvas _localPlayerCanvas;
 
 		public override void Spawned()
 		{
+			_localPlayerCanvas = GetComponentInChildren<Canvas>();
+
 			if (Object.HasInputAuthority)
 			{
 				LocalPlayer = this;
 				RPC_SetName(PlayerSettings.PlayerName);
 				LocalPlayerSpawned?.Invoke(Runner);
+				_localPlayerCanvas.gameObject.SetActive(true);
+				_localPlayerCanvas.worldCamera = Camera.main;
+			}
+			else
+			{
+				_localPlayerCanvas.gameObject.SetActive(false);
 			}
 			
+			Runner.SetPlayerObject(Object.InputAuthority, Object);
+
 			_respawnAbles = GetComponentsInChildren<IRespawnAble>();
 			PlayerStats = new PlayerStats(); //TODO this needs to be synced. Will be overwriten by host migration now
 

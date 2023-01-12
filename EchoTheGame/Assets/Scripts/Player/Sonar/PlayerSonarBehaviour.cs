@@ -50,6 +50,14 @@ public class PlayerSonarBehaviour : NetworkBehaviour
 		}
 	}
 
+	private void OnDrawGizmos()
+	{
+		//foreach (var item in _hitEvents)
+		//{
+		//	Gizmos.DrawSphere(item.intersection,0.1f);
+		//}	
+	}
+
 	[Rpc(sources:RpcSources.InputAuthority, RpcTargets.All)]
 	private void RPC_PlayParticleEffect()
 	{
