@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using Fusion;
 using Project.Echo.Player.Controls.Data;
+using Project.Echo.Player.Visuals;
 using Project.Echo.Projectiles;
 using Project.Echo.Projectiles.Behaviours;
 using UnityEngine;
@@ -17,7 +19,7 @@ namespace Project.Echo.Weapons
 
 		private ProjectileManager _projectileManager;
 		private TickTimer _tickTimer;
-
+		
 		private void Awake()
 		{
 			_projectileManager = GetComponent<ProjectileManager>();

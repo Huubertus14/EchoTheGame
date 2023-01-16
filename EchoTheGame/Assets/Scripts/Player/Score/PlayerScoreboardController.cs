@@ -9,14 +9,14 @@ public class PlayerScoreboardController : NetworkBehaviour
 {
 	private NetworkedKillFeedController _killFeedController;
 
-	[Networked(OnChanged =nameof(OnKillsChanged))]
-	private int _matchKils { get; set; }
+	[Networked(OnChanged = nameof(OnKillsChanged))]
+	private int _matchKils { get; set; } = 0;
 
 	[Networked(OnChanged = nameof(OnDeathsChanged))]
-	private int _matchDeaths { get; set; }
+	private int _matchDeaths { get; set; } = 0;
 
 	[Networked(OnChanged = nameof(OnScoreChanged))]
-	private int _matchScore { get; set; }
+	private int _matchScore { get; set; } = 0;
 
 	[Networked(OnChanged = nameof(OnNameChanged))]
 	private NetworkString<_32> _playerName { get; set; }
@@ -64,39 +64,54 @@ public class PlayerScoreboardController : NetworkBehaviour
 		PlayerList.Instance.UpdateList(newNames);
 	}
 
+	public void AddScore(int score)
+	{
+		_matchScore += score;
+		PlayerList.Instance.UpdatePlayerStats(GetPlayerName, _matchScore, _matchKils, _matchDeaths);
+	}
+
+	public void AddKills(int kills = 1)
+	{
+		_matchKils += kills; 
+	}
+
+	public void AddDeath()
+	{
+		_matchDeaths++;	}
+
 	private static void OnKillsChanged(Changed<PlayerScoreboardController> changed)
 	{
-		
+		if (changed.Behaviour.HasStateAuthority)
+		{
+			changed.Behaviour.RPC_UpdateStatsUI();
+		}
 	}
 
 	private static void OnDeathsChanged(Changed<PlayerScoreboardController> changed)
 	{
-
+		if (changed.Behaviour.HasStateAuthority)
+		{
+			changed.Behaviour.RPC_UpdateStatsUI();
+		}
 	}
 
 	private static void OnNameChanged(Changed<PlayerScoreboardController> changed)
 	{
-		
+		//TODO can this be a thing
 	}
 
 	private static void OnScoreChanged(Changed<PlayerScoreboardController> changed)
 	{
-
+		if (changed.Behaviour.HasStateAuthority)
+		{
+			changed.Behaviour.RPC_UpdateStatsUI();
+		}
 	}
 
-	private void UpdateKillsUI()
+	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	private void RPC_UpdateStatsUI()
 	{
-
-	}
-
-	private void UpdateDeathsUI()
-	{
-
-	}
-
-	private void UpdateScoreUI()
-	{
-
+		PlayerList.Instance.UpdatePlayerStats(GetPlayerName, _matchScore, _matchKils, _matchDeaths);
 	}
 
 	public override void Despawned(NetworkRunner runner, bool hasState)

@@ -29,6 +29,16 @@ public class PlayerList : MonoBehaviour
 		_listItemTemplate.gameObject.SetActive(false);
 	}
 
+	public void UpdatePlayerStats(string playerName,int score, int kills, int deaths)
+	{
+		if (_currentPlayers.TryGetValue(playerName, out var item))
+		{
+			item.UpdateKills(kills);
+			item.UpdateDeaths(deaths);
+			item.UpdateScore(score);
+		}
+	}
+
 	public void UpdateList(IReadOnlyCollection<string> nameCollection)
 	{
 		foreach (var sendName in nameCollection)

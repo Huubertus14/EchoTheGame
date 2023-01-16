@@ -642,7 +642,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   _visibleProjectileCount: 0
-  _objectCache: {fileID: 0}
 --- !u!114 &2189349644602464357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,6 +702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _killFeedUIHandler: {fileID: 0}
 --- !u!1 &1265456750298655131
 GameObject:
   m_ObjectHideFlags: 0
@@ -757,7 +757,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -767,7 +767,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c01c7611f0d79e14595b553ea1236df8, type: 2}
+  - {fileID: 2100000, guid: 23b5f37da725c6e4aaf88471ec536a85, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1352,7 +1352,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c01c7611f0d79e14595b553ea1236df8, type: 2}
+  - {fileID: 2100000, guid: 23b5f37da725c6e4aaf88471ec536a85, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

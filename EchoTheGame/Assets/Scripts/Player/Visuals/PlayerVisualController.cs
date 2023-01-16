@@ -1,10 +1,6 @@
-using Cysharp.Threading.Tasks;
-using Project.Echo.Networking;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
-using System.Threading.Tasks;
+using System;
 
 namespace Project.Echo.Player.Visuals
 {
@@ -13,7 +9,9 @@ namespace Project.Echo.Player.Visuals
 		private Renderer[] _renderers;
 
 		[Networked]
-		private Color _color { get; set; }
+		public Color PlayerColor { get; set; }
+
+		public Action<Color> ColorSet { get; set; }
 
 		public override void Spawned()
 		{
@@ -21,13 +19,14 @@ namespace Project.Echo.Player.Visuals
 
 			if (Object.HasInputAuthority)
 			{
-				_color = Color.blue;
+				PlayerColor = Color.blue;
 			}
 			else
 			{
-				_color = Color.red;
+				PlayerColor = Color.red;
 			}
-			SetColor(_color);
+			SetColor(PlayerColor);
+			ColorSet?.Invoke(PlayerColor);
 		}
 
 		private void SetColor(Color col)

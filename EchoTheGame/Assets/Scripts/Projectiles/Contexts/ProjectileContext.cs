@@ -11,6 +11,7 @@ namespace Project.Echo.Projectiles.Contexts
 		public ObjectCache Cache;
 		public PlayerRef InputAuthority;
 		public int OwnerObjectInstanceID;
+		public Color ProjectileColor;
 
 		public Transform BulletBegin;
 

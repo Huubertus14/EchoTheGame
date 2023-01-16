@@ -19,7 +19,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	[Networked(OnChanged =nameof(OnAliveChanged))]
 	public NetworkBool Alive {get;set;}
 
-	private string _lastHitByPlayer;
+	private PlayerRef _lastHitByPlayer;
 
 	private int _maxHealth = 100;
 	private HealthBarPositionBehaviour _healthBarSlider;
@@ -50,14 +50,15 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 		Alive = true;
 	}
 
-	private void OnRespawned()
+	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	private void RPC_OnRespawned()
 	{
 		PlayerHealth = _maxHealth;
 		_healthBarSlider.gameObject.SetActive(true);
 		_healthBarSlider.UpdateSlider(PlayerHealth);
 	}
 
-	public void HitPlayer(int damage, string hitByPlayer)
+	public void HitPlayer(int damage, PlayerRef hitByPlayer)
 	{
 		if (!HasStateAuthority || !Alive) return;
 
@@ -74,8 +75,14 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 			Alive = false;
 			if (HasStateAuthority)
 			{
-				Debug.Log("send from here", gameObject);
-				_killFeedController.SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}");
+				//Add kill to last hit player
+				if (Runner.TryGetPlayerObject(_lastHitByPlayer, out NetworkObject playerNetworkObject))
+				{
+					var playerScoreboard =playerNetworkObject.GetComponent<PlayerScoreboardController>();
+					playerScoreboard.AddKills(1);
+					_killFeedController.SetKillFeed(playerScoreboard.GetPlayerName, $"Killed {_playerScoreBoard.GetPlayerName}");
+				}
+				_playerScoreBoard.AddDeath();
 			}
 		}
 	}
@@ -88,27 +95,24 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 	private static void OnAliveChanged(Changed<PlayerHealthController> changed)
 	{
-		changed.LoadNew();
 		var newValue = changed.Behaviour.Alive;
-
-		if(newValue)
-		{
-			changed.Behaviour.OnRespawned();
-		}
-		else 
-		{
-			changed.Behaviour.PlayerDied();
+		if (changed.Behaviour.HasStateAuthority) 
+		{ 
+			if (newValue)
+			{
+				changed.Behaviour.RPC_OnRespawned();
+			}
+			else 
+			{
+			
+				changed.Behaviour.RPC_PlayerDied();
+			}
 		}
 	}
 
-	private void PlayerDied()
+	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	private void RPC_PlayerDied()
 	{
-		if (HasStateAuthority)
-		{
-			
-			//_killFeedController.SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}");
-			//_playerNetworkController.GetComponent<NetworkedKillFeedController>().SetKillFeed(_lastHitByPlayer, $"Killed {_playerScoreBoard.GetPlayerName}"); //TODO check why this is called twice
-		}
 		_healthBarSlider.gameObject.SetActive(false);
 		_playerNetworkController.DisablePlayer();
 		_playerNetworkController.RespawnPlayer(2.5f);

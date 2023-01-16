@@ -47,14 +47,7 @@ namespace Project.Echo.Projectiles.Behaviours
 
 				if (healthController != null)
 				{
-					if(context.Runner.TryGetPlayerObject(context.InputAuthority, out NetworkObject shotPlayer) && shotPlayer.TryGetComponent<PlayerScoreboardController>(out var scoreboard))
-					{
-						healthController.HitPlayer(_damage, scoreboard.GetPlayerName);
-					}
-					else
-					{
-						Debug.LogError("Invalid player found?");
-					}
+					healthController.HitPlayer(_damage, context.InputAuthority);
 				}
 
 				data.IsFinished = true;

@@ -1,5 +1,6 @@
 using Fusion;
 using Project.Echo.Caches;
+using Project.Echo.Player.Visuals;
 using Project.Echo.Projectiles.Behaviours;
 using Project.Echo.Projectiles.Contexts;
 using Project.Echo.Projectiles.Structs;
@@ -21,12 +22,19 @@ namespace Project.Echo.Projectiles
 		private NetworkArray<ProjectileData> _projectiles { get; }
 		[Networked]
 		[SerializeField] private int _projectileCount { get; set; }
-
+		
 		[SerializeField] private Projectile[] _visibleProjectiles = new Projectile[128];
 		[SerializeField] private int _visibleProjectileCount;
 		[SerializeField] private ProjectileContext _projectileContext;
 		[SerializeField] private RawInterpolator _projectilesInterpolator;
-		[SerializeField] private ObjectCache _objectCache;
+		private ObjectCache _objectCache;
+		[SerializeField]private PlayerVisualController _visualController;
+
+		private void Awake()
+		{
+			_visualController = GetComponentInChildren<PlayerVisualController>();
+			_visualController.ColorSet += OnColorSet;
+		}
 
 		public override void Spawned()
 		{
@@ -77,13 +85,21 @@ namespace Project.Echo.Projectiles
 			_projectileContext = new ProjectileContext()
 			{
 				Runner = Runner,
-				Cache =_objectCache,
-				InputAuthority = Object.InputAuthority, 
+				Cache = _objectCache,
+				InputAuthority = Object.InputAuthority,
 				BulletBegin = _cannon.GetBulletTransform,
 				OwnerObjectInstanceID = gameObject.GetInstanceID(),
+				ProjectileColor = _visualController.PlayerColor
 			};
 
 			_projectilesInterpolator = GetInterpolator(nameof(_projectiles));
+		}
+
+		private void OnColorSet(Color col)
+		{
+			_visualController.ColorSet -= OnColorSet;
+			_projectileContext.ProjectileColor = col;
+			Debug.Log($"Color set {col}");
 		}
 
 		public override void FixedUpdateNetwork()
@@ -97,7 +113,6 @@ namespace Project.Echo.Projectiles
 
 			for (int i = 0; i < _projectiles.Length; i++)
 			{
-				
 				var projectileData = _projectiles[i];
 
 				if (projectileData.IsActive == false)
@@ -234,7 +249,7 @@ namespace Project.Echo.Projectiles
 
 			Runner.MoveToRunnerScene(projectile);
 
-			projectile.Activate(context, ref data);
+			projectile.Activate(context, _visualController.PlayerColor, ref data);
 
 			return projectile;
 		}

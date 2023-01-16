@@ -70,6 +70,7 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		public override void OnRender(ProjectileContext context, ref ProjectileData data)
 		{
+			base.OnRender(context, ref data);
 			if (data.IsFinished == true)
 			{
 				SpawnImpactVisual(context, ref data);

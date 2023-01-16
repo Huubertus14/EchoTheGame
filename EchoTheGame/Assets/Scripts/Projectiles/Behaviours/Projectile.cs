@@ -20,15 +20,25 @@ namespace Project.Echo.Projectiles.Behaviours
 		[SerializeField, Tooltip("Standalone effect that will be spawned through NetworkRunner")]
 		private NetworkObject _impactObjectPrefab;
 
+		[SerializeField]private Renderer[] _renderers;
+
+		private void Awake()
+		{
+			_renderers= GetComponentsInChildren<Renderer>();
+		}
+
 		public abstract ProjectileData GetFireData(NetworkRunner runner, Vector3 firePosition, Vector3 fireDirection);
 		public abstract void OnFixedUpdate(ProjectileContext context, ref ProjectileData data);
 
-		public void Activate(ProjectileContext context, ref ProjectileData data)
+		public void Activate(ProjectileContext context, Color projectileColor, ref ProjectileData data)
 		{
 			PrefabId = data.PrefabId;
 			IsFinished = false;
 			IsDiscarded = false;
-
+			foreach (Renderer ren in _renderers)
+			{
+				ren.material.color = context.ProjectileColor;
+			}
 			OnActivated(context, ref data);
 		}
 
@@ -41,6 +51,7 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		public virtual void OnRender(ProjectileContext context, ref ProjectileData data)
 		{
+			
 		}
 
 		public void Discard()
