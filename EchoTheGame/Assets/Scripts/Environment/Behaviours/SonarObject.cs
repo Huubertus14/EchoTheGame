@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 [RequireComponent(typeof(MeshRenderer))]
 public class SonarObject : MonoBehaviour, IHitSonarAble
@@ -10,68 +11,58 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 	private Color _hitColor;
 	private Color _offColor;
 
-	private float _lerpedValue;
-	private Color _lerpedColor;
-
-	private IEnumerator _faceCoroutine;
-
 	private bool ishit;
+
+	private IEnumerator _fadeEffect;
+
+	float durationTo = 120;
+	float durationFrom = 60;
 
 	private void Awake()
 	{
 		_meshRenderer = GetComponent<MeshRenderer>();
 		_hitColor = Color.blue;
-		_offColor = Color.black;
+		_offColor = Color.black; 
+		_meshRenderer.material.color = _offColor;
 	}
 
 	public void HitBySonar(Vector3 firstHitPosition)
 	{
 		if (!ishit)
 		{
-			ishit = true;
-
 			//Do fancy transition thing
-		}
-		else
-		{
-			//Update color and reset lerped reset thing
-		}
-	}
-
-	private void OnParticleCollision(GameObject other)
-	{
-		//Debug.Log($"Hit {other.name}", other);
-		return; //TODO add logic not in this method
-		if(_faceCoroutine == null)
-		{
-			_faceCoroutine = ObjectHitEffect();
-			StartCoroutine(ObjectHitEffect());
-		}
-		else
-		{
-			_lerpedValue = 1;
+			ObjectHitEffect(Color.blue, firstHitPosition);
+			_fadeEffect ??= FadeOut();
+			StartCoroutine(_fadeEffect);
 		}
 	}
 
-	private IEnumerator ObjectHitEffect()
+	private void ObjectHitEffect(Color playerColor, Vector3 firstParticlePosition)
 	{
-		_meshRenderer.material.color = _hitColor;
-		_lerpedColor = _hitColor;
-		float duration = 1.5f;
-		_lerpedValue = 1;
+		_meshRenderer.material.SetVector("_SonarWaveVector", firstParticlePosition);
+		_meshRenderer.material.SetColor("_SonarWaveColor", playerColor);
+	}
 
-		//todo lerp the fade in to whole object
+	
 
-		//if fadein is done fade out  u8*
+	private IEnumerator FadeOut()
+	{
+		ishit = true;
+		_meshRenderer.material.EnableKeyword("VISIBLE");
 
-		while(_lerpedValue >= 0)
+		for (int i = 0; i < durationTo; i++)
 		{
-			_lerpedValue -= Time.deltaTime / duration;
-			_lerpedColor = Color.Lerp(_offColor, _hitColor, _lerpedValue);
-			_meshRenderer.material.color = _lerpedColor;
-			yield return 0;
+			_meshRenderer.material.SetFloat("_SonarStep", i/durationTo);
+			yield return new WaitForSeconds(1f/50);
 		}
-		_meshRenderer.material.color = _offColor;
-		_faceCoroutine = null;
+		yield return 0;
+		_meshRenderer.material.DisableKeyword("VISIBLE");
+		for (int i = 0; i < durationFrom; i++)
+		{
+			_meshRenderer.material.SetFloat("_SonarStep", i / durationFrom);
+			yield return new WaitForSeconds(1f / 50);
+		}
+		ishit = false;
+		_fadeEffect = null;
 	}
 }
