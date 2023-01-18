@@ -43,9 +43,7 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 		_meshRenderer.material.SetColor("_SonarWaveColor", playerColor);
 	}
 
-	
-
-	private IEnumerator FadeOut()
+	private IEnumerator FadeOut() //TODO change this to use normal logic
 	{
 		ishit = true;
 		_meshRenderer.material.EnableKeyword("VISIBLE");
@@ -62,6 +60,7 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 			_meshRenderer.material.SetFloat("_SonarStep", i / durationFrom);
 			yield return new WaitForSeconds(1f / 50);
 		}
+		_meshRenderer.material.SetFloat("_SonarStep", 1);
 		ishit = false;
 		_fadeEffect = null;
 	}
