@@ -45,7 +45,7 @@ public class PlayerList : MonoBehaviour
 		{
 			if(!_currentPlayers.ContainsKey(sendName))
 			{
-				AddName(sendName);
+				AddName(sendName) ;
 			}
 		}
 

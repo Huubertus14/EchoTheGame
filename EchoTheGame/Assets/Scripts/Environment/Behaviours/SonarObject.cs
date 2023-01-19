@@ -26,12 +26,12 @@ public class SonarObject : MonoBehaviour, IHitSonarAble
 		_meshRenderer.material.color = _offColor;
 	}
 
-	public void HitBySonar(Vector3 firstHitPosition)
+	public void HitBySonar(Vector3 firstHitPosition, Color hitColor)
 	{
 		if (!ishit)
 		{
 			//Do fancy transition thing
-			ObjectHitEffect(Color.blue, firstHitPosition);
+			ObjectHitEffect(hitColor, firstHitPosition);
 			_fadeEffect ??= FadeOut();
 			StartCoroutine(_fadeEffect);
 		}

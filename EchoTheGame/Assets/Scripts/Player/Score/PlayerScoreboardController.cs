@@ -49,7 +49,7 @@ public class PlayerScoreboardController : NetworkBehaviour
 		_playerName = name;
 		var stringName = _playerName.ToString();
 		PlayerList.Instance.AddName(stringName);
-		RPC_UpdatePlayerList( PlayerList.Instance.GetCurrentPlayers);
+		RPC_UpdatePlayerList(PlayerList.Instance.GetCurrentPlayers);
 
 		if (!_isNameMessageSend)
 		{

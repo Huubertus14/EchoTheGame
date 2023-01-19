@@ -642,6 +642,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   _visibleProjectileCount: 0
+  _visualController: {fileID: 0}
 --- !u!114 &2189349644602464357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -816,6 +817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _PlayerColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1739349024025774583
 GameObject:
   m_ObjectHideFlags: 0
@@ -1542,6 +1544,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1265456750276898290}
     m_Modifications:
+    - target: {fileID: -2476562874500837429, guid: 7a0d091a653910c4b88b8685c8e72163, type: 3}
+      propertyPath: Flags
+      value: 3073
+      objectReference: {fileID: 0}
+    - target: {fileID: -2476562874500837429, guid: 7a0d091a653910c4b88b8685c8e72163, type: 3}
+      propertyPath: NetworkGuid.RawGuidValue.Array.data[0]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2476562874500837429, guid: 7a0d091a653910c4b88b8685c8e72163, type: 3}
+      propertyPath: NetworkGuid.RawGuidValue.Array.data[1]
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7660158195097663115, guid: 7a0d091a653910c4b88b8685c8e72163, type: 3}
       propertyPath: m_RootOrder
       value: 0

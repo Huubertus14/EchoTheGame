@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Project.Echo.Player;
 
 public class PlayerListItem : MonoBehaviour
 {
@@ -19,7 +20,14 @@ public class PlayerListItem : MonoBehaviour
 	public void Init(string playerName)
 	{
 		PlayerName = playerName;
-		_playerNameText.text = PlayerName;
+		if (PlayerNetworkedController.LocalPlayer.PlayerName == playerName)
+		{
+			_playerNameText.text = $"<b>{PlayerName}</b>";
+		}
+		else
+		{
+			_playerNameText.text = PlayerName;
+		}
 		_killsText.text = "0";
 		_deathsText.text = "0";
 		_scoreText.text = "0";

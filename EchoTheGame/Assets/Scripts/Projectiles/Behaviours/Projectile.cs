@@ -19,7 +19,7 @@ namespace Project.Echo.Projectiles.Behaviours
 		private float _impactEffectReturnTime = 2f;
 		[SerializeField, Tooltip("Standalone effect that will be spawned through NetworkRunner")]
 		private NetworkObject _impactObjectPrefab;
-
+		[SerializeField]private NetworkObject _spawnedObject;
 		[SerializeField]private Renderer[] _renderers;
 
 		private void Awake()
@@ -66,7 +66,6 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		protected virtual void OnDeactivated(ProjectileContext context)
 		{
-			
 		}
 
 		protected virtual void OnDiscarded()
@@ -76,6 +75,11 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		protected void SpawnImpact(ProjectileContext context, ref ProjectileData data, Vector3 position, Vector3 normal)
 		{
+			if (!context.Runner.IsServer)
+			{
+				return;
+			}
+
 			if (context.Runner.Stage == default)
 			{
 				Debug.LogError("Call SpawnImpact only from fixed update");
@@ -87,13 +91,22 @@ namespace Project.Echo.Projectiles.Behaviours
 
 			data.ImpactPosition = position;
 			data.ImpactNormal = normal;
-
+			
 			if (_impactObjectPrefab != null)
 			{
 				var key = new NetworkObjectPredictionKey() { AsInt = context.Runner.Tick * (context.InputAuthority + _impactObjectPrefab.NetworkGuid.GetHashCode()) };
-				context.Runner.Spawn(_impactObjectPrefab, position, Quaternion.LookRotation(normal), context.InputAuthority, null, key);
+				_spawnedObject = context.Runner.Spawn(_impactObjectPrefab, position , Quaternion.Euler(270,0,0), context.InputAuthority, null, key);
+
+				//Send signal to clients to fetch their local color of this object
+
+				if (_spawnedObject.TryGetBehaviour(out SonarImpact impact))
+				{
+					impact.RPC_UpdateColor(context.InputAuthority);
+				}
 			}
 		}
+
+
 
 		protected void SpawnImpactVisual(ProjectileContext context, ref ProjectileData data)
 		{

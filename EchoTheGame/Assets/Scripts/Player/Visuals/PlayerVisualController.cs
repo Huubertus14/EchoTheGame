@@ -8,7 +8,6 @@ namespace Project.Echo.Player.Visuals
     {
 		private Renderer[] _renderers;
 
-		[Networked]
 		public Color PlayerColor { get; set; }
 
 		public Action<Color> ColorSet { get; set; }

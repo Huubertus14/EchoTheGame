@@ -7,7 +7,7 @@ using Project.Echo.Player;
 
 public class NetworkedKillFeedController : NetworkBehaviour
 {
-	[SerializeField] private KillFeedUIHandler _killFeedUIHandler;
+	 private KillFeedUIHandler _killFeedUIHandler;
 
 	public void SetKillFeed(string userName, string message)
 	{

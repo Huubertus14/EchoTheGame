@@ -44,9 +44,9 @@ public class PlayerSonarBehaviour : NetworkBehaviour
 	{
 		_sonarParticleSystem.GetCollisionEvents(other, _hitEvents);
 
-		if(other.TryGetComponent<IHitSonarAble>(out var sonar))
+		if (_hitEvents.Count > 0 && other.TryGetComponent<IHitSonarAble>(out var sonar))
 		{
-			sonar.HitBySonar(_hitEvents.FirstOrDefault().intersection);
+			sonar.HitBySonar(_hitEvents[0].intersection, _sonarParticleSystem.main.startColor.color);
 		}
 	}
 

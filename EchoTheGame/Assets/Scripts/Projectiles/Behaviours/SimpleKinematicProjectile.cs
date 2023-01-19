@@ -21,12 +21,12 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		public override void OnFixedUpdate(ProjectileContext context, ref ProjectileData data)
 		{
-			var previousPosition = GetMovePosition(context.Runner, ref data, context.Runner.Tick - 1);
+			Vector3 previousPosition = GetMovePosition(context.Runner, ref data, context.Runner.Tick - 1);
 			var nextPosition = GetMovePosition(context.Runner, ref data, context.Runner.Tick);
 
 			var direction = nextPosition - previousPosition;
 			float distance = direction.magnitude;
-
+		
 			// Normalize
 			direction /= distance;
 
@@ -38,6 +38,7 @@ namespace Project.Echo.Projectiles.Behaviours
 				previousPosition -= direction * projectileLength;
 				distance += projectileLength;
 			}
+			
 
 			if (ProjectileUtility.ProjectileCast(context.Runner, context.InputAuthority, previousPosition, direction, distance, _hitMask, out LagCompensatedHit hit) == true)
 			{
