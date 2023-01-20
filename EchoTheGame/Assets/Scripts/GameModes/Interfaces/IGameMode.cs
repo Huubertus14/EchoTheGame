@@ -1,4 +1,4 @@
 public interface IGameMode 
 {
-	void EvaluateGameScore();
+	void EvaluateGameScore(int score, int kills);
 }

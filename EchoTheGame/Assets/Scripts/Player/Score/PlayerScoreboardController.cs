@@ -8,6 +8,7 @@ using System;
 public class PlayerScoreboardController : NetworkBehaviour
 {
 	private NetworkedKillFeedController _killFeedController;
+	public static Action<int,int> ScoreChanged;
 
 	[Networked(OnChanged = nameof(OnKillsChanged))]
 	private int _matchKils { get; set; } = 0;
@@ -67,16 +68,23 @@ public class PlayerScoreboardController : NetworkBehaviour
 	public void AddScore(int score)
 	{
 		_matchScore += score;
+		ScoreChanged?.Invoke(_matchScore, _matchKils);
 	}
 
 	public void AddKills(int kills = 1)
 	{
-		_matchKils += kills; 
+		_matchKils += kills;
+
+		if (HasStateAuthority)
+		{
+			ScoreChanged?.Invoke(_matchScore, _matchKils);
+		}
 	}
 
 	public void AddDeath()
 	{
-		_matchDeaths++;	}
+		_matchDeaths++;	
+	}
 
 	private static void OnKillsChanged(Changed<PlayerScoreboardController> changed)
 	{

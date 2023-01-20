@@ -155,7 +155,7 @@ namespace Project.Echo.Networking
             {
                 await _runner.PushHostMigrationSnapshot();
             }
-           _runner.Shutdown();
+           await _runner.Shutdown();
 		}
 	} 
 }

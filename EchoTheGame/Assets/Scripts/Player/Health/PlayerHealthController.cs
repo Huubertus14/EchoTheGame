@@ -78,7 +78,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 				//Add kill to last hit player
 				if (Runner.TryGetPlayerObject(_lastHitByPlayer, out NetworkObject playerNetworkObject))
 				{
-					var playerScoreboard =playerNetworkObject.GetComponent<PlayerScoreboardController>();
+					var playerScoreboard = playerNetworkObject.GetComponent<PlayerScoreboardController>();
 					playerScoreboard.AddScore(50);
 					playerScoreboard.AddKills(1);
 					_killFeedController.SetKillFeed(playerScoreboard.GetPlayerName, $"Killed {_playerScoreBoard.GetPlayerName}");

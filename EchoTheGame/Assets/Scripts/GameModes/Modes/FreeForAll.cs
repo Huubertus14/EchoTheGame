@@ -8,9 +8,9 @@ using Project.Echo.Player;
 public class FreeForAll : NetworkBehaviour, IGameMode
 {
 	private const float _timeLimitInSeconds = 10;
-	private int _killLimit = 10;
+	private int _killLimit = 2;
 
-	 private float _matchStartTimer = 5;
+	private float _matchStartTimer = 5;
 
 	[Networked]
 	private TickTimer _gameTimer { get; set; }
@@ -33,21 +33,24 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		{
 			_pregameTimer = TickTimer.CreateFromSeconds(Runner,3f);
 			_gameTimer = TickTimer.None;
+
+			PlayerScoreboardController.ScoreChanged += OnScoreChanged;
 		}
 
 		IsSpawned = true;
 	}
-	
+
+	private void OnScoreChanged(int score, int kills)
+	{
+		EvaluateGameScore(score,kills);
+	}
+
 	private static void MatchStarted(Changed<FreeForAll> changed)
 	{
 		if (changed.Behaviour.IsGameStarted) //Game starts
 		{
 			Debug.Log("Game started");
 			changed.Behaviour._gameTimer = TickTimer.CreateFromSeconds(changed.Behaviour.Runner, _timeLimitInSeconds);
-		}
-		else //Game is done?
-		{
-
 		}
 	}
 
@@ -62,7 +65,7 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 
 	private void DisconnectPlayerFromRoom()
 	{
-		PlayerNetworkedController.LocalPlayer.Runner.Shutdown();//.Disconnect(PlayerNetworkedController.LocalPlayer.Object.InputAuthority);
+		PlayerNetworkedController.LocalPlayer.Runner.Shutdown();
 	}
 
 	private bool HasWon()
@@ -89,10 +92,20 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 
 			if (_gameTimer.Expired(Runner))
 			{
-				IsGameStarted = false;
-				IsGameDone = true;
-				_gameTimer = TickTimer.None;
+				GameOver();
 			}
+		}
+	}
+
+	private void GameOver()
+	{
+		IsGameStarted = false;
+		IsGameDone = true;
+		_gameTimer = TickTimer.None;
+
+		if (HasStateAuthority)
+		{
+			PlayerScoreboardController.ScoreChanged -= OnScoreChanged;
 		}
 	}
 
@@ -105,8 +118,11 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		return -1;
 	}
 
-	public void EvaluateGameScore()
+	public void EvaluateGameScore(int score, int kills)
 	{
-		
+		if (kills >= _killLimit)
+		{
+			GameOver();
+		}
 	}
 }
