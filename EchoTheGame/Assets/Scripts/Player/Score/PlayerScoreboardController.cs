@@ -67,7 +67,6 @@ public class PlayerScoreboardController : NetworkBehaviour
 	public void AddScore(int score)
 	{
 		_matchScore += score;
-		PlayerList.Instance.UpdatePlayerStats(GetPlayerName, _matchScore, _matchKils, _matchDeaths);
 	}
 
 	public void AddKills(int kills = 1)
@@ -95,10 +94,6 @@ public class PlayerScoreboardController : NetworkBehaviour
 		}
 	}
 
-	private static void OnNameChanged(Changed<PlayerScoreboardController> changed)
-	{
-		//TODO can this be a thing
-	}
 
 	private static void OnScoreChanged(Changed<PlayerScoreboardController> changed)
 	{
@@ -106,6 +101,11 @@ public class PlayerScoreboardController : NetworkBehaviour
 		{
 			changed.Behaviour.RPC_UpdateStatsUI();
 		}
+	}
+
+	private static void OnNameChanged(Changed<PlayerScoreboardController> changed)
+	{
+		//TODO can this be a thing
 	}
 
 	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -116,7 +116,10 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
-		_killFeedController?.SetKillFeed(GetPlayerName,"left the game"); //TODO change this code to something has left?
-		PlayerList.Instance.RemoveName(GetPlayerName);
+		if (hasState)
+		{
+			_killFeedController?.SetKillFeed(GetPlayerName, "left the game"); //TODO change this code to something has left?
+			PlayerList.Instance.RemoveName(GetPlayerName);
+		} 
 	}
 }

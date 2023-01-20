@@ -13,7 +13,6 @@ namespace Project.Echo.Player
     {
 		public static PlayerNetworkedController LocalPlayer;
 		public static Action<NetworkRunner> LocalPlayerSpawned;
-		public PlayerStats PlayerStats { get; private set; }
 		public PlayerSettings PlayerSettings => Settings.Player;
 
 		[Networked]
@@ -54,8 +53,6 @@ namespace Project.Echo.Player
 			Runner.SetPlayerObject(Object.InputAuthority, Object);
 
 			_respawnAbles = GetComponentsInChildren<IRespawnAble>();
-			PlayerStats = new PlayerStats(); //TODO this needs to be synced. Will be overwriten by host migration now
-
 			_respawnTimer = TickTimer.None;
 			_visualController = GetComponentInChildren<PlayerVisualController>();
 			_isPlayerActive = true;

@@ -79,4 +79,11 @@ public class PlayerList : MonoBehaviour
 			_currentPlayers.Remove(nameToRemove);
 		}
 	}
+
+	public List<PlayerListItem> GetSortedPlayerList()
+	{
+		List<PlayerListItem > unsortedPlayers = _currentPlayers.Values.ToList();
+		unsortedPlayers.Sort((a,b)=> b.GetScore.CompareTo(a.GetScore));
+		return unsortedPlayers;
+	}
 }
