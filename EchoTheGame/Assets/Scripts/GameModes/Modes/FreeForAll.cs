@@ -7,8 +7,8 @@ using Project.Echo.Player;
 
 public class FreeForAll : NetworkBehaviour, IGameMode
 {
-	private const float _timeLimitInSeconds = 10;
-	private int _killLimit = 2;
+	private const float _timeLimitInSeconds = 60;
+	private int _killLimit = 5;
 
 	private float _matchStartTimer = 5;
 
@@ -31,7 +31,7 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		//When spawned //Wait until everything is loaded correctly and count down
 		if (HasStateAuthority)
 		{
-			_pregameTimer = TickTimer.CreateFromSeconds(Runner,3f);
+			_pregameTimer = TickTimer.CreateFromSeconds(Runner,5f);
 			_gameTimer = TickTimer.None;
 
 			PlayerScoreboardController.ScoreChanged += OnScoreChanged;
@@ -51,6 +51,7 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		{
 			Debug.Log("Game started");
 			changed.Behaviour._gameTimer = TickTimer.CreateFromSeconds(changed.Behaviour.Runner, _timeLimitInSeconds);
+			MatchManager.Instance.IsGameStarted = true;
 		}
 	}
 
@@ -58,7 +59,8 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 	{
 		if (changed.Behaviour.IsGameDone) //Game is done
 		{
-			MatchManager.Instance.ShowEndScreen(changed.Behaviour.HasWon());
+			MatchManager.Instance.ShowEndScreen(changed.Behaviour.HasWon()); 
+			MatchManager.Instance.IsGameStarted = false;
 			changed.Behaviour.DisconnectPlayerFromRoom();
 		}	
 	}
@@ -109,7 +111,16 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		}
 	}
 
-	public float GetSecondsLeft()
+	public float GetPreGameSecondsLeft()
+	{
+		if (!_pregameTimer.ExpiredOrNotRunning(Runner))
+		{
+			return _pregameTimer.RemainingTime(Runner).Value;
+		}
+		return -1;
+	}
+
+	public float GetGameSecondsLeft()
 	{
 		if (!_gameTimer.ExpiredOrNotRunning(Runner))
 		{

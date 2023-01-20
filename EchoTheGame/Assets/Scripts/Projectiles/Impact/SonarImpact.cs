@@ -10,7 +10,6 @@ public class SonarImpact : NetworkBehaviour
 {
 	ParticleSystem _sonarParticleSystem;
 	private List<ParticleCollisionEvent> _hitEvents;
-	[SerializeField] private Color _colorToSet; 
 
 	private void Awake()
 	{
@@ -21,13 +20,10 @@ public class SonarImpact : NetworkBehaviour
 	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
 	public void RPC_UpdateColor(PlayerRef player)
 	{
-		if(Runner.TryGetPlayerObject(player, out var nwObject))
+		if(Runner.TryGetPlayerObject(player, out NetworkObject nwObject))
 		{
-			Debug.Log("Get Color", nwObject);
-			var pColor =nwObject.GetComponentInChildren<PlayerVisualController>()?.PlayerColor;
-			_colorToSet = pColor.Value;
-
-			var main = _sonarParticleSystem.main;
+			Color? pColor =nwObject.GetComponentInChildren<PlayerVisualController>()?.PlayerColor;
+			ParticleSystem.MainModule main = _sonarParticleSystem.main;
 			main.startColor = pColor.Value;
 		}
 	}

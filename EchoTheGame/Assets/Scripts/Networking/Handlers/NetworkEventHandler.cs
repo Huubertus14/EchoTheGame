@@ -74,9 +74,13 @@ namespace Project.Echo.Networking.Handlers
 
         public void OnInput(NetworkRunner runner, NetworkInput input) 
         {
-            var data = _movementController.GetInput();
-            input.Set(data);
+            if (MatchManager.Instance.IsGameStarted)
+            {
+				Player.Controls.Data.NetworkPlayerMovementData data = _movementController.GetInput();
+                input.Set(data);
+            }
         }
+
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
         public void OnConnectedToServer(NetworkRunner runner) { }

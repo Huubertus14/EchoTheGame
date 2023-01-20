@@ -995,6 +995,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5713831151638730349, guid: 161aad0baaef9ce4a8e3eedf52758417, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6754618169579433784, guid: 161aad0baaef9ce4a8e3eedf52758417, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1035,6 +1039,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8775679172383990478, guid: 161aad0baaef9ce4a8e3eedf52758417, type: 3}
+      propertyPath: _freeForAllGameMode
+      value: 
+      objectReference: {fileID: 462060891}
     - target: {fileID: 8883668761895836008, guid: 161aad0baaef9ce4a8e3eedf52758417, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

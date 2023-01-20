@@ -10,8 +10,9 @@ public class MatchManager : MonoBehaviour
 
 	[SerializeField] private GameObject _gameOverPanel;
 	[SerializeField] private TextMeshProUGUI _winnerText;
-
 	[SerializeField] private GameModeTimerUI _gameModeTimerUI;
+
+	public bool IsGameStarted;
 
 	private void Awake()
 	{
