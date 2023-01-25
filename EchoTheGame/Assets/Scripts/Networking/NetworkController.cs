@@ -25,6 +25,7 @@ namespace Project.Echo.Networking
 
         [SerializeField] private PlayerSpawner _spawner;
 
+        public static Action<NetworkRunner> OnHostMigrationStarted;
         public static Action<NetworkRunner> OnHostMigrationDone;
 
         private async void Awake()
@@ -106,13 +107,13 @@ namespace Project.Echo.Networking
 
 			foreach (NetworkObject resumeObject in _runner.GetResumeSnapshotNetworkObjects())
 			{
+                Debug.Log(resumeObject.name);
 				if (resumeObject.TryGetBehaviour<PlayerMovement>(out var playerNetworked))
 				{
                     obj.Spawn(resumeObject, playerNetworked.ReadPosition(), playerNetworked.ReadRotation(), onBeforeSpawned: (obj,newNetworkObject) =>
 					{
                         newNetworkObject.CopyStateFrom(resumeObject);
 
-                        //TODo see if this can be made more
 						if (resumeObject.TryGetBehaviour<PlayerMovement>(out var oldMovement))
 						{
                             PlayerMovement newMovement = newNetworkObject.GetComponent<PlayerMovement>();
@@ -126,12 +127,37 @@ namespace Project.Echo.Networking
 
 						if (resumeObject.TryGetBehaviour<PlayerHealthController>(out var oldHealth))
 						{
-                            PlayerHealthController newHealth =newNetworkObject.GetComponent<PlayerHealthController>();
+                            PlayerHealthController newHealth = newNetworkObject.GetComponent<PlayerHealthController>();
                             newHealth.CopyStateFrom(oldHealth);
                             newHealth.SkipInit = true;
                         }
+
+                        if (resumeObject.TryGetBehaviour<PlayerScoreboardController>(out var oldScore))
+                        {
+                            PlayerScoreboardController newScore = newNetworkObject.GetComponent<PlayerScoreboardController>();
+                            newScore.CopyStateFrom(oldHealth);
+                            newScore.SkipInitialization = true;
+                        }
                     });
 				}
+
+				if (resumeObject.TryGetBehaviour<FreeForAll>(out var gameModeNetworked))
+				{
+                    Debug.Log("Found ffa");
+                    obj.Spawn(resumeObject, onBeforeSpawned: (obj, newNetworkObject) =>
+                    {
+                        Debug.Log("spawn ffa");
+                        newNetworkObject.CopyStateFrom(resumeObject);
+
+                        if (resumeObject.TryGetBehaviour<FreeForAll>(out var oldGameMode))
+                        {
+                            FreeForAll newGameMode = newNetworkObject.GetComponent<FreeForAll>();
+                            newGameMode.CopyStateFrom(oldGameMode);
+                            newGameMode.SkipInit = true;
+                            Debug.Log("copy ffa");
+                        }
+                    });
+                }
 			}
 
             OnHostMigrationDone?.Invoke(_runner);
@@ -142,11 +168,12 @@ namespace Project.Echo.Networking
 
         public void StartHostMigration(HostMigrationToken migrationToken)
 		{
+            OnHostMigrationStarted?.Invoke(_runner);
             _runner =Instantiate(_networkRunnerPrefab);
             _networkSceneManager = GetNetworkSceneManager();
             _eventHandler = FindObjectOfType<NetworkEventHandler>();
 
-            var clientTask= InitializeNetworkRunnerHostMigration(_runner, migrationToken);
+            var clientTask = InitializeNetworkRunnerHostMigration(_runner, migrationToken);
             Debug.Log("Host migration started");
         }
 

@@ -632,11 +632,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ce19a5bfd338f478aa97fb61af9d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
+  _interpolationDataSource: 1
   _IsGameStarted:
     _value: 0
-  _IsGameDone:
-    _value: 0
+  SkipInit: 0
 --- !u!4 &462060892
 Transform:
   m_ObjectHideFlags: 0
@@ -2631,3 +2630,4 @@ MonoBehaviour:
   _winnerText: {fileID: 714969273}
   _gameModeTimerUI: {fileID: 525112708}
   IsGameStarted: 0
+  IsGameOver: 0

@@ -29,7 +29,6 @@ namespace Project.Echo.Setting
 			}
 
 			_instance = this;
-			DontDestroyOnLoad(this);
 		}
 
 		private void OnDestroy()

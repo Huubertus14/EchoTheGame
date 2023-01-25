@@ -35,7 +35,7 @@ namespace Project.Echo.Loading
         
         public static void SetLoadingText(string message)
 		{
-            Debug.Log(message);
+           // Debug.Log(message);
 			_instance._loadingScreenText.text = message;
 		}
     }

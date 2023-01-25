@@ -17,6 +17,10 @@ public class NetworkedKillFeedController : NetworkBehaviour
 	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
 	private void RPC_SendMessage(string message, RpcInfo info = default)
 	{
+		if (MatchManager.Instance.IsGameOver)
+		{ 
+			return;
+		}
 		if (_killFeedUIHandler == null)
 		{
 			_killFeedUIHandler = PlayerNetworkedController.LocalPlayer.GetComponentInChildren<KillFeedUIHandler>();

@@ -35,7 +35,7 @@ namespace Project.Echo.Player
 
 		public override void Spawned()
 		{
-			_localPlayerCanvas = GetComponentInChildren<Canvas>();
+			_localPlayerCanvas = GetComponentInChildren<Canvas>(true);
 
 			if (Object.HasInputAuthority)
 			{

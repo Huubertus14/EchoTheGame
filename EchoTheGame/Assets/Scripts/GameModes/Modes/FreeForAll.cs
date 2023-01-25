@@ -2,16 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
-using System;
+using Project.Echo.Networking;
 using Project.Echo.Player;
 using Project.Echo.Loading;
+using System;
 
 public class FreeForAll : NetworkBehaviour, IGameMode
 {
-	private const float _timeLimitInSeconds = 60;
+	private const float _timeLimitInSeconds = 120;
 
-	private int _killLimit = 5;
-	private float _matchStartTimer = 5;
+	private int _killLimit = 3;
+	private float _matchStartTimer = 2;
 
 	[Networked]
 	private TickTimer _gameTimer { get; set; }
@@ -23,23 +24,35 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 	public NetworkBool IsGameStarted { get; set; }
 
 	[Networked(OnChanged = nameof(OnMatchDone))]
-	public NetworkBool IsGameDone { get; set; }
+	private NetworkBool _isGameDone { get; set; }
 
 	public bool IsSpawned { get; internal set; }
 
+	public bool SkipInit;
+
 	public override void Spawned()
 	{
+		NetworkController.OnHostMigrationStarted += HostMigrationStarted ;
+
 		//When spawned //Wait until everything is loaded correctly and count down
 		if (HasStateAuthority)
 		{
-			_pregameTimer = TickTimer.CreateFromSeconds(Runner, _matchStartTimer);
-			_gameTimer = TickTimer.None;
-
+			if (!SkipInit)
+			{
+				_pregameTimer = TickTimer.CreateFromSeconds(Runner, _matchStartTimer);
+				_gameTimer = TickTimer.None;
+			}
 			PlayerScoreboardController.ScoreChanged += OnScoreChanged;
 		}
 
 		LoadScreenController.Hide();
 		IsSpawned = true;
+	}
+
+	private void HostMigrationStarted(NetworkRunner obj)
+	{
+		NetworkController.OnHostMigrationStarted -= HostMigrationStarted;
+		IsSpawned = false;
 	}
 
 	private void OnScoreChanged(int score, int kills)
@@ -59,17 +72,13 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 
 	private static void OnMatchDone(Changed<FreeForAll> changed)
 	{
-		if (changed.Behaviour.IsGameDone) //Game is done
+		if (changed.Behaviour._isGameDone) //Game is done
 		{
 			MatchManager.Instance.ShowEndScreen(changed.Behaviour.HasWon()); 
 			MatchManager.Instance.IsGameStarted = false;
-			changed.Behaviour.DisconnectPlayerFromRoom();
+			MatchManager.Instance.IsGameOver = true;
+			//changed.Behaviour.DisconnectPlayerFromRoom();
 		}	
-	}
-
-	private void DisconnectPlayerFromRoom()
-	{
-		PlayerNetworkedController.LocalPlayer.Runner.Shutdown();
 	}
 
 	private bool HasWon()
@@ -104,7 +113,7 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 	private void GameOver()
 	{
 		IsGameStarted = false;
-		IsGameDone = true;
+		_isGameDone = true;
 		_gameTimer = TickTimer.None;
 
 		if (HasStateAuthority)

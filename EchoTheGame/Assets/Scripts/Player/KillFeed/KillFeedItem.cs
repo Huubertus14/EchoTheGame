@@ -28,8 +28,12 @@ public class KillFeedItem : MonoBehaviour
 			StopCoroutine(_fadeCoroutine);
 			_messageText.alpha = 0;
 		}
-		_fadeCoroutine = FadeTextIn();
-		StartCoroutine(_fadeCoroutine);
+	
+		if (enabled)
+		{
+			_fadeCoroutine = FadeTextIn();
+			StartCoroutine(_fadeCoroutine);
+		}
 	}
 
 	private IEnumerator FadeTextIn()
@@ -63,5 +67,10 @@ public class KillFeedItem : MonoBehaviour
 		}
 		_messageText.alpha = 0;
 		_fadeCoroutine = null;
+	}
+
+	private void OnDestroy()
+	{
+		StopAllCoroutines();
 	}
 }

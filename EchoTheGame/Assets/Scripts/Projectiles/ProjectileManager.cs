@@ -40,7 +40,7 @@ namespace Project.Echo.Projectiles
 		{
 			base.Spawned();
 			_objectCache = GameReferenceManager.GetObjectCache;
-			_cannon = GetComponent<BasicCannonBehaviour>();
+			_cannon = GetComponent<BasicCannonBehaviour>(); 
 			OnSpawned();
 		}
 
@@ -88,8 +88,7 @@ namespace Project.Echo.Projectiles
 				Cache = _objectCache,
 				InputAuthority = Object.InputAuthority,
 				BulletBegin = _cannon.GetBulletTransform,
-				OwnerObjectInstanceID = gameObject.GetInstanceID(),
-				ProjectileColor = _visualController.PlayerColor
+				OwnerObjectInstanceID = gameObject.GetInstanceID()
 			};
 
 			_projectilesInterpolator = GetInterpolator(nameof(_projectiles));
@@ -97,7 +96,6 @@ namespace Project.Echo.Projectiles
 
 		private void OnColorSet(Color col)
 		{
-			_visualController.ColorSet -= OnColorSet;
 			_projectileContext.ProjectileColor = col;
 			Debug.Log($"Color set {col}");
 		}
@@ -264,6 +262,11 @@ namespace Project.Echo.Projectiles
 		private void LogMessage(string message)
 		{
 			Debug.Log($"{Runner.name} (tick: {Runner.Tick}, frame: {Time.frameCount}) - {message}");
+		}
+
+		private void OnDestroy()
+		{
+			_visualController.ColorSet -= OnColorSet;
 		}
 	}
 }

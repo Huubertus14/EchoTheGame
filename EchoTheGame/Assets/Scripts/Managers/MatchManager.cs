@@ -13,6 +13,7 @@ public class MatchManager : MonoBehaviour
 	[SerializeField] private GameModeTimerUI _gameModeTimerUI;
 
 	public bool IsGameStarted;
+	public bool IsGameOver;
 
 	private void Awake()
 	{

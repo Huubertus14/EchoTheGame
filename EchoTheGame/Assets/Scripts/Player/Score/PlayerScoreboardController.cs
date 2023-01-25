@@ -26,6 +26,8 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	public string GetPlayerName => _playerName.ToString();
 
+	public bool SkipInitialization;
+
 	private void Awake()
 	{
 		_killFeedController = GetComponent<NetworkedKillFeedController>();
@@ -33,14 +35,17 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	public override void Spawned()
 	{
-		if (HasInputAuthority)
+		if (!SkipInitialization)
 		{
-			Debug.Log("Local player spawned");
-			RPC_SendNameToHost(Settings.Player.PlayerName);
-		}
-		else
-		{
-			Debug.Log("Not local player spawned");
+			if (HasInputAuthority)
+			{
+				Debug.Log("Local player spawned");
+				RPC_SendNameToHost(Settings.Player.PlayerName);
+			}
+			else
+			{
+				Debug.Log("Not local player spawned");
+			}
 		}
 	}
 
@@ -124,7 +129,7 @@ public class PlayerScoreboardController : NetworkBehaviour
 
 	public override void Despawned(NetworkRunner runner, bool hasState)
 	{
-		if (hasState)
+		if (hasState && !MatchManager.Instance.IsGameOver)
 		{
 			_killFeedController?.SetKillFeed(GetPlayerName, "left the game"); //TODO change this code to something has left?
 			PlayerList.Instance.RemoveName(GetPlayerName);

@@ -8,10 +8,12 @@ public class KillFeedUIHandler : MonoBehaviour
 
 	private Queue<string> _messageQueue = new Queue<string>();
 
+	private int _killfeedIndex;
+
 	private void Awake()
 	{
 		_killFeedItems = GetComponentsInChildren<KillFeedItem>();
-
+		_killfeedIndex = 0;
 		foreach (var feedItem in _killFeedItems)
 		{
 			feedItem.SetText("");
@@ -21,19 +23,17 @@ public class KillFeedUIHandler : MonoBehaviour
 	public void OnMessageReceived(string message)
 	{
 		Debug.Log(message);
-
-		_messageQueue.Enqueue(message);
-
-		if (_messageQueue.Count > 4)
+		if (MatchManager.Instance.IsGameOver)
 		{
-			_messageQueue.Dequeue();
+			return;
 		}
 
-		int queueIndex = 0;
-		foreach (string messageInQueue in _messageQueue)
+		var item = _killFeedItems[_killfeedIndex++];
+		item.transform.SetSiblingIndex(0);
+		item.SetText(message);
+		if (_killfeedIndex>= _killFeedItems.Length)
 		{
-			_killFeedItems[queueIndex].SetText(messageInQueue);
-			queueIndex++;
+			_killfeedIndex = 0;
 		}
 	}
 }

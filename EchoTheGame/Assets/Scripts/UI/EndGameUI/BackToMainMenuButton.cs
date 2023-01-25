@@ -1,7 +1,4 @@
-using Project.Echo.Networking;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using Project.Echo.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -18,10 +15,9 @@ public class BackToMainMenuButton : MonoBehaviour
 
 	private void OnClick()
 	{
-		//NetworkController.Instance.LeaveGame();
+		PlayerNetworkedController.LocalPlayer.Runner.Shutdown();
 		_loadMenuScene = SceneManager.LoadSceneAsync("MainMenu");
 		_loadMenuScene.completed += OnLoadDone;
-		//Leave the game
 	}
 
 	private void OnLoadDone(AsyncOperation obj)
