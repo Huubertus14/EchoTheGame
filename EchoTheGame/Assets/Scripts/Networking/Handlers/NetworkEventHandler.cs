@@ -97,6 +97,8 @@ namespace Project.Echo.Networking.Handlers
         {
 			try
 			{
+                Loading.LoadScreenController.Show();
+                Loading.LoadScreenController.SetLoadingText("Host migration");
                 Debug.Log("OnHost migration Started");
                 await runner.Shutdown(shutdownReason: ShutdownReason.HostMigration);
                 NetworkController.Instance.StartHostMigration(hostMigrationToken);

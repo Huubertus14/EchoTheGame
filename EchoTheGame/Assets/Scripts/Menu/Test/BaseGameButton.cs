@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +14,10 @@ namespace Project.Echo.Menu.Test
 			_button.onClick.AddListener(OnClick);
 		}
 
-		protected abstract void OnClick();
+		protected virtual void OnClick()
+		{
+			Loading.LoadScreenController.Show();
+		}
 		
 
 		private void OnDestroy()

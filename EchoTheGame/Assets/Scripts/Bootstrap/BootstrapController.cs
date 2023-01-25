@@ -11,7 +11,6 @@ namespace Project.Echo.Bootstrap
 		private void Awake()
 		{
 			SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
-			SceneManager.LoadSceneAsync("Loading", LoadSceneMode.Additive);
 		}
 	}
 }

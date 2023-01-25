@@ -38,7 +38,7 @@ namespace Project.Echo.Networking
                     return;
 				}
                 Instance = this;
-               // LoadScreenController.SetLoadingText("Setting up session");
+                LoadScreenController.SetLoadingText("Setting up session");
                 SessionSettings sessionSettings = Settings.Session;
 				if (sessionSettings == null)
 				{
@@ -53,7 +53,7 @@ namespace Project.Echo.Networking
 
                 _runner.ProvideInput = true;
                 _eventHandler = FindObjectOfType<NetworkEventHandler>();
-                // LoadScreenController.SetLoadingText("Runner created and starting a game");
+                LoadScreenController.SetLoadingText("Runner created and starting a game");
 
                 await _runner.StartGame(new StartGameArgs()
                 {
@@ -87,7 +87,7 @@ namespace Project.Echo.Networking
 
 		private void OnRunnerInitialized(NetworkRunner obj)
 		{
-            Loading.LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
+            LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
         }
 
 		private async Task InitializeNetworkRunnerHostMigration(NetworkRunner runner, HostMigrationToken token)
@@ -136,7 +136,8 @@ namespace Project.Echo.Networking
 
             OnHostMigrationDone?.Invoke(_runner);
             _eventHandler.OnHostMigrationCleanup();
-            Debug.Log("Done Host migration Resume");
+            Debug.Log("Done Host migration Resume"); 
+            LoadScreenController.Hide();
         }
 
         public void StartHostMigration(HostMigrationToken migrationToken)

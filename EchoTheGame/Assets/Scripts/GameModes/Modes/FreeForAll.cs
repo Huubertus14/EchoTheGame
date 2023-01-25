@@ -4,12 +4,13 @@ using UnityEngine;
 using Fusion;
 using System;
 using Project.Echo.Player;
+using Project.Echo.Loading;
 
 public class FreeForAll : NetworkBehaviour, IGameMode
 {
 	private const float _timeLimitInSeconds = 60;
-	private int _killLimit = 5;
 
+	private int _killLimit = 5;
 	private float _matchStartTimer = 5;
 
 	[Networked]
@@ -31,12 +32,13 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		//When spawned //Wait until everything is loaded correctly and count down
 		if (HasStateAuthority)
 		{
-			_pregameTimer = TickTimer.CreateFromSeconds(Runner,5f);
+			_pregameTimer = TickTimer.CreateFromSeconds(Runner, _matchStartTimer);
 			_gameTimer = TickTimer.None;
 
 			PlayerScoreboardController.ScoreChanged += OnScoreChanged;
 		}
 
+		LoadScreenController.Hide();
 		IsSpawned = true;
 	}
 
@@ -117,7 +119,7 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		{
 			return _pregameTimer.RemainingTime(Runner).Value;
 		}
-		return -1;
+		return _matchStartTimer;
 	}
 
 	public float GetGameSecondsLeft()
@@ -126,7 +128,7 @@ public class FreeForAll : NetworkBehaviour, IGameMode
 		{
 			return _gameTimer.RemainingTime(Runner).Value;
 		}
-		return -1;
+		return _timeLimitInSeconds;
 	}
 
 	public void EvaluateGameScore(int score, int kills)

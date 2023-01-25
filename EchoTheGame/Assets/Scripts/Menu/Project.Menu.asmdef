@@ -2,7 +2,8 @@
     "name": "Project.Menu",
     "rootNamespace": "",
     "references": [
-        "GUID:cdafb9568d2801045a46f7ec9fefc2c3"
+        "GUID:cdafb9568d2801045a46f7ec9fefc2c3",
+        "GUID:5432fd7c4d834664d8dece3749c3d1a6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -12,11 +12,8 @@ namespace Project.Echo.Menu.Test
 
 		protected override void OnClick()
 		{
+			base.OnClick();
 			Settings.Session = new SessionSettings("TestGame", GameMode.Client);
-
-			Settings.Player = new();
-			Settings.Player.PlayerName = $"Client {Random.value}";
-
 			_loadGameScene = SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
 			_loadGameScene.completed += OnGameSceneLoaded;
 		}
@@ -24,7 +21,6 @@ namespace Project.Echo.Menu.Test
 		private void OnGameSceneLoaded(AsyncOperation obj)
 		{
 			_loadGameScene.completed -= OnGameSceneLoaded;
-			//TODO something 
 		}
 	}
 }
