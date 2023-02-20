@@ -12,6 +12,9 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 	[Networked]
 	private TickTimer _gameTimer { get; set; }
 
+	[Networked(OnChanged =nameof(TimeChanged))]
+	private float _TimeLeft { get; set; }
+
 	public override void Spawned()
 	{
 		if (HasInputAuthority&& !SkipInit)
@@ -23,13 +26,13 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 				LoadScreenController.Hide();
 			}
 		}
-
+		MatchManager.Instance.IsGameStarted = true;
 		LoadScreenController.Hide();
+	}
 
-		//If hose create values etc
-
-		//If not host. Request values from host and set to
-
+	private static void TimeChanged(Changed<NetworkedPlayerGameModeController> changed)
+	{
+		MatchManager.Instance.TimeLeft = changed.Behaviour._TimeLeft;
 	}
 
 	public override void FixedUpdateNetwork()
@@ -38,17 +41,9 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 		{
 			if (!_gameTimer.ExpiredOrNotRunning(Runner) && _gameTimer.IsRunning)
 			{
-				//MatchManager.Instance.TimeLeft =_gameTimer.RemainingTime(Runner).Value;
-				RPC_SendMatchData(MatchManager.Instance.IsGameStarted, _gameTimer.RemainingTime(Runner).Value);
+				_TimeLeft = _gameTimer.RemainingTime(Runner).Value;
 			}
 		}
-	}
-
-	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-	private void RPC_SendMatchData(NetworkBool isGameStarted, float secondsLeft)
-	{
-			MatchManager.Instance.IsGameStarted = isGameStarted;
-			MatchManager.Instance.TimeLeft = secondsLeft;
 	}
 
 	public void SetMatchValues(bool item1, float item2)
