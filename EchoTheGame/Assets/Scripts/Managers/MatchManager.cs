@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Fusion;
 
 public class MatchManager : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class MatchManager : MonoBehaviour
 
 	public bool IsGameStarted;
 	public bool IsGameOver;
+
+	public float TimeLeft { get; set; }
 
 	private void Awake()
 	{
@@ -27,6 +30,11 @@ public class MatchManager : MonoBehaviour
 		}
 
 		_gameOverPanel.SetActive(false);
+	}
+
+	public (bool, float) GetMatchData()
+	{
+		return (IsGameStarted, TimeLeft);
 	}
 
 	public  void ShowEndScreen(bool hasWon)

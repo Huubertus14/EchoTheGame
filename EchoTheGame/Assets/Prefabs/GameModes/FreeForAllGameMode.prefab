@@ -54,8 +54,7 @@ MonoBehaviour:
   NetworkGuid:
     RawGuidValue: fc823fdbf8779f448aecb8713c9fe4df
   NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 3184161924675853032}
+  NetworkedBehaviours: []
   SimulationBehaviours: []
 --- !u!114 &3184161924675853032
 MonoBehaviour:
@@ -69,5 +68,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1ce19a5bfd338f478aa97fb61af9d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interpolationDataSource: 0
-  _matchStartTimer: 5
+  SkipInit: 0

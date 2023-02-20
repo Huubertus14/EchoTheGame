@@ -138,26 +138,16 @@ namespace Project.Echo.Networking
                             newScore.CopyStateFrom(oldHealth);
                             newScore.SkipInitialization = true;
                         }
-                    });
-				}
 
-				if (resumeObject.TryGetBehaviour<FreeForAll>(out var gameModeNetworked))
-				{
-                    Debug.Log("Found ffa");
-                    obj.Spawn(resumeObject, onBeforeSpawned: (obj, newNetworkObject) =>
-                    {
-                        Debug.Log("spawn ffa");
-                        newNetworkObject.CopyStateFrom(resumeObject);
-
-                        if (resumeObject.TryGetBehaviour<FreeForAll>(out var oldGameMode))
-                        {
-                            FreeForAll newGameMode = newNetworkObject.GetComponent<FreeForAll>();
-                            newGameMode.CopyStateFrom(oldGameMode);
+						if (resumeObject.TryGetBehaviour<NetworkedPlayerGameModeController>(out var oldGameMode))
+						{
+                            NetworkedPlayerGameModeController newGameMode = newNetworkObject.GetComponent<NetworkedPlayerGameModeController>();
+                            var data = MatchManager.Instance.GetMatchData();
                             newGameMode.SkipInit = true;
-                            Debug.Log("copy ffa");
+                            newGameMode.SetMatchValues(data.Item1, data.Item2);
                         }
                     });
-                }
+				}
 			}
 
             OnHostMigrationDone?.Invoke(_runner);

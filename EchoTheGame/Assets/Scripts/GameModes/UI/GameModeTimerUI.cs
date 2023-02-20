@@ -7,7 +7,7 @@ using Project.Echo.Player;
 public class GameModeTimerUI : MonoBehaviour
 {
 	[SerializeField] private TextMeshProUGUI _timerText;
-	[SerializeField] private FreeForAll _freeForAllGameMode;
+	 private FreeForAll _freeForAllGameMode;
 
 	private float _refreshTimer= 0;
 
@@ -18,12 +18,12 @@ public class GameModeTimerUI : MonoBehaviour
 
 	private void Update()
 	{
-		if (_freeForAllGameMode.IsSpawned)
+		if (MatchManager.Instance.IsGameStarted)
 		{
 			_refreshTimer += Time.deltaTime;
 			if (_refreshTimer > 0.5f)
 			{
-				SetText(_freeForAllGameMode.GetGameSecondsLeft());
+				SetText(MatchManager.Instance.TimeLeft);
 			}
 		}
 	}

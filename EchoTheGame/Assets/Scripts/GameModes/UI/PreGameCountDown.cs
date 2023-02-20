@@ -6,17 +6,17 @@ using TMPro;
 public class PreGameCountDown : MonoBehaviour
 {
     private TextMeshProUGUI _countDownTime;
-	[SerializeField] private FreeForAll _freeForAllGameMode;
 
 	private void Awake()
 	{
 		_countDownTime = GetComponentInChildren<TextMeshProUGUI>();
-		_countDownTime.text = "0";
+		_countDownTime.text = "0"; 
+		StartCoroutine(StartGame());
 	}
 
-	private void Update()
+	/*private void Update()
 	{
-		if (_freeForAllGameMode.IsSpawned)
+		if (!MatchManager.Instance.IsGameStarted)
 		{
 			if (!_freeForAllGameMode.IsGameStarted)
 			{
@@ -28,7 +28,7 @@ public class PreGameCountDown : MonoBehaviour
 				StartCoroutine(StartGame());
 			}
 		}
-	}
+	}*/
 
 	private IEnumerator StartGame()
 	{
