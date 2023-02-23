@@ -11,6 +11,7 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 	private Transform _followTarget;
 	private Slider _healthSlider;
 	[SerializeField] private Vector3 _positionOffset;
+	private Quaternion _originalWorldRotation;
 
 	public void Init(byte[] connectionToken,Transform target, int maxHealth)
 	{
@@ -18,6 +19,7 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 		_healthSlider = GetComponentInChildren<Slider>();
 		_healthSlider.maxValue = maxHealth;
 		_healthSlider.value = maxHealth;
+		_originalWorldRotation = transform.rotation;
 	}
 
 	public void UpdateSlider(int health)
@@ -27,6 +29,7 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 
 	internal void SetPosition()
 	{
+		transform.rotation = _originalWorldRotation;
 		transform.position = _followTarget.position + _positionOffset;
 	}
 }

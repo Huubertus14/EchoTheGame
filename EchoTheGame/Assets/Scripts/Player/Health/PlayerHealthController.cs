@@ -14,7 +14,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	[SerializeField] private GameObject _healthBarPrefab;
 
 	[Networked(OnChanged = nameof(UpdateHealthBar))]
-	public int PlayerHealth { get; set; }
+	public int _playerHealth { get; set; }
 
 	[Networked(OnChanged =nameof(OnAliveChanged))]
 	public NetworkBool Alive {get;set;}
@@ -25,7 +25,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	private HealthBarPositionBehaviour _healthBarSlider;
 	private PlayerNetworkedController _playerNetworkController;
 	private NetworkedKillFeedController _killFeedController;
-	[SerializeField]private PlayerScoreboardController _playerScoreBoard;
+	private PlayerScoreboardController _playerScoreBoard;
 	public bool SkipInit = false;
 	
 	public override void Spawned()
@@ -34,13 +34,13 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 		if (!SkipInit)
 		{
-			PlayerHealth = _maxHealth;
+			_playerHealth = _maxHealth;
 		}
 
 		_killFeedController = GetComponent<NetworkedKillFeedController>();
 		_playerScoreBoard = GetComponent<PlayerScoreboardController>();
 		_playerNetworkController = GetComponentInChildren<PlayerNetworkedController>();
-		_healthBarSlider = Instantiate(_healthBarPrefab).GetComponentInChildren<HealthBarPositionBehaviour>();
+		_healthBarSlider = Instantiate(_healthBarPrefab, transform).GetComponentInChildren<HealthBarPositionBehaviour>();
 		_healthBarSlider.Init(GameManager.GetConnectionToken(),transform, _maxHealth);
 		Alive = true;
 	}
@@ -53,24 +53,24 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
 	private void RPC_OnRespawned()
 	{
-		PlayerHealth = _maxHealth;
+		_playerHealth = _maxHealth;
 		_healthBarSlider.gameObject.SetActive(true);
-		_healthBarSlider.UpdateSlider(PlayerHealth);
+		_healthBarSlider.UpdateSlider(_playerHealth);
 	}
 
 	public void HitPlayer(int damage, PlayerRef hitByPlayer)
 	{
 		if (!HasStateAuthority || !Alive) return;
 
-			PlayerHealth -= damage;
+			_playerHealth -= damage;
 			_lastHitByPlayer = hitByPlayer;
 	}
 
 	private void UpdateHealth()
 {
-		_healthBarSlider.UpdateSlider(PlayerHealth);
+		_healthBarSlider.UpdateSlider(_playerHealth);
 
-		if (PlayerHealth < 0)
+		if (_playerHealth < 0)
 		{
 			Alive = false;
 			if (HasStateAuthority)
@@ -118,31 +118,9 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 		_playerNetworkController.DisablePlayer();
 		_playerNetworkController.RespawnPlayer(2.5f);
 	}
-	
-	public override void FixedUpdateNetwork()
-	{
-		base.FixedUpdateNetwork();
-		_healthBarSlider.SetPosition();
-	}
 
-	public override void Despawned(NetworkRunner runner, bool hasState)
+	private void Update()
 	{
-		if (_healthBarSlider != null)
-		{
-			DestroyImmediate(_healthBarSlider.gameObject);
-		}
-		else
-		{
-			//Not possible // Find healthbar
-			var healthbars = FindObjectsOfType<HealthBarPositionBehaviour>();
-			foreach (var bar in healthbars)
-			{
-				if (bar.connectionToken == GameManager.GetConnectionToken())
-				{
-					Destroy(bar);
-					break;
-				}
-			}
-		}
-	}
+		_healthBarSlider.SetPosition();
+	}		
 }
