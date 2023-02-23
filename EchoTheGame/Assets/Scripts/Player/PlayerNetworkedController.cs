@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Threading.Tasks;
+using System.Collections;
 
 namespace Project.Echo.Player
 {
@@ -30,6 +31,8 @@ namespace Project.Echo.Player
 		public Action OnPlayerDied;
 
 		private PlayerVisualController _visualController;
+		private PlayerHealthController _healthController;
+		private IHiddenRespawnAble[] _hiddenRespawnAbles; 
 		private IRespawnAble[] _respawnAbles;
 		private Canvas _localPlayerCanvas;
 
@@ -51,15 +54,17 @@ namespace Project.Echo.Player
 			}
 			
 			Runner.SetPlayerObject(Object.InputAuthority, Object);
-
+			_hiddenRespawnAbles = GetComponentsInChildren<IHiddenRespawnAble>();
 			_respawnAbles = GetComponentsInChildren<IRespawnAble>();
 			_respawnTimer = TickTimer.None;
 			_visualController = GetComponentInChildren<PlayerVisualController>();
+			_healthController = GetComponentInChildren<PlayerHealthController>();
 			_isPlayerActive = true;
 		}
 
 		private void EnablePlayer()
 		{
+			
 			_isPlayerActive = true;
 		}
 
@@ -75,29 +80,35 @@ namespace Project.Echo.Player
 			beh._visualController.gameObject.SetActive(beh._isPlayerActive);
 		}
 
-		public override void FixedUpdateNetwork()
-		{
-			if (_respawnTimer.Expired(Runner))
-			{
-				_respawnTimer = TickTimer.None;
-
-				foreach (IRespawnAble respawnObject in _respawnAbles)
-				{
-					respawnObject.Respawn();
-				}
-				EnablePlayer();
-			}
-		}
-
-		public void DisablePlayer()
+		private void DisablePlayer()
 		{
 			_isPlayerActive = false;
 		}
 
 		public void RespawnPlayer(float delaySeconds)
 		{
-			_respawnTimer = TickTimer.CreateFromSeconds(Runner, delaySeconds);
+			DisablePlayer();
 			OnPlayerDied?.Invoke();
+			StartCoroutine(RespawnLoop(delaySeconds));
+		}
+
+		private IEnumerator RespawnLoop(float delay)
+		{
+			DisablePlayer();
+			yield return new WaitForSeconds(delay/2);
+
+			foreach (IHiddenRespawnAble respawnObject in _hiddenRespawnAbles)
+			{
+				respawnObject.Respawn(); //not the health player
+			}
+			yield return new WaitForSeconds(delay / 2); 
+			foreach (IRespawnAble respawnObject in _respawnAbles)
+			{
+				respawnObject.Respawn(); //not the health player
+			}
+			_healthController.Respawn();
+			EnablePlayer();
+
 		}
 	}
 }

@@ -8,6 +8,7 @@ using Project.Echo.Player.Visuals;
 using Project.Echo.Player;
 using System;
 using Cysharp.Threading.Tasks;
+using Project.Echo.Player.Controls;
 
 public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 {
@@ -62,8 +63,8 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	{
 		if (!HasStateAuthority || !Alive) return;
 
-			_playerHealth -= damage;
-			_lastHitByPlayer = hitByPlayer;
+		_playerHealth -= damage;
+		_lastHitByPlayer = hitByPlayer;
 	}
 
 	private void UpdateHealth()
@@ -72,6 +73,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 		if (_playerHealth < 0)
 		{
+			_healthBarSlider.gameObject.SetActive(false);
 			Alive = false;
 			if (HasStateAuthority)
 			{
@@ -81,7 +83,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 					var playerScoreboard = playerNetworkObject.GetComponent<PlayerScoreboardController>();
 					playerScoreboard.AddScore(50);
 					playerScoreboard.AddKills(1);
-					_killFeedController.SetKillFeed(playerScoreboard.GetPlayerName, $"Killed {_playerScoreBoard.GetPlayerName}");
+					_killFeedController.SetKillFeed(playerScoreboard.GetPlayerName, $"Killed {_playerScoreBoard.GetPlayerName}"); 
 				}
 				_playerScoreBoard.AddDeath();
 			}
@@ -114,8 +116,6 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
 	private void RPC_PlayerDied()
 	{
-		_healthBarSlider.gameObject.SetActive(false);
-		_playerNetworkController.DisablePlayer();
 		_playerNetworkController.RespawnPlayer(2.5f);
 	}
 

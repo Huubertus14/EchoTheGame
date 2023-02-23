@@ -8,7 +8,7 @@ using Project.Echo.Spawner;
 
 namespace Project.Echo.Player.Controls
 {
-    public class PlayerMovement : NetworkPositionRotation, IRespawnAble
+    public class PlayerMovement : NetworkPositionRotation, IHiddenRespawnAble
     {
         private Rigidbody _rigidBody;
 
