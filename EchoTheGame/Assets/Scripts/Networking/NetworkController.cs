@@ -142,9 +142,9 @@ namespace Project.Echo.Networking
 						if (resumeObject.TryGetBehaviour<NetworkedPlayerGameModeController>(out var oldGameMode))
 						{
                             NetworkedPlayerGameModeController newGameMode = newNetworkObject.GetComponent<NetworkedPlayerGameModeController>();
-                            var data = MatchManager.Instance.GetMatchData();
+							MatchStatus matchData = MatchManager.Instance.GetMatchData();
                             newGameMode.SkipInit = true;
-                            newGameMode.SetMatchValues(data.Item1, data.Item2);
+                            newGameMode.SetMatchValues(matchData);
                         }
                     });
 				}

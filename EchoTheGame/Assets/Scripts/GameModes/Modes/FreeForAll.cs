@@ -68,28 +68,18 @@ public class FreeForAll : MonoBehaviour, IGameMode
 		}*/
 	}
 
-	private static void OnMatchDone()//Changed<FreeForAll> changed)
+	/*private static void OnMatchDone(Changed<FreeForAll> changed)
 	{
-		/*if (changed.Behaviour._isGameDone) //Game is done
+		if (changed.Behaviour._isGameDone) //Game is done
 		{
 			MatchManager.Instance.ShowEndScreen(changed.Behaviour.HasWon()); 
 			MatchManager.Instance.IsGameStarted = false;
 			MatchManager.Instance.IsGameOver = true;
-			//changed.Behaviour.DisconnectPlayerFromRoom();
-		}*/	
-	}
-
-	private bool HasWon()
-	{
-		var sortedPlayer = PlayerList.Instance.GetSortedPlayerList();
-
-		if (sortedPlayer.Count>0 && PlayerNetworkedController.LocalPlayer.PlayerName == sortedPlayer[0].PlayerName)
-		{
-			return true;
+			changed.Behaviour.DisconnectPlayerFromRoom();
 		}
+	}*/
 
-		return false;
-	}
+	
 
 	public void FixedUpdateNetwork()
 	{

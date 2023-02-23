@@ -4,6 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Fusion;
+using Project.Echo.Player;
+
+public struct MatchStatus
+{
+	public float TimeLeft;
+	public float PreGameTime;
+	public bool GameOver;
+	public bool GameStarted;
+}
 
 public class MatchManager : MonoBehaviour
 {
@@ -17,6 +26,7 @@ public class MatchManager : MonoBehaviour
 	public bool IsGameOver;
 
 	public float TimeLeft { get; set; }
+	public float PreGameTime { get;  set; }
 
 	private void Awake()
 	{
@@ -32,15 +42,34 @@ public class MatchManager : MonoBehaviour
 		_gameOverPanel.SetActive(false);
 	}
 
-	public (bool, float) GetMatchData()
+	public MatchStatus GetMatchData()
 	{
-		return (IsGameStarted, TimeLeft);
+		var matchStatus = new MatchStatus
+		{
+			TimeLeft = TimeLeft,
+			PreGameTime = PreGameTime,
+			GameStarted = IsGameStarted,
+			GameOver = IsGameOver
+		};
+		return matchStatus;
 	}
 
-	public  void ShowEndScreen(bool hasWon)
+	public  void ShowEndScreen()
 	{
 		_gameModeTimerUI.enabled = false;
-		_winnerText.text = hasWon ? "Winner!" : "Loser";
+		_winnerText.text = HasWon() ? "Winner!" : "Loser";
 		_gameOverPanel.SetActive(true);
+	}
+
+	private bool HasWon()
+	{
+		var sortedPlayer = PlayerList.Instance.GetSortedPlayerList();
+
+		if (sortedPlayer.Count > 0 && PlayerNetworkedController.LocalPlayer.PlayerName == sortedPlayer[0].PlayerName)
+		{
+			return true;
+		}
+
+		return false;
 	}
 }
