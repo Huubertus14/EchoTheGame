@@ -14,11 +14,11 @@ namespace Project.Echo.Player.Controls
 
             if (Input.GetKey(KeyCode.A))
             {
-                data.Rotation = -_rotation;
+               // data.Rotation = -_rotation;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                data.Rotation = _rotation;
+               // data.Rotation = _rotation;
             }
 
             if (Input.GetKey(KeyCode.W))

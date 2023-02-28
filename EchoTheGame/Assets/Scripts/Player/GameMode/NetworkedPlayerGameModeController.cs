@@ -10,7 +10,7 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 {
 	public bool SkipInit;
 
-	private int _killLimit  =2; 
+	private int _killLimit  =20; 
 	private float _matchTimeToSet;
 
 	[Networked(OnChanged =nameof(GameOverChanged))]
@@ -41,7 +41,7 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 				{
 					MatchManager.Instance.IsGameOver = false;
 					MatchManager.Instance.IsGameStarted = false;
-					_matchTimeToSet = 30;
+					_matchTimeToSet = 500;
 					PlayerScoreboardController.ScoreChanged += OnScoreChanged;
 				}
 

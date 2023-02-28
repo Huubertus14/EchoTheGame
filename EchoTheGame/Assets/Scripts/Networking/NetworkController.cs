@@ -25,6 +25,7 @@ namespace Project.Echo.Networking
 
         [SerializeField] private PlayerSpawner _spawner;
 
+        public static Action<NetworkRunner> OnRunnerSpawned;
         public static Action<NetworkRunner> OnHostMigrationStarted;
         public static Action<NetworkRunner> OnHostMigrationDone;
 
@@ -89,6 +90,7 @@ namespace Project.Echo.Networking
 		private void OnRunnerInitialized(NetworkRunner obj)
 		{
             LoadScreenController.SetLoadingText("Runner created and started, Network loaded");
+            OnRunnerSpawned?.Invoke(obj);
         }
 
 		private async Task InitializeNetworkRunnerHostMigration(NetworkRunner runner, HostMigrationToken token)

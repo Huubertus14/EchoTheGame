@@ -9,7 +9,7 @@ namespace Project.Echo.Player.Controls.Data
 	{
 		//TODO change to int if possible
 		public float Speed;
-		public float Rotation;
+		public Vector2 JoystickRotation;
 		public bool IsShooting;
 		public bool IsPing;
 	}

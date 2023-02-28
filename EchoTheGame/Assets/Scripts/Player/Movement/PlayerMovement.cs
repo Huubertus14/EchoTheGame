@@ -12,6 +12,9 @@ namespace Project.Echo.Player.Controls
     {
         private Rigidbody _rigidBody;
 
+        float maxAngle =12f;
+        float rotationSpeed = 60;
+
 		public override void Spawned()
 		{
             _rigidBody = GetComponent<Rigidbody>();
@@ -28,13 +31,11 @@ namespace Project.Echo.Player.Controls
            if (GetInput(out NetworkPlayerMovementData data))
             {
                 _rigidBody.Sleep();
-                Vector3 e = transform.position;
-                var q = transform.rotation.eulerAngles;
-                q.y += data.Rotation + Runner.DeltaTime;
-                e += transform.forward * data.Speed * Runner.DeltaTime;
-                
-                SetEnginePosition(e);
-                SetEngineRotation(Quaternion.Euler(q));
+
+                Quaternion targetRotation = Quaternion.LookRotation(new(data.JoystickRotation.x, 0, data.JoystickRotation.y));
+                float step = rotationSpeed * Runner.DeltaTime;
+				Quaternion angles =Quaternion.RotateTowards(transform.rotation, targetRotation, step * maxAngle);
+                SetEngineRotation(angles);
             }
         }
 	}

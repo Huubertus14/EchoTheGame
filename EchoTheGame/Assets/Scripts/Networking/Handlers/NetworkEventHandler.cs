@@ -12,12 +12,12 @@ namespace Project.Echo.Networking.Handlers
 {
 	public class NetworkEventHandler : MonoBehaviour, INetworkRunnerCallbacks
 	{
-        private PlayerMovementController _movementController;
+        //private PlayerMovementController _movementController;
         Dictionary<int, PlayerNetworkedController> _mapTokenIDWithNetworkPlayer;
 
 		private void Awake()
 		{
-            _movementController = new PlayerMovementController();
+           // _movementController = new PlayerMovementController();
             _mapTokenIDWithNetworkPlayer = new Dictionary<int, PlayerNetworkedController>();
         }
 
@@ -76,8 +76,8 @@ namespace Project.Echo.Networking.Handlers
         {
             if (MatchManager.Instance.IsGameStarted)
             {
-				Player.Controls.Data.NetworkPlayerMovementData data = _movementController.GetInput();
-                input.Set(data);
+				//Player.Controls.Data.NetworkPlayerMovementData data = _movementController.GetInput();
+                //input.Set(data);
             }
         }
 
