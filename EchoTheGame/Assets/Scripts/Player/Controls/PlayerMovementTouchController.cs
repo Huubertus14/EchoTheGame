@@ -10,11 +10,18 @@ public class PlayerMovementTouchController : MonoBehaviour
 	private DynamicJoystick _joystick;
 	NetworkEvents _networkEvents;
 
-	private Button _gasButton;
+	[SerializeField] private BaseTouchButton _gasButton;
+	[SerializeField] private BaseTouchButton _pingButton;
+	[SerializeField] private BaseTouchButton _shootButton;
 
 	private void Awake()
 	{
 		_joystick = GetComponentInChildren<DynamicJoystick>();
+
+		_gasButton = GetComponentInChildren<GasButton>();
+		_pingButton = GetComponentInChildren<PingButton>();
+		_shootButton = GetComponentInChildren<ShootButton>();
+
 		NetworkController.OnRunnerSpawned += OnSpawned;
 	}
 
@@ -34,22 +41,15 @@ public class PlayerMovementTouchController : MonoBehaviour
 		}
 	}
 
-	private void Update()
-	{
-		foreach (Touch touch in Input.touches)
-		{
-			int id = touch.fingerId;
-		
-			//TODO add touch raycast to custom stuff/ui/controls
-		}
-	}
 	private NetworkPlayerMovementData GetData()
 	{
 		NetworkPlayerMovementData data = new();
+		data.JoystickRotation = _joystick.Direction; 
 
-		//Vector3 joyInput = new Vector3(-_joystick.Vertical,0,_joystick.Horizontal);
-		data.Speed = 1;
-		data.JoystickRotation = _joystick.Direction;
+		data.Speed = _gasButton.IsPressed ? 1 : 0;
+		data.IsShooting = _shootButton.IsPressed;
+		data.IsPing = _pingButton.IsPressed;
+
 		return data;
 	}
 }

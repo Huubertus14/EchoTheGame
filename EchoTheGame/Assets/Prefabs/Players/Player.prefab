@@ -370,7 +370,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
 --- !u!1 &1265456750276898291
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,6 +478,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  SubSpeed: 2.5
 --- !u!114 &7101726924133065784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -674,10 +675,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   _healthBarPrefab: {fileID: 6554604411005134829, guid: 3f75b1d0aba1b3245819eca8368a61a8, type: 3}
-  _PlayerHealth: 0
+  __playerHealth: 0
   _Alive:
     _value: 0
-  _playerScoreBoard: {fileID: 0}
   SkipInit: 0
 --- !u!114 &4835129743432766610
 MonoBehaviour:
@@ -719,6 +719,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  SkipInit: 0
+  __networkedPreGameTime: 0
+  __networkedTime: 0
 --- !u!1 &1265456750298655131
 GameObject:
   m_ObjectHideFlags: 0
