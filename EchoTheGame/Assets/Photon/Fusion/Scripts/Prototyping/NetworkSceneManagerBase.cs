@@ -31,7 +31,8 @@ namespace Fusion {
 
 
     protected virtual void OnEnable() {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_6000_4_OR_NEWER
+      // Fusion 1's optional overlay uses scene instance IDs, removed in Unity 6.4.
       if (ShowHierarchyWindowOverlay) {
         UnityEditor.EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowOverlay;
       }
@@ -39,7 +40,7 @@ namespace Fusion {
     }
 
     protected virtual void OnDisable() {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_6000_4_OR_NEWER
       UnityEditor.EditorApplication.hierarchyWindowItemOnGUI -= HierarchyWindowOverlay;
 #endif
     }
@@ -253,7 +254,7 @@ namespace Fusion {
       }
     }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_6000_4_OR_NEWER
     private static Lazy<GUIStyle> s_hierarchyOverlayLabelStyle = new Lazy<GUIStyle>(() => {
       var result = new GUIStyle(UnityEditor.EditorStyles.miniButton);
       result.alignment = TextAnchor.MiddleCenter;

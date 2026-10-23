@@ -21,7 +21,7 @@ namespace Project.Echo.Projectiles
 		[Networked, Capacity(96)]
 		private NetworkArray<ProjectileData> _projectiles { get; }
 		[Networked]
-		[SerializeField] private int _projectileCount { get; set; }
+		private int _projectileCount { get; set; }
 		
 		[SerializeField] private Projectile[] _visibleProjectiles = new Projectile[128];
 		[SerializeField] private int _visibleProjectileCount;
@@ -88,7 +88,7 @@ namespace Project.Echo.Projectiles
 				Cache = _objectCache,
 				InputAuthority = Object.InputAuthority,
 				BulletBegin = _cannon.GetBulletTransform,
-				OwnerObjectInstanceID = gameObject.GetInstanceID()
+				OwnerObjectInstanceID = gameObject.GetHashCode()
 			};
 
 			_projectilesInterpolator = GetInterpolator(nameof(_projectiles));

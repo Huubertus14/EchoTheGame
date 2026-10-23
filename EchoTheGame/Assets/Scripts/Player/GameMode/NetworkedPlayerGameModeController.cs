@@ -4,7 +4,6 @@ using UnityEngine;
 using Fusion;
 using Project.Echo.Loading;
 using System;
-using Cysharp.Threading.Tasks;
 
 public class NetworkedPlayerGameModeController : NetworkBehaviour
 {

@@ -7358,22 +7358,20 @@ namespace Fusion.Editor {
     }
 
     private static Action<object> SetDirty = x => EditorUtility.SetDirty((UnityEngine.Object)x);
-    private static Dictionary<NetworkObjectGuid, int> SceneObjectIds = new Dictionary<NetworkObjectGuid, int>();
+    private static Dictionary<NetworkObjectGuid, NetworkObject> SceneObjectIds = new Dictionary<NetworkObjectGuid, NetworkObject>();
 
     private static Func<NetworkObject, NetworkObjectGuid> GuidProvider = obj => {
-      var instanceId = obj.GetInstanceID();
       var guid = obj.NetworkGuid;
 
       if (guid.IsValid) {
-        if (SceneObjectIds.TryGetValue(guid, out var otherInstanceId)) {
-          if (otherInstanceId == instanceId) {
+        if (SceneObjectIds.TryGetValue(guid, out var otherInstance)) {
+          if (otherInstance == obj) {
             // can keep the guid
             return guid;
           } else {
-            var otherInstance = EditorUtility.InstanceIDToObject(otherInstanceId);
             if (otherInstance == null || otherInstance == obj) {
               // fine, can reuse
-              SceneObjectIds[guid] = instanceId;
+              SceneObjectIds[guid] = obj;
               return guid;
             } else {
               // can't reuse
@@ -7381,7 +7379,7 @@ namespace Fusion.Editor {
           }
         } else {
           // keep and add to cache
-          SceneObjectIds.Add(guid, instanceId);
+          SceneObjectIds.Add(guid, obj);
           return guid;
         }
       }
@@ -7391,7 +7389,7 @@ namespace Fusion.Editor {
         guid = Guid.NewGuid();
       } while (SceneObjectIds.ContainsKey(guid));
 
-      SceneObjectIds.Add(guid, instanceId);
+      SceneObjectIds.Add(guid, obj);
       return guid;
     };
 
@@ -11024,7 +11022,7 @@ namespace Fusion.Editor {
 
       return
         property.propertyType == SerializedPropertyType.Boolean ? (property.boolValue ? 1 : 0) :
-        property.propertyType == SerializedPropertyType.ObjectReference ? (property.objectReferenceValue == null ? 0 : property.objectReferenceValue.GetInstanceID()) :
+        property.propertyType == SerializedPropertyType.ObjectReference ? (property.objectReferenceValue == null ? 0 : property.objectReferenceValue.GetHashCode()) :
         property.propertyType == SerializedPropertyType.Float ? (double)property.floatValue :
         property.longValue;
     }
@@ -11085,7 +11083,7 @@ namespace Fusion.Editor {
       if (type.IsByRef) {
         var objObj = valueObj as UnityEngine.Object;
         if (objObj != null)
-          return objObj.GetInstanceID();
+          return objObj.GetHashCode();
 
       } else {
 
@@ -11152,7 +11150,7 @@ namespace Fusion.Editor {
             case SerializedPropertyType.Float: hashCode            = HashCodeUtilities.CombineHashCodes(hashCode, p.floatValue.GetHashCode()); break;
             case SerializedPropertyType.String: hashCode           = HashCodeUtilities.CombineHashCodes(hashCode, p.stringValue.GetHashCode()); break;
             case SerializedPropertyType.Color: hashCode            = HashCodeUtilities.CombineHashCodes(hashCode, p.colorValue.GetHashCode()); break;
-            case SerializedPropertyType.ObjectReference: hashCode  = HashCodeUtilities.CombineHashCodes(hashCode, p.objectReferenceInstanceIDValue); break;
+            case SerializedPropertyType.ObjectReference: hashCode  = HashCodeUtilities.CombineHashCodes(hashCode, p.objectReferenceValue == null ? 0 : p.objectReferenceValue.GetHashCode()); break;
             case SerializedPropertyType.LayerMask: hashCode        = HashCodeUtilities.CombineHashCodes(hashCode, p.intValue); break;
             case SerializedPropertyType.Enum: hashCode             = HashCodeUtilities.CombineHashCodes(hashCode, p.intValue); break;
             case SerializedPropertyType.Vector2: hashCode          = HashCodeUtilities.CombineHashCodes(hashCode, p.vector2Value.GetHashCode()); break;
@@ -11590,11 +11588,24 @@ namespace Fusion.Editor {
         BindingFlags.Static | BindingFlags.NonPublic);
 
       public delegate Type GetDrawerTypeForTypeDelegate(Type type);
+#if UNITY_6000_0_OR_NEWER
+      private delegate Type GetDrawerTypeForTypeUnity6Delegate(Type type, Type[] renderPipelineAssetTypes, bool isManagedReference);
+      private static readonly GetDrawerTypeForTypeUnity6Delegate GetDrawerTypeForTypeUnity6 =
+        CreateEditorMethodDelegate<GetDrawerTypeForTypeUnity6Delegate>(
+        "UnityEditor.ScriptAttributeUtility",
+        "GetDrawerTypeForType",
+        BindingFlags.Static | BindingFlags.NonPublic);
+      public static readonly GetDrawerTypeForTypeDelegate GetDrawerTypeForType = type =>
+        GetDrawerTypeForTypeUnity6(type, UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline != null
+          ? new[] { UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline.GetType() }
+          : null, false);
+#else
       public static readonly GetDrawerTypeForTypeDelegate GetDrawerTypeForType =
         CreateEditorMethodDelegate<GetDrawerTypeForTypeDelegate>(
         "UnityEditor.ScriptAttributeUtility",
         "GetDrawerTypeForType",
         BindingFlags.Static | BindingFlags.NonPublic);
+#endif
 
       private delegate object GetHandlerDelegate(UnityEditor.SerializedProperty property);
       private static readonly GetHandlerDelegate _GetHandler = InternalType.CreateMethodDelegate<GetHandlerDelegate>("GetHandler", BindingFlags.NonPublic | BindingFlags.Static,

@@ -1,0 +1,13 @@
+﻿<Solution>
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Unity.Fusion.CodeGen.csproj" />
+  <Project Path="Project.Bootstrap.csproj" />
+  <Project Path="Fusion.Addressables.csproj" />
+  <Project Path="Project.Settings.csproj" />
+  <Project Path="ParrelSync.csproj" />
+  <Project Path="Fusion.Editor.csproj" />
+  <Project Path="Project.Menu.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="DOTween.Modules.csproj" />
+  <Project Path="Project.Loading.csproj" />
+</Solution>
