@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4cf6a6f6defdc4c9a66c4f1f069f5e, type: 3}
+  m_Name: EchoMenuTheme
+  m_EditorClassIdentifier: Project.Menu::Project.Echo.Menu.EchoMenuTheme
+  abyss: {r: 0.007843138, g: 0.047058824, b: 0.07450981, a: 1}
+  panel: {r: 0.019607844, g: 0.09411765, b: 0.12941177, a: 0.98039216}
+  seafoam: {r: 0.60784316, g: 0.9137255, b: 0.8862745, a: 1}
+  muted: {r: 0.5764706, g: 0.7254902, b: 0.7607843, a: 1}
+  amber: {r: 0.95686275, g: 0.7254902, b: 0.30980393, a: 1}
+  font: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  lightTextMaterial: {fileID: 2100000, guid: 834646bf2bfdb3d429159a9500dca35f, type: 2}
+  sonar: {fileID: 21300000, guid: abac235e2acab19418a701f6c8833b51, type: 3}
+  submarine: {fileID: 21300000, guid: f8899444d4ae0564482db893f36d95a0, type: 3}
+  currency: {fileID: 21300000, guid: 7f71ca141c9269d49b7fa95e2f7bdddd, type: 3}
+  arrow: {fileID: 21300000, guid: e956b686800f6914f813619232ac5916, type: 3}
+  signal: {fileID: 21300000, guid: 1ece0311b5283284b968d76044129d23, type: 3}
+  roundedButton: {fileID: 21300000, guid: 2f16c754d5fa46f419e85055665979e8, type: 3}

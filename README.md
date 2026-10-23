@@ -6,11 +6,21 @@ De huidige herstelversie is getest in Unity **6000.6.7f1**. Het project is oorsp
 
 1. Open de projectmap `EchoTheGame` in Unity Hub.
 2. Wacht tot packages, imports en scriptcompilatie klaar zijn.
-3. Open `Assets/Scenes/Bootstrap.unity` en druk op Play. Deze scene maakt de persistente managers aan en opent het hoofdmenu. Start niet rechtstreeks vanuit de Game-scene.
-4. Kies **Host**. De speler verschijnt en na vijf seconden begint een testronde van dertig seconden.
-5. Voor een tweede speler: start een tweede instantie (bijvoorbeeld via de meegeleverde ParrelSync-tool) en kies **Join**. Beide gebruiken momenteel de vaste sessienaam `TestGame` en dezelfde Photon-configuratie. Deze verbinding met een tweede speler moet nog worden getest.
+3. Open `Assets/Scenes/Bootstrap.unity` en druk op Play. Deze scene maakt de persistente managers aan en opent het hoofdmenu. Rechtstreeks starten vanuit `MainMenu.unity` wordt ook ondersteund; ontbrekende managers worden dan aangemaakt. Start niet rechtstreeks vanuit de Game-scene.
+4. Kies **Spelen → Duik starten** (Host). De speler verschijnt en na vijf seconden begint een testronde van dertig seconden.
+5. Voor een tweede speler: start een tweede instantie (bijvoorbeeld via de meegeleverde ParrelSync-tool) en kies **Spelen → Aansluiten** (Join). Beide gebruiken momenteel de vaste sessienaam `TestGame` en dezelfde Photon-configuratie. Deze verbinding met een tweede speler moet nog worden getest.
 
 Editorbesturing: W/S bewegen, A/D draaien, linker Shift versnellen, spatie schieten en linker Ctrl sonar. De huidige inputcode gebruikt een toetsenbord; mobiele touchbesturing en Android/iOS-builds zijn in deze herstelronde niet getest of toegevoegd.
+
+## Hoofdmenu en huisstijl
+
+`MainMenu.unity` bevat het top-down sonarontwerp met echte Unity-knoppen, TMP-tekst en afzonderlijke PNG-iconen. De achtergrondafbeelding staat apart voor een toekomstige live-wereld. Beste score is weggelaten. Level 01, 0 valuta en lege XP zijn beginwaarden; er is nog geen voortgangseconomie aangesloten.
+
+Spelen behoudt Host/Join. Onderzeeër en Logboek hebben eigen startvensters; hun spelsystemen volgen later. Instellingen biedt mastervolume en volledig scherm. Pijltjestoetsen navigeren, Enter activeert en Escape sluit een venster.
+
+De herbruikbare huisstijl staat in [docs/UI_STYLE.md](docs/UI_STYLE.md) en `Assets/UI/Echo/EchoMenuTheme.asset`. [Preview van de Unity-scene](docs/main-menu-preview.png). De scene-objecten zijn direct bewerkbaar; het editorcommando **Echo → Build Main Menu** bouwt het menu opnieuw en vervangt handmatige scene-aanpassingen. **Echo → Validate Main Menu** controleert de aansluitingen en maakt previews voor 16:9 en 5:4.
+
+Gecontroleerd in Unity: scriptcompilatie, 14 knoppen met aansluitingen, de vijf menuvensters, voortgangsweergave en renders op twee schermverhoudingen. In Play Mode zijn toetsenbordnavigatie, Spelen, Escape en de volumeslider gecontroleerd. De bestaande netwerkroute is gekoppeld; een nieuwe multiplayerverbinding is bij deze UI-wijziging niet getest.
 
 ## Herstel van de oude dependencies
 
