@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using Project.Echo.Localization;
+using Project.Echo.Setting;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -19,7 +23,17 @@ namespace Project.Echo.Menu
         [SerializeField] private Slider volumeSlider;
         [SerializeField] private TMP_Text volumeLabel;
         [SerializeField] private TMP_Text fullscreenLabel;
+        [SerializeField] private TMP_Dropdown languageDropdown;
+        [SerializeField] private Toggle soundToggle;
+        [SerializeField] private Slider musicSlider;
+        [SerializeField] private Slider effectsSlider;
+        [SerializeField] private TMP_Text musicLabel;
+        [SerializeField] private TMP_Text effectsLabel;
+        private readonly List<string> languageCodes = new List<string>();
         private GameObject previousSelection;
+        private int currentPage;
+        private int currentLevel = 1;
+        private int currentCurrency;
 
         private void Awake()
         {
@@ -28,27 +42,45 @@ namespace Project.Echo.Menu
                 Instantiate(persistentManagersPrefab);
         }
 
-        private void Start()
+        private void OnEnable()
+        {
+            EchoLocalization.Changed += RefreshLanguage;
+            AudioPreferences.Changed += RefreshAudio;
+        }
+
+        private async void Start()
         {
             // Local presentation values until a progression system supplies them.
             SetProgress(1, 0, 0);
-            volumeSlider.SetValueWithoutNotify(PlayerPrefs.GetFloat("Echo.Audio.Volume", 0.8f));
-            ApplyVolume(volumeSlider.value);
-            UpdateFullscreenLabel();
+            RefreshAudio();
             modal.SetActive(false);
             EventSystem.current?.SetSelectedGameObject(playButton.gameObject);
+            try
+            {
+                await EchoLocalization.InitializeAsync();
+                if (this != null) RefreshLanguage();
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
         }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && modal.activeSelf)
-                ClosePanel();
+            {
+                if (languageDropdown != null && languageDropdown.IsExpanded) languageDropdown.Hide();
+                else if (currentPage == 5) ShowSettings();
+                else ClosePanel();
+            }
         }
 
         public void SetProgress(int level, int currency, float experience)
         {
-            levelLabel.text = $"LEVEL {Mathf.Max(1, level):00}";
-            currencyLabel.text = Mathf.Max(0, currency).ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("nl-NL"));
+            currentLevel = Mathf.Max(1, level);
+            currentCurrency = Mathf.Max(0, currency);
+            RefreshProgress();
             experienceFill.fillAmount = Mathf.Clamp01(experience);
         }
 
@@ -57,9 +89,19 @@ namespace Project.Echo.Menu
         public void ShowLogbook() => OpenPanel(2);
         public void ShowSettings() => OpenPanel(3);
         public void ShowQuit() => OpenPanel(4);
+        public void ShowAudio() => OpenPanel(5);
+
+        private void RefreshProgress()
+        {
+            levelLabel.text = EchoLocalization.IsReady ? EchoLocalization.Get("LEVEL", currentLevel.ToString("00")) : $"LEVEL {currentLevel:00}";
+            currencyLabel.text = currentCurrency.ToString("N0", EchoLocalization.IsReady
+                ? UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale.Identifier.CultureInfo
+                : System.Globalization.CultureInfo.InvariantCulture);
+        }
 
         private void OpenPanel(int index)
         {
+            currentPage = index;
             if (!modal.activeSelf)
                 previousSelection = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
             mainNavigation.interactable = false;
@@ -80,9 +122,50 @@ namespace Project.Echo.Menu
 
         public void ApplyVolume(float value)
         {
-            AudioListener.volume = value;
-            volumeLabel.text = $"{Mathf.RoundToInt(value * 100)}%";
-            PlayerPrefs.SetFloat("Echo.Audio.Volume", value);
+            AudioPreferences.SetMasterVolume(value);
+        }
+
+        public void ApplyMusicVolume(float value) => AudioPreferences.SetMusicVolume(value);
+        public void ApplyEffectsVolume(float value) => AudioPreferences.SetEffectsVolume(value);
+        public void SetSoundEnabled(bool value) => AudioPreferences.SetMuted(!value);
+
+        private void RefreshAudio()
+        {
+            SetVolumeControl(volumeSlider, volumeLabel, AudioPreferences.MasterVolume);
+            SetVolumeControl(musicSlider, musicLabel, AudioPreferences.MusicVolume);
+            SetVolumeControl(effectsSlider, effectsLabel, AudioPreferences.EffectsVolume);
+            if (soundToggle != null) soundToggle.SetIsOnWithoutNotify(!AudioPreferences.Muted);
+        }
+
+        private static void SetVolumeControl(Slider slider, TMP_Text label, float value)
+        {
+            if (slider != null) slider.SetValueWithoutNotify(value);
+            if (label != null) label.text = $"{Mathf.RoundToInt(value * 100)}%";
+        }
+
+        public void ChangeLanguage(int index)
+        {
+            if (index >= 0 && index < languageCodes.Count) EchoLocalization.Select(languageCodes[index]);
+        }
+
+        private void RefreshLanguage()
+        {
+            if (!EchoLocalization.IsReady) return;
+            RefreshProgress();
+            UpdateFullscreenLabel(Screen.fullScreen);
+            if (languageDropdown == null) return;
+            languageCodes.Clear();
+            languageCodes.Add("");
+            var options = new List<string> { EchoLocalization.Get("LANGUAGE_AUTO") };
+            foreach (var locale in EchoLocalization.AvailableLocales)
+            {
+                languageCodes.Add(locale.Identifier.Code);
+                options.Add(locale.LocaleName);
+            }
+            languageDropdown.ClearOptions();
+            languageDropdown.AddOptions(options);
+            languageDropdown.SetValueWithoutNotify(Mathf.Max(0, languageCodes.IndexOf(EchoLocalization.SelectedCode)));
+            languageDropdown.RefreshShownValue();
         }
 
         public void ToggleFullscreen()
@@ -90,10 +173,14 @@ namespace Project.Echo.Menu
             bool fullscreen = !Screen.fullScreen;
             Screen.fullScreen = fullscreen;
             // The screen mode is applied at the end of the frame.
-            fullscreenLabel.text = fullscreen ? "VOLLEDIG SCHERM: AAN" : "VOLLEDIG SCHERM: UIT";
+            UpdateFullscreenLabel(fullscreen);
         }
 
-        private void UpdateFullscreenLabel() => fullscreenLabel.text = Screen.fullScreen ? "VOLLEDIG SCHERM: AAN" : "VOLLEDIG SCHERM: UIT";
+        private void UpdateFullscreenLabel(bool fullscreen)
+        {
+            if (EchoLocalization.IsReady)
+                fullscreenLabel.text = EchoLocalization.Get(fullscreen ? "FULLSCREEN_ON" : "FULLSCREEN_OFF");
+        }
 
         public void QuitGame()
         {
@@ -105,6 +192,11 @@ namespace Project.Echo.Menu
 #endif
         }
 
-        private void OnDisable() => PlayerPrefs.Save();
+        private void OnDisable()
+        {
+            EchoLocalization.Changed -= RefreshLanguage;
+            AudioPreferences.Changed -= RefreshAudio;
+            PlayerPrefs.Save();
+        }
     }
 }

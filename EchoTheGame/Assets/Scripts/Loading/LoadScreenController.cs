@@ -18,6 +18,7 @@ namespace Project.Echo.Loading
 			else
 			{
 				Destroy(gameObject);
+				return;
 			}
 			_loadingScreenText.text = "";
 			Hide();

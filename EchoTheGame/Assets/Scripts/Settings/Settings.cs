@@ -33,7 +33,7 @@ namespace Project.Echo.Setting
 
 		private void OnDestroy()
 		{
-			_instance = null;
+			if (_instance == this) _instance = null;
 		}
 	}
 }

@@ -33,7 +33,7 @@ public class PreGameCountDown : MonoBehaviour
 		}
 		else if(_canFadeOut)
 		{
-			_canFadeOut = true;
+			_canFadeOut = false;
 			StartCoroutine(StartGame());
 		}
 	}

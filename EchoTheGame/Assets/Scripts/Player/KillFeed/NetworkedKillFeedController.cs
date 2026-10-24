@@ -23,6 +23,7 @@ public class NetworkedKillFeedController : NetworkBehaviour
 		}
 		if (_killFeedUIHandler == null)
 		{
+			if (PlayerNetworkedController.LocalPlayer == null) return;
 			_killFeedUIHandler = PlayerNetworkedController.LocalPlayer.GetComponentInChildren<KillFeedUIHandler>();
 		}
 

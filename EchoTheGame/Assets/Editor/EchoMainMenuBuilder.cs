@@ -17,6 +17,7 @@ public static class EchoMainMenuBuilder
 {
     private const string Root = "Assets/UI/Echo";
     private static EchoMenuTheme theme;
+    internal static void LoadTheme() => theme = AssetDatabase.LoadAssetAtPath<EchoMenuTheme>(Root + "/EchoMenuTheme.asset");
 
     [MenuItem("Echo/Build Main Menu %#m")]
     public static void Build()
@@ -225,13 +226,14 @@ public static class EchoMainMenuBuilder
         so.ApplyModifiedPropertiesWithoutUndo();
         events.GetComponent<EventSystem>().firstSelectedGameObject = play.gameObject;
         modal.gameObject.SetActive(false);
+        EchoSettingsInstaller.ApplyToOpenScene();
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/MainMenu.unity");
         AssetDatabase.SaveAssets();
         ValidateAndPreview();
         Debug.Log("ECHO_MENU_BUILD_OK");
     }
 
-    private static RectTransform Rect(string name, Transform parent, float x, float y, float w, float h)
+    internal static RectTransform Rect(string name, Transform parent, float x, float y, float w, float h)
     {
         var go = new GameObject(name, typeof(RectTransform));
         go.layer = 5;
@@ -243,21 +245,21 @@ public static class EchoMainMenuBuilder
         return rect;
     }
 
-    private static RectTransform Stretch(string name, Transform parent)
+    internal static RectTransform Stretch(string name, Transform parent)
     {
         RectTransform rect = Rect(name, parent, 0, 0, 0, 0);
         StretchRect(rect);
         return rect;
     }
 
-    private static void StretchRect(RectTransform rect)
+    internal static void StretchRect(RectTransform rect)
     {
         rect.anchorMin = Vector2.zero;
         rect.anchorMax = Vector2.one;
         rect.offsetMin = rect.offsetMax = Vector2.zero;
     }
 
-    private static Image Picture(string name, Transform parent, Sprite sprite, Color color, float x, float y, float w, float h)
+    internal static Image Picture(string name, Transform parent, Sprite sprite, Color color, float x, float y, float w, float h)
     {
         Image image = Rect(name, parent, x, y, w, h).gameObject.AddComponent<Image>();
         image.sprite = sprite;
@@ -266,7 +268,7 @@ public static class EchoMainMenuBuilder
         return image;
     }
 
-    private static TMP_Text Label(string name, Transform parent, string text, float x, float y, float w, float h, float size, Color color, float tracking = 0)
+    internal static TMP_Text Label(string name, Transform parent, string text, float x, float y, float w, float h, float size, Color color, float tracking = 0)
     {
         var label = Rect(name, parent, x, y, w, h).gameObject.AddComponent<TextMeshProUGUI>();
         label.font = theme.font;
@@ -281,7 +283,7 @@ public static class EchoMainMenuBuilder
         return label;
     }
 
-    private static Button MakeButton(string name, Transform parent, string text, float x, float y, float w, float h, bool primary, UnityAction action)
+    internal static Button MakeButton(string name, Transform parent, string text, float x, float y, float w, float h, bool primary, UnityAction action)
     {
         Image surface = Picture(name, parent, theme.roundedButton, Color.white, x, y, w, h);
         surface.type = Image.Type.Sliced;
@@ -300,7 +302,7 @@ public static class EchoMainMenuBuilder
         return button;
     }
 
-    private static void LinkNavigation(Selectable[] items)
+    internal static void LinkNavigation(Selectable[] items)
     {
         for (int i = 0; i < items.Length; i++)
         {
@@ -312,7 +314,7 @@ public static class EchoMainMenuBuilder
         }
     }
 
-    private static void SetArray(SerializedObject so, string name, UnityEngine.Object[] values)
+    internal static void SetArray(SerializedObject so, string name, UnityEngine.Object[] values)
     {
         var p = so.FindProperty(name);
         p.arraySize = values.Length;
@@ -391,12 +393,12 @@ public static class EchoMainMenuBuilder
         foreach (string name in new[] { "persistentManagersPrefab", "modal", "playButton", "mainNavigation", "levelLabel", "currencyLabel", "experienceFill", "volumeSlider", "volumeLabel", "fullscreenLabel" })
             if (so.FindProperty(name).objectReferenceValue == null) throw new Exception("Unbound menu field: " + name);
         Button[] buttons = controller.GetComponentsInChildren<Button>(true);
-        if (buttons.Length != 14) throw new Exception("Expected 14 real buttons, got " + buttons.Length);
+        if (buttons.Length != 16) throw new Exception("Expected 16 real buttons, got " + buttons.Length);
         foreach (Button button in buttons)
             if (button.onClick.GetPersistentEventCount() == 0 && button.GetComponent<BaseGameButton>() == null)
                 throw new Exception("Unbound button: " + button.name);
         var modal = (GameObject)so.FindProperty("modal").objectReferenceValue;
-        Action[] open = { controller.ShowPlay, controller.ShowSubmarine, controller.ShowLogbook, controller.ShowSettings, controller.ShowQuit };
+        Action[] open = { controller.ShowPlay, controller.ShowSubmarine, controller.ShowLogbook, controller.ShowSettings, controller.ShowQuit, controller.ShowAudio };
         for (int i = 0; i < open.Length; i++)
         {
             open[i]();
@@ -415,10 +417,10 @@ public static class EchoMainMenuBuilder
         controller.ShowSettings();
         RenderPreview(1920, 1080, "../docs/main-menu-settings-preview.png");
         controller.ClosePanel();
-        Debug.Log("ECHO_MENU_VALIDATION_OK: 14 buttons, 5 panels, bindings, progress, separate assets, 16:9 and 5:4 renders.");
+        Debug.Log("ECHO_MENU_VALIDATION_OK: 16 buttons, 6 panels, bindings, progress, separate assets, 16:9 and 5:4 renders.");
     }
 
-    private static void RenderPreview(int width, int height, string path)
+    internal static void RenderPreview(int width, int height, string path)
     {
         Canvas canvas = UnityEngine.Object.FindAnyObjectByType<MenuController>().GetComponent<Canvas>();
         Camera camera = Camera.main;

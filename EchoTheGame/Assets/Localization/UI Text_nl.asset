@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI Text_nl
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: nl
+  m_SharedData: {fileID: 11400000, guid: 244448220228d8c4985ed630b6db07ab, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 846630912
+    m_Localized: LUISTER NAAR DE DIEPTE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768256
+    m_Localized: SPELEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768257
+    m_Localized: "ONDERZEE\xCBR"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768258
+    m_Localized: LOGBOEK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768259
+    m_Localized: INSTELLINGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768260
+    m_Localized: AFSLUITEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768261
+    m_Localized: KAPITEIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768262
+    m_Localized: LEVEL {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768263
+    m_Localized: SONAR ACTIEF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768264
+    m_Localized: TERUG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768265
+    m_Localized: Begin een duik of sluit aan bij een sessie.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768266
+    m_Localized: DUIK STARTEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768267
+    m_Localized: AANSLUITEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768268
+    m_Localized: VERKENNER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768269
+    m_Localized: "Je onderzee\xEBr is klaar voor de diepte.\nUpgrades volgen in een latere versie."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768270
+    m_Localized: DE DIEPTE WACHT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768271
+    m_Localized: 'Hier komen je ontdekkingen en duiken.
+
+      Het logboek wordt later aangesloten.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768272
+    m_Localized: TAAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768273
+    m_Localized: Automatisch (systeemtaal)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768274
+    m_Localized: GELUID
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768275
+    m_Localized: GELUID AAN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768276
+    m_Localized: MASTERVOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768277
+    m_Localized: ACHTERGRONDMUZIEK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768278
+    m_Localized: GELUIDSEFFECTEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768279
+    m_Localized: 'VOLLEDIG SCHERM: AAN'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768280
+    m_Localized: 'VOLLEDIG SCHERM: UIT'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768281
+    m_Localized: Wil je Echo afsluiten?
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

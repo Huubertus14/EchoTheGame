@@ -58,6 +58,7 @@ namespace Project.Echo.Player.Cameras
 
 		private void OnDestroy()
 		{
+			PlayerNetworkedController.LocalPlayerSpawned -= OnLocalPlayerSpawned;
 			NetworkController.OnHostMigrationDone -= OnHostMigrated;
 		}
 	}

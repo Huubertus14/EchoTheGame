@@ -6,8 +6,6 @@ public class KillFeedUIHandler : MonoBehaviour
 {
     private KillFeedItem[] _killFeedItems;
 
-	private Queue<string> _messageQueue = new Queue<string>();
-
 	private int _killfeedIndex;
 
 	private void Awake()
@@ -22,8 +20,7 @@ public class KillFeedUIHandler : MonoBehaviour
 
 	public void OnMessageReceived(string message)
 	{
-		Debug.Log(message);
-		if (MatchManager.Instance.IsGameOver)
+		if (MatchManager.Instance.IsGameOver || _killFeedItems.Length == 0)
 		{
 			return;
 		}

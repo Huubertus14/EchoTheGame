@@ -23,6 +23,7 @@ public class GameModeTimerUI : MonoBehaviour
 			_refreshTimer += Time.deltaTime;
 			if (_refreshTimer > 0.5f)
 			{
+				_refreshTimer = 0;
 				SetText(MatchManager.Instance.TimeLeft);
 			}
 		}

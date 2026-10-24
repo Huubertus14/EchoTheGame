@@ -39,7 +39,7 @@ namespace Project.Echo.Networking.Handlers
 
         public void SetConnectionTokenMapping(int token, PlayerNetworkedController playerController)
 		{
-            _mapTokenIDWithNetworkPlayer.Add(token, playerController);
+            _mapTokenIDWithNetworkPlayer[token] = playerController;
 		}
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
@@ -48,7 +48,7 @@ namespace Project.Echo.Networking.Handlers
             {
                 int playerToken = GetPlayerToken(runner,player);
 
-				if (_mapTokenIDWithNetworkPlayer.TryGetValue(playerToken, out PlayerNetworkedController playerNetworkController))
+				if (_mapTokenIDWithNetworkPlayer.TryGetValue(playerToken, out PlayerNetworkedController playerNetworkController) && playerNetworkController != null)
 				{
                     Loading.LoadScreenController.SetLoadingText($"Found a referenced player. Assign authority over this object {playerToken}");
                     playerNetworkController.GetComponent<NetworkObject>().AssignInputAuthority(player);
@@ -74,7 +74,7 @@ namespace Project.Echo.Networking.Handlers
 
         public void OnInput(NetworkRunner runner, NetworkInput input) 
         {
-            if (MatchManager.Instance.IsGameStarted)
+            if (MatchManager.Instance != null && MatchManager.Instance.IsGameStarted)
             {
 				Player.Controls.Data.NetworkPlayerMovementData data = _movementController.GetInput();
                 input.Set(data);
@@ -109,7 +109,6 @@ namespace Project.Echo.Networking.Handlers
 			catch (Exception e)
 			{
                 Debug.LogError(e);
-				throw;
 			}
         }
 
@@ -120,6 +119,7 @@ namespace Project.Echo.Networking.Handlers
         public async void OnHostMigrationCleanup()
 		{
             await Task.Delay(500);
+            if (this == null) return;
 
             int tokenToRemove=0;
 			foreach (var entry in _mapTokenIDWithNetworkPlayer)

@@ -53,10 +53,10 @@ namespace Project.Echo.Networking
                 _networkSceneManager = GetNetworkSceneManager();
 
                 _runner.ProvideInput = true;
-                _eventHandler = FindObjectOfType<NetworkEventHandler>();
+                _eventHandler = _runner.GetComponent<NetworkEventHandler>();
                 LoadScreenController.SetLoadingText("Runner created and starting a game");
 
-                await _runner.StartGame(new StartGameArgs()
+                var result = await _runner.StartGame(new StartGameArgs()
                 {
                     GameMode = sessionSettings.Mode,
                     SessionName = sessionSettings.LobbyName,
@@ -65,12 +65,16 @@ namespace Project.Echo.Networking
                     Initialized = OnRunnerInitialized,
                     ConnectionToken = GameManager.GetConnectionToken()
                 });
+                if (!result.Ok)
+                {
+                    LoadScreenController.SetLoadingText($"Could not start session: {result.ShutdownReason}");
+                    Debug.LogError($"Could not start session: {result.ShutdownReason}");
+                }
             }
 			catch (Exception e)
 			{
                 LoadScreenController.SetLoadingText($"Something went wrong starting the network {e}");
                 Debug.LogException(e);
-				throw;
 			}
 		}
 
@@ -93,12 +97,13 @@ namespace Project.Echo.Networking
 
 		private async Task InitializeNetworkRunnerHostMigration(NetworkRunner runner, HostMigrationToken token)
 		{
-            await _runner.StartGame(new StartGameArgs()
+            var result = await runner.StartGame(new StartGameArgs()
             {
                 SceneManager = _networkSceneManager,
                 HostMigrationToken = token,
                 HostMigrationResume = OnHostMigrationResumed
             });
+            if (!result.Ok) throw new InvalidOperationException($"Host migration failed: {result.ShutdownReason}");
         }
 
         private void OnHostMigrationResumed(NetworkRunner obj)
@@ -135,7 +140,7 @@ namespace Project.Echo.Networking
                         if (resumeObject.TryGetBehaviour<PlayerScoreboardController>(out var oldScore))
                         {
                             PlayerScoreboardController newScore = newNetworkObject.GetComponent<PlayerScoreboardController>();
-                            newScore.CopyStateFrom(oldHealth);
+                            newScore.CopyStateFrom(oldScore);
                             newScore.SkipInitialization = true;
                         }
 
@@ -156,24 +161,35 @@ namespace Project.Echo.Networking
             LoadScreenController.Hide();
         }
 
-        public void StartHostMigration(HostMigrationToken migrationToken)
+        public async void StartHostMigration(HostMigrationToken migrationToken)
 		{
             OnHostMigrationStarted?.Invoke(_runner);
             _runner =Instantiate(_networkRunnerPrefab);
+            _runner.ProvideInput = true;
             _networkSceneManager = GetNetworkSceneManager();
-            _eventHandler = FindObjectOfType<NetworkEventHandler>();
+            _eventHandler = _runner.GetComponent<NetworkEventHandler>();
 
-            var clientTask = InitializeNetworkRunnerHostMigration(_runner, migrationToken);
-            Debug.Log("Host migration started");
+            try { await InitializeNetworkRunnerHostMigration(_runner, migrationToken); }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+                LoadScreenController.SetLoadingText("Host migration failed. Return to the menu and reconnect.");
+            }
         }
 
         public async Task LeaveGame()
 		{
+            if (_runner == null || !_runner.IsRunning) return;
             if (_runner.IsServer)
             {
                 await _runner.PushHostMigrationSnapshot();
             }
            await _runner.Shutdown();
 		}
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
 	} 
 }

@@ -1,5 +1,13 @@
 # EchoTheGame
 
+## Lokalisatie, geluid en ontwikkelstatus
+
+Het menu heeft Nederlandse en Engelse vertaaltabellen via Unity Localization, een opgeslagen taalkeuze en een apart geluidsvenster met mute, mastervolume, achtergrondmuziek en effecten. Nieuwe talen uit Unity's Available Locales verschijnen automatisch in de keuzelijst. Koppel toekomstige muziek/effecten via het component `AudioChannel`.
+
+Zie [ontwikkelstatus en vervolgstappen](docs/DEVELOPMENT_NEXT_STEPS.md) voor de uitgevoerde code-opruiming en controles. **Fusion 2 is nog niet geïmporteerd:** de officiële SDK-download vereist een Photon-login. Het opgegeven nieuwe AppId staat in dat document, klaar voor de migratie. De huidige checkout behoudt de werkende Fusion 1-configuratie.
+
+Herstelpunt: `backup/pre-fusion2-20261024`. Werkbranch: `codex/fusion2-localization-audio`. Compilatie en editor-/layoutcontrole zijn uitgevoerd; functionele speeltests doet de eigenaar.
+
 ## Starten in Unity
 
 De huidige herstelversie is getest in Unity **6000.6.7f1**. Het project is oorspronkelijk gemaakt met Unity 2021.3.11f1 en gebruikt Photon **Fusion 1**.

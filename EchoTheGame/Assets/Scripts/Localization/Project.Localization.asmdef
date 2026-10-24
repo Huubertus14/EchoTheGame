@@ -1,0 +1,4 @@
+{
+  "name": "Project.Localization",
+  "references": ["Unity.Localization", "Unity.ResourceManager", "Unity.TextMeshPro"]
+}

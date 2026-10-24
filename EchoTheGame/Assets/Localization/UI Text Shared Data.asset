@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Text Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: UI Text
+  m_TableCollectionNameGuidString: 244448220228d8c4985ed630b6db07ab
+  m_Entries:
+  - m_Id: 846630912
+    m_Key: SUBTITLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768256
+    m_Key: PLAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768257
+    m_Key: SUBMARINE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768258
+    m_Key: LOGBOOK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768259
+    m_Key: SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768260
+    m_Key: QUIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768261
+    m_Key: CAPTAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768262
+    m_Key: LEVEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768263
+    m_Key: SONAR_ACTIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768264
+    m_Key: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768265
+    m_Key: PLAY_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768266
+    m_Key: HOST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768267
+    m_Key: JOIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768268
+    m_Key: VESSEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768269
+    m_Key: SUBMARINE_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768270
+    m_Key: LOGBOOK_EMPTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768271
+    m_Key: LOGBOOK_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768272
+    m_Key: LANGUAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768273
+    m_Key: LANGUAGE_AUTO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768274
+    m_Key: AUDIO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768275
+    m_Key: SOUND_ENABLED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768276
+    m_Key: MASTER_VOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768277
+    m_Key: MUSIC_VOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768278
+    m_Key: EFFECTS_VOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768279
+    m_Key: FULLSCREEN_ON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768280
+    m_Key: FULLSCREEN_OFF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 892768281
+    m_Key: QUIT_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 9156148439605313560
+  references:
+    version: 2
+    RefIds:
+    - rid: 9156148439605313560
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1792800348043

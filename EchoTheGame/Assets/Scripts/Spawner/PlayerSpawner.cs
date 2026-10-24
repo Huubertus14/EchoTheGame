@@ -35,6 +35,7 @@ namespace Project.Echo.Spawner
 
 		public static void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
 		{
+			if (!runner.IsServer || _instance == null) return;
 			if (_instance._spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
 			{
 				runner.Despawn(networkObject);

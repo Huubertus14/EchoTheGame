@@ -28,6 +28,11 @@ namespace Project.Echo.Projectiles.Behaviours
 			float distance = direction.magnitude;
 		
 			// Normalize
+			if (distance <= Mathf.Epsilon)
+			{
+				base.OnFixedUpdate(context, ref data);
+				return;
+			}
 			direction /= distance;
 
 			if (_length > 0f)

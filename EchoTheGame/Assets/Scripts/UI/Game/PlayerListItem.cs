@@ -20,7 +20,7 @@ public class PlayerListItem : MonoBehaviour
 	public void Init(string playerName)
 	{
 		PlayerName = playerName;
-		if (PlayerNetworkedController.LocalPlayer.PlayerName == playerName)
+		if (PlayerNetworkedController.LocalPlayer != null && PlayerNetworkedController.LocalPlayer.PlayerName == playerName)
 		{
 			_playerNameText.text = $"<b>{PlayerName}</b>";
 		}

@@ -8,21 +8,17 @@ using UnityEngine.SceneManagement;
 
 public class ReturnToMenuBehaviour : MonoBehaviour
 {
-	private AsyncOperation _loadMenuScene;
-
 	private void Update()
 	{
 		if(Input.GetKeyDown(KeyCode.Escape))
 		{
-			NetworkController.Instance.LeaveGame();
-			_loadMenuScene = SceneManager.LoadSceneAsync("MainMenu");
-			_loadMenuScene.completed += OnLoadDone;
+			ReturnToMenu();
 		}
 	}
 
-	private void OnLoadDone(AsyncOperation obj)
+	private async void ReturnToMenu()
 	{
-		_loadMenuScene.completed -= OnLoadDone;
-		
+		try { await SessionNavigation.ReturnToMenuAsync(); }
+		catch (Exception exception) { Debug.LogException(exception); }
 	}
 }

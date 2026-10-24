@@ -24,7 +24,7 @@ public class SonarImpact : NetworkBehaviour
 		{
 			Color? pColor =nwObject.GetComponentInChildren<PlayerVisualController>()?.PlayerColor;
 			ParticleSystem.MainModule main = _sonarParticleSystem.main;
-			main.startColor = pColor.Value;
+			if (pColor.HasValue) main.startColor = pColor.Value;
 		}
 	}
 

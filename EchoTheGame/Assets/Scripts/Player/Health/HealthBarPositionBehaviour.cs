@@ -14,6 +14,7 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 
 	public void Init(byte[] connectionToken,Transform target, int maxHealth)
 	{
+		this.connectionToken = connectionToken;
 		_followTarget = target;
 		_healthSlider = GetComponentInChildren<Slider>();
 		_healthSlider.maxValue = maxHealth;

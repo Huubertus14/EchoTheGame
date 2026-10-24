@@ -11,6 +11,8 @@ public class PlayerList : MonoBehaviour
 	[SerializeField]private PlayerListItem _listItemTemplate;
 
 	 private Dictionary<string,PlayerListItem> _currentPlayers;
+	private readonly HashSet<string> _incomingNames = new HashSet<string>();
+	private readonly List<string> _removedNames = new List<string>();
 	[SerializeField] private List<string> _playerNames;
 
 	private void Awake()
@@ -22,6 +24,7 @@ public class PlayerList : MonoBehaviour
 		else
 		{
 			Destroy(gameObject);
+			return;
 		}
 
 		_playerNames = new List<string>();
@@ -41,26 +44,30 @@ public class PlayerList : MonoBehaviour
 
 	public void UpdateList(IReadOnlyCollection<string> nameCollection)
 	{
+		_incomingNames.Clear();
 		foreach (var sendName in nameCollection)
 		{
+			_incomingNames.Add(sendName);
 			if(!_currentPlayers.ContainsKey(sendName))
 			{
 				AddName(sendName) ;
 			}
 		}
 
+		_removedNames.Clear();
 		foreach(var item in _currentPlayers)
 		{
-			if(!nameCollection.Contains(item.Key))
+			if(!_incomingNames.Contains(item.Key))
 			{
-				Destroy(item.Value.gameObject);
-				_currentPlayers.Remove(item.Key);
+				_removedNames.Add(item.Key);
 			}
 		}
+		foreach (var removedName in _removedNames) RemoveName(removedName);
 	}
 
 	public void AddName(string name)
 	{
+		if (_currentPlayers.ContainsKey(name)) return;
 		_playerNames.Add(name);
 
 		PlayerListItem newItem = Instantiate(_listItemTemplate, transform);
@@ -85,5 +92,10 @@ public class PlayerList : MonoBehaviour
 		List<PlayerListItem > unsortedPlayers = _currentPlayers.Values.ToList();
 		unsortedPlayers.Sort((a,b)=> b.GetScore.CompareTo(a.GetScore));
 		return unsortedPlayers;
+	}
+
+	private void OnDestroy()
+	{
+		if (Instance == this) Instance = null;
 	}
 }

@@ -197,7 +197,7 @@ namespace Project.Echo.Caches
 			_all.Clear();
 		}
 
-		protected  void OnTick()
+		private void Update()
 		{
 			for (int i = _deferred.Count; i-- > 0;)
 			{

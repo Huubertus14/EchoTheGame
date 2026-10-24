@@ -87,6 +87,7 @@ namespace Project.Echo.Projectiles
 				Runner = Runner,
 				Cache = _objectCache,
 				InputAuthority = Object.InputAuthority,
+				ProjectileColor = _visualController.PlayerColor,
 				BulletBegin = _cannon.GetBulletTransform,
 				OwnerObjectInstanceID = gameObject.GetHashCode()
 			};
@@ -96,8 +97,7 @@ namespace Project.Echo.Projectiles
 
 		private void OnColorSet(Color col)
 		{
-			_projectileContext.ProjectileColor = col;
-			Debug.Log($"Color set {col}");
+			if (_projectileContext != null) _projectileContext.ProjectileColor = col;
 		}
 
 		public override void FixedUpdateNetwork()
@@ -128,6 +128,7 @@ namespace Project.Echo.Projectiles
 
 		public void OnRender( )
 		{
+			if (_projectileContext == null || Runner == null || !Object.IsValid) return;
 			// Visuals are not spawned on dedicated server at all
 			if (Runner.Mode == SimulationModes.Server)
 				return;
@@ -266,7 +267,7 @@ namespace Project.Echo.Projectiles
 
 		private void OnDestroy()
 		{
-			_visualController.ColorSet -= OnColorSet;
+			if (_visualController != null) _visualController.ColorSet -= OnColorSet;
 		}
 	}
 }
