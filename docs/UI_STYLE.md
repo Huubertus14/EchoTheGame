@@ -35,3 +35,7 @@ De scene is bewerkbaar zonder runtime-opbouw: alle UI-objecten en persistente bu
 ## Huidige functionaliteit
 
 Spelen opent de bestaande Host/Join-routes. Onderzeeër en Logboek openen informatieve startvensters: upgrades/ontdekkingen zijn nog geen geïmplementeerde spelsystemen. Instellingen regelt de opgeslagen taalkeuze en volledig scherm. Een apart geluidsvenster bevat een aan/uit-toggle en sliders voor mastervolume, achtergrondmuziek en effecten. Teksten komen uit de Unity Localization-collection UI Text (Nederlands en Engels). Afsluiten heeft een bevestigingsvenster. Level 01, 0 valuta en lege XP zijn beginwaarden; `MenuController.SetProgress` is het aansluitpunt voor echte voortgang. De normale route blijft Bootstrap; bij rechtstreeks starten vanuit MainMenu maakt de controller de bestaande persistente managers aan als die nog ontbreken.
+
+## Healthbar tijdens het spelen
+
+`Assets/Prefabs/Players/PlayerHealthbar.prefab` is een bewerkbare world-space Canvas met een smalle, gesegmenteerde hull-meter. De navy ondergrond, seafoam vulling, dunne instrumentlijnen en amber waarschuwing bij maximaal 25% gezondheid komen uit `EchoMenuTheme.asset`. De meter volgt de speler en neemt geen muis-, toetsenbord- of controllerfocus over. `Echo / Style Player Health Bar` past deze opgeslagen prefabstijl opnieuw toe en vervangt de UI-kindobjecten; handmatige wijzigingen daaraan worden overschreven.

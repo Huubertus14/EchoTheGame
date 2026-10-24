@@ -10,6 +10,8 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 	public bool SkipInit;
 
 	private int _killLimit  =2; 
+	[SerializeField, Min(0), Tooltip("Match duration in seconds. Set to 0 for unlimited testing.")]
+	private float _timeLimitInSeconds = 0;
 	private float _matchTimeToSet;
 
 	[Networked(OnChanged =nameof(GameOverChanged))]
@@ -40,7 +42,7 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 				{
 					MatchManager.Instance.IsGameOver = false;
 					MatchManager.Instance.IsGameStarted = false;
-					_matchTimeToSet = 30;
+					_matchTimeToSet = _timeLimitInSeconds;
 					PlayerScoreboardController.ScoreChanged += OnScoreChanged;
 				}
 
@@ -117,7 +119,10 @@ public class NetworkedPlayerGameModeController : NetworkBehaviour
 	private void StartGame()
 	{
 		_gameStarted = true; 
-		_gameTimer = TickTimer.CreateFromSeconds(Runner, _matchTimeToSet); //TODO change to dynamic gamemode settings
+		_gameTimer = _matchTimeToSet > 0
+			? TickTimer.CreateFromSeconds(Runner, _matchTimeToSet)
+			: TickTimer.None;
+		_networkedTime = _matchTimeToSet > 0 ? _matchTimeToSet : -1;
 		_preGameCountdown = TickTimer.None;
 	}
 

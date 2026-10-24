@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Fusion;
 using System;
+using Project.Echo.Menu;
 
 public class HealthBarPositionBehaviour : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 	private Transform _followTarget;
 	private Slider _healthSlider;
 	[SerializeField] private Vector3 _positionOffset;
+	[SerializeField] private EchoMenuTheme _theme;
+	[SerializeField] private Image _fill;
 
 	public void Init(byte[] connectionToken,Transform target, int maxHealth)
 	{
@@ -19,15 +22,21 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 		_healthSlider = GetComponentInChildren<Slider>();
 		_healthSlider.maxValue = maxHealth;
 		_healthSlider.value = maxHealth;
+		UpdateSlider(maxHealth);
 	}
 
 	public void UpdateSlider(int health)
 	{
-		_healthSlider.value = health;
+		if (!_healthSlider) return;
+		_healthSlider.value = Mathf.Clamp(health, 0, _healthSlider.maxValue);
+		if (_fill && _theme)
+			_fill.color = _healthSlider.normalizedValue <= 0.25f ? _theme.amber : _theme.seafoam;
 	}
 
 	internal void SetPosition()
 	{
-		transform.position = _followTarget.position + _positionOffset;
+		if (_followTarget) transform.position = _followTarget.position + _positionOffset;
 	}
+
+	private void LateUpdate() => SetPosition();
 }

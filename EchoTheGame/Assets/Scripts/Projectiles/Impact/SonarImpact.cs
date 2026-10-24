@@ -1,40 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
-using System;
 using Project.Echo.Player.Visuals;
 
 [RequireComponent(typeof(ParticleSystem))]
 public class SonarImpact : NetworkBehaviour
 {
-	ParticleSystem _sonarParticleSystem;
-	private List<ParticleCollisionEvent> _hitEvents;
+    [SerializeField] private WorldSonarPulse.Settings pulse = new WorldSonarPulse.Settings { range = 9f, duration = 0.6f };
+    private bool emitted;
 
-	private void Awake()
-	{
-		_hitEvents = new List<ParticleCollisionEvent>();
-		_sonarParticleSystem = GetComponent<ParticleSystem>();
-	}
+    private void Awake()
+    {
+        var particles = GetComponent<ParticleSystem>();
+        var main = particles.main;
+        main.playOnAwake = false;
+        particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
 
-	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-	public void RPC_UpdateColor(PlayerRef player)
-	{
-		if(Runner.TryGetPlayerObject(player, out NetworkObject nwObject))
-		{
-			Color? pColor =nwObject.GetComponentInChildren<PlayerVisualController>()?.PlayerColor;
-			ParticleSystem.MainModule main = _sonarParticleSystem.main;
-			if (pColor.HasValue) main.startColor = pColor.Value;
-		}
-	}
-
-	private void OnParticleCollision(GameObject other)
-	{
-		_sonarParticleSystem.GetCollisionEvents(other, _hitEvents);
-
-		if (_hitEvents.Count > 0 && other.TryGetComponent<IHitSonarAble>(out var sonar))
-		{
-			sonar.HitBySonar(_hitEvents[0].intersection, _sonarParticleSystem.main.startColor.color);
-		}
-	}
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_UpdateColor(PlayerRef player, Vector3 surfaceNormal)
+    {
+        if (emitted) return;
+        emitted = true;
+        Color color = new Color(0.6078f, 0.9137f, 0.8863f);
+        if (Runner.TryGetPlayerObject(player, out NetworkObject networkObject))
+        {
+            var visual = networkObject.GetComponentInChildren<PlayerVisualController>();
+            if (visual != null) color = visual.PlayerColor;
+        }
+        WorldSonarPulse.Emit(transform.position + surfaceNormal.normalized * 0.08f, color, pulse);
+    }
 }

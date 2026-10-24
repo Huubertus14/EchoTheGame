@@ -1,85 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
+/// <summary>Marks reusable sonar geometry. Surface reveal follows the original emitted world-space pulse.</summary>
 [RequireComponent(typeof(MeshRenderer))]
 public class SonarObject : MonoBehaviour, IHitSonarAble
 {
-	private const string _visibleKeyword = "VISIBLE";
-
-	private MeshRenderer _meshRenderer;
-	private Material _material;
-	private IEnumerator _fadeEffect;
-
-	private bool _ishit;
-	private int _sonarStepId;
-	private int _sonarWaveVectorId;
-	private int _sonarWaveColorId;
-
-	private float _durationToInSeconds = 4f;
-	private float _durationFromInSeconds = 1.5f;
-
-	private void Awake()
-	{
-		_sonarStepId = Shader.PropertyToID("_SonarStep");
-		_sonarWaveVectorId = Shader.PropertyToID("_SonarWaveVector");
-		_sonarWaveColorId = Shader.PropertyToID("_SonarWaveColor");
-
-		_meshRenderer = GetComponent<MeshRenderer>();
-		_material = _meshRenderer.material;
-		_material.SetColor("_BaseColor", Color.black);
-		_material.SetFloat(_sonarStepId, 1);
-	}
-
-	public void HitBySonar(Vector3 firstHitPosition, Color hitColor)
-	{
-		if (!_ishit)
-		{
-			//Do fancy transition thing
-			ObjectHitEffect(hitColor, firstHitPosition);
-			_fadeEffect ??= FadeOut();
-			StartCoroutine(_fadeEffect);
-		}
-	}
-
-	private void ObjectHitEffect(Color playerColor, Vector3 firstParticlePosition)
-	{
-		_material.SetVector(_sonarWaveVectorId, firstParticlePosition);
-		_material.SetColor(_sonarWaveColorId, playerColor);
-	}
-
-	private IEnumerator FadeOut() //TODO change this to use normal logic
-	{
-		_ishit = true;
-		_material.EnableKeyword(_visibleKeyword);
-
-		float indexer = 0;
-
-		while (indexer < 1)
-		{
-			indexer += Time.deltaTime / _durationToInSeconds; 
-			_material.SetFloat(_sonarStepId, indexer);
-			yield return null;
-		}
-
-		_material.DisableKeyword(_visibleKeyword);
-
-		indexer = 0;
-		while (indexer < 1)
-		{
-			indexer += Time.deltaTime / _durationFromInSeconds;
-			_material.SetFloat(_sonarStepId, indexer);
-			yield return null;
-		}
-
-		_material.SetFloat(_sonarStepId, 1);
-		_ishit = false;
-		_fadeEffect = null;
-	}
-
-	private void OnDestroy()
-	{
-		if (_material != null) Destroy(_material);
-	}
+    // Compatibility for callers outside the normal ping/impact path. No per-object animation.
+    public void HitBySonar(Vector3 firstHitPosition, Color hitColor)
+    {
+        WorldSonarPulse.Emit(firstHitPosition, hitColor,
+            new WorldSonarPulse.Settings { range = 9f, duration = 0.6f });
+    }
 }

@@ -1,67 +1,64 @@
-using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Project.Echo.Player.Controls.Data;
+using Project.Echo.Player;
+using Project.Echo.Player.Visuals;
 
 public class PlayerSonarBehaviour : NetworkBehaviour
 {
-    private ParticleSystem _sonarParticleSystem;
+    [SerializeField] private WorldSonarPulse.Settings pulse = new WorldSonarPulse.Settings();
+    [SerializeField, Min(0.1f)] private float cooldown = 0.4f;
+    private TickTimer nextPing;
+    private bool pingHeld;
+    [SerializeField] private WorldSonarPulse.Settings collisionPulse = new WorldSonarPulse.Settings { range = 9f, duration = 0.6f };
+    [SerializeField, Min(0.1f)] private float collisionCooldown = 0.65f;
+    private TickTimer nextCollisionPing;
 
-	private TickTimer _localTickTimer;
+    public override void Spawned()
+    {
+        // The old sparse, colliding particles no longer control visibility or draw another wave.
+        var particles = GetComponent<ParticleSystem>();
+        var main = particles.main;
+        main.playOnAwake = false;
+        particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        nextPing = TickTimer.None;
+        nextCollisionPing = TickTimer.None;
+    }
 
-	private List<ParticleCollisionEvent> _hitEvents;	
+    public void EmitCollision(Vector3 contactPoint, Vector3 normal)
+    {
+        if (!HasStateAuthority || !Runner.IsForward || !nextCollisionPing.ExpiredOrNotRunning(Runner)) return;
+        nextCollisionPing = TickTimer.CreateFromSeconds(Runner, collisionCooldown);
+        RPC_PlayCollisionPulse(contactPoint + normal.normalized * 0.08f);
+    }
 
-	public override void Spawned()
-	{
-		_sonarParticleSystem = GetComponent<ParticleSystem>();
-		_hitEvents = new List<ParticleCollisionEvent>();
-		_localTickTimer = TickTimer.None;
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayCollisionPulse(Vector3 origin)
+    {
+        var player = GetComponentInParent<PlayerNetworkedController>();
+        var visual = player ? player.GetComponentInChildren<PlayerVisualController>() : null;
+        WorldSonarPulse.Emit(origin, visual ? visual.PlayerColor : Color.blue, collisionPulse);
+    }
 
-		ParticleSystem.MainModule particleSettings = _sonarParticleSystem.main;
-		if(HasInputAuthority)
-		{
-			particleSettings.startColor = Color.blue;
-		}
-		else
-		{
-			particleSettings.startColor = Color.red;
-		}
-	}
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasInputAuthority || !Runner.IsForward) return;
+        if (!GetInput(out NetworkPlayerMovementData data)) return;
+        bool pressed = data.IsPing && !pingHeld;
+        pingHeld = data.IsPing;
+        if (pressed && nextPing.ExpiredOrNotRunning(Runner))
+        {
+            nextPing = TickTimer.CreateFromSeconds(Runner, cooldown);
+            RPC_PlayParticleEffect(transform.position);
+        }
+    }
 
-	public override void FixedUpdateNetwork()
-	{
-		if(GetInput(out NetworkPlayerMovementData data) && _localTickTimer.ExpiredOrNotRunning(Runner))
-		{
-			if(data.IsPing)
-			{
-				RPC_PlayParticleEffect();
-			}
-		}
-	}
-
-	private void OnParticleCollision(GameObject other)
-	{
-		_sonarParticleSystem.GetCollisionEvents(other, _hitEvents);
-
-		if (_hitEvents.Count > 0 && other.TryGetComponent<IHitSonarAble>(out var sonar))
-		{
-			sonar.HitBySonar(_hitEvents[0].intersection, _sonarParticleSystem.main.startColor.color);
-		}
-	}
-
-	private void OnDrawGizmos()
-	{
-		//foreach (var item in _hitEvents)
-		//{
-		//	Gizmos.DrawSphere(item.intersection,0.1f);
-		//}	
-	}
-
-	[Rpc(sources:RpcSources.InputAuthority, RpcTargets.All)]
-	private void RPC_PlayParticleEffect()
-	{
-		_localTickTimer = TickTimer.CreateFromSeconds(Runner,0.4f);
-		_sonarParticleSystem.Play();
-	}
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_PlayParticleEffect(Vector3 origin)
+    {
+        var player = GetComponentInParent<PlayerNetworkedController>();
+        var visual = player ? player.GetComponentInChildren<PlayerVisualController>() : null;
+        Color color = visual ? visual.PlayerColor : (HasInputAuthority ? Color.blue : Color.red);
+        WorldSonarPulse.Emit(origin, color, pulse);
+    }
 }

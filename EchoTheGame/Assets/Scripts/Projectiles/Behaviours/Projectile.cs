@@ -101,7 +101,7 @@ namespace Project.Echo.Projectiles.Behaviours
 
 				if (_spawnedObject.TryGetBehaviour(out SonarImpact impact))
 				{
-					impact.RPC_UpdateColor(context.InputAuthority);
+					impact.RPC_UpdateColor(context.InputAuthority, normal);
 				}
 			}
 		}

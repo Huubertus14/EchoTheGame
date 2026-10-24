@@ -31,6 +31,11 @@ public class GameModeTimerUI : MonoBehaviour
 
 	private void SetText(float secondsLeft)
 	{
+		if (secondsLeft < 0)
+		{
+			_timerText.text = "--:--";
+			return;
+		}
 		int minutes = Mathf.FloorToInt(secondsLeft / 60);
 		int seconds =Mathf.RoundToInt(secondsLeft % 60);
 
