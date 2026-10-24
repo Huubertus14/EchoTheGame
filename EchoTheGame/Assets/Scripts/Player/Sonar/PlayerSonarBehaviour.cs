@@ -37,7 +37,7 @@ public class PlayerSonarBehaviour : NetworkBehaviour
     {
         var player = GetComponentInParent<PlayerNetworkedController>();
         var visual = player ? player.GetComponentInChildren<PlayerVisualController>() : null;
-        WorldSonarPulse.Emit(origin, visual ? visual.PlayerColor : Color.blue, collisionPulse);
+        WorldSonarPulse.Emit(origin, visual ? visual.PlayerColor : PlayerVisualController.DefaultPlayerColor, collisionPulse);
     }
 
     public override void FixedUpdateNetwork()
@@ -58,7 +58,7 @@ public class PlayerSonarBehaviour : NetworkBehaviour
     {
         var player = GetComponentInParent<PlayerNetworkedController>();
         var visual = player ? player.GetComponentInChildren<PlayerVisualController>() : null;
-        Color color = visual ? visual.PlayerColor : (HasInputAuthority ? Color.blue : Color.red);
+        Color color = visual ? visual.PlayerColor : (HasInputAuthority ? PlayerVisualController.DefaultPlayerColor : Color.red);
         WorldSonarPulse.Emit(origin, color, pulse);
     }
 }

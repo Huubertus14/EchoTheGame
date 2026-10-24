@@ -39,3 +39,13 @@ Spelen opent de bestaande Host/Join-routes. Onderzeeër en Logboek openen inform
 ## Healthbar tijdens het spelen
 
 `Assets/Prefabs/Players/PlayerHealthbar.prefab` is een bewerkbare world-space Canvas met een smalle, gesegmenteerde hull-meter. De navy ondergrond, seafoam vulling, dunne instrumentlijnen en amber waarschuwing bij maximaal 25% gezondheid komen uit `EchoMenuTheme.asset`. De meter volgt de speler en neemt geen muis-, toetsenbord- of controllerfocus over. `Echo / Style Player Health Bar` past deze opgeslagen prefabstijl opnieuw toe en vervangt de UI-kindobjecten; handmatige wijzigingen daaraan worden overschreven.
+
+## Scorebord in Game
+
+`Game.unity` bevat een bewerkbaar `Scoreboard`-Canvas met het gedeelde theme en echte TMP-velden. Het minimale paneel toont alleen de titel `Score`, gamemode/tijd en de tabel; geen gamenaam, icoon, telemetrielabels of instructieregels. Houd Tab of de View/Select-knop op de controller ingedrukt om het paneel te tonen; loslaten of focusverlies verbergt het direct. Het paneel neemt geen cursor-, gameplay- of navigatiefocus over. Bij veel spelers scroll je met muiswiel/pijltjes of de rechterstick.
+
+De kolommen zijn rang, naam, score, kills, deaths, K/D en ping. Sortering: score aflopend, kills aflopend, deaths oplopend en vervolgens speler-ID. Je eigen rij heeft een cyaan markering; de eerste rang en ping vanaf 150 ms zijn amber. K/D gebruikt minimaal één death als deler. Ping komt van de host, wordt ongeveer elke seconde gesynchroniseerd en toont `--` zolang er geen meting is. De host zelf heeft 0 ms. De naamkolom heet `Naam`. De gamemode, matchstatus en resterende tijd blijven boven de tabel staan.
+
+De lijst leest gerepliceerde spelerdata op objectidentiteit, zodat gelijke namen aparte rijen houden en laat aangesloten spelers bestaande scores ontvangen. De oude GameInfo-Canvas en automatische eindpopup zijn uit de game scene verwijderd; resultaten blijven na afloop via Tab beschikbaar. Escape behoudt de bestaande terugkeer naar het hoofdmenu. De aparte MainMenu-scene blijft de start- en verbindingsroute.
+
+`Echo / Build Game Scoreboard` bouwt de opgeslagen game-UI opnieuw en maakt voorbeeldrenders op 16:9 en 5:4 in `docs/`. Dit vervangt de bestaande screen-space Canvas-objecten in Game; handmatige aanpassingen daaraan worden overschreven. De huidige scene is direct bruikbaar en hoeft niet opnieuw opgebouwd te worden.

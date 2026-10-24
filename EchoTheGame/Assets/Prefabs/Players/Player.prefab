@@ -832,6 +832,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  _theme: {fileID: 11400000, guid: aed109a2e4a678049bd73e6fc5546da9, type: 2}
+  _ownPlayerColor: {r: 0.60784316, g: 0.9137255, b: 0.8862745, a: 1}
 --- !u!1 &1739349024025774583
 GameObject:
   m_ObjectHideFlags: 0

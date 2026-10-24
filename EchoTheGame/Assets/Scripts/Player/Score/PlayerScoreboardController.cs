@@ -1,138 +1,90 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Fusion;
 using Project.Echo.Setting;
-using System;
+using UnityEngine;
 
 public class PlayerScoreboardController : NetworkBehaviour
 {
-	private NetworkedKillFeedController _killFeedController;
-	public static Action<int,int> ScoreChanged;
+    private static readonly HashSet<PlayerScoreboardController> Players = new();
+    public static Action<int, int> ScoreChanged;
+    [Networked] private int _matchKils { get; set; }
+    [Networked] private int _matchDeaths { get; set; }
+    [Networked] private int _matchScore { get; set; }
+    [Networked] private NetworkString<_32> _playerName { get; set; }
+    [Networked] public int PingMilliseconds { get; private set; } = -1;
+    private TickTimer _pingTimer;
+    private bool _isNameMessageSend;
+    public bool SkipInitialization;
+    public string GetPlayerName => _playerName.ToString();
+    public int Score => _matchScore;
+    public int Kills => _matchKils;
+    public int Deaths => _matchDeaths;
 
-	[Networked(OnChanged = nameof(OnKillsChanged))]
-	private int _matchKils { get; set; } = 0;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetPlayers() => Players.Clear();
 
-	[Networked(OnChanged = nameof(OnDeathsChanged))]
-	private int _matchDeaths { get; set; } = 0;
+    // Read replicated snapshots so late joiners get existing scores. Object identity
+    // keeps two players with the same display name in separate rows.
+    public static void GetSortedPlayers(List<PlayerScoreboardController> result)
+    {
+        result.Clear();
+        foreach (var player in Players)
+            if (player && player.Object && player.Object.IsValid) result.Add(player);
+        result.Sort((a, b) =>
+        {
+            int order = b.Score.CompareTo(a.Score);
+            if (order == 0) order = b.Kills.CompareTo(a.Kills);
+            if (order == 0) order = a.Deaths.CompareTo(b.Deaths);
+            return order != 0 ? order : a.Object.InputAuthority.RawEncoded.CompareTo(b.Object.InputAuthority.RawEncoded);
+        });
+    }
 
-	[Networked(OnChanged = nameof(OnScoreChanged))]
-	private int _matchScore { get; set; } = 0;
+    public override void Spawned()
+    {
+        Players.Add(this);
+        if (HasInputAuthority && !SkipInitialization) RPC_SendNameToHost(Settings.Player.PlayerName);
+    }
 
-	[Networked(OnChanged = nameof(OnNameChanged))]
-	private NetworkString<_32> _playerName { get; set; }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_SendNameToHost(string name)
+    {
+        _playerName = string.IsNullOrWhiteSpace(name) ? "Unknown" : name;
+        if (_isNameMessageSend) return;
+        GetComponent<NetworkedKillFeedController>()?.SetKillFeed(GetPlayerName, "Joined the game");
+        _isNameMessageSend = true;
+    }
 
-	private bool _isNameMessageSend;
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasStateAuthority || !_pingTimer.ExpiredOrNotRunning(Runner)) return;
+        _pingTimer = TickTimer.CreateFromSeconds(Runner, 1);
+        var player = Object.InputAuthority;
+        if (player.IsNone) { PingMilliseconds = -1; return; }
+        double rtt = Runner.GetPlayerRtt(player);
+        PingMilliseconds = rtt > 0 ? Mathf.RoundToInt((float)rtt * 1000) :
+            player == Runner.LocalPlayer ? 0 : -1;
+    }
 
-	public string GetPlayerName => _playerName.ToString();
+    public void AddScore(int score)
+    {
+        if (!HasStateAuthority) return;
+        _matchScore += score;
+        ScoreChanged?.Invoke(_matchScore, _matchKils);
+    }
+    public void AddKills(int kills = 1)
+    {
+        if (!HasStateAuthority) return;
+        _matchKils += kills;
+        ScoreChanged?.Invoke(_matchScore, _matchKils);
+    }
+    public void AddDeath() { if (HasStateAuthority) _matchDeaths++; }
 
-	public bool SkipInitialization;
-
-	private void Awake()
-	{
-		_killFeedController = GetComponent<NetworkedKillFeedController>();
-	}
-
-	public override void Spawned()
-	{
-		if (!SkipInitialization)
-		{
-			if (HasInputAuthority)
-			{
-				Debug.Log("Local player spawned");
-				RPC_SendNameToHost(Settings.Player.PlayerName);
-			}
-			else
-			{
-				Debug.Log("Not local player spawned");
-			}
-		}
-	}
-
-	[Rpc(sources: RpcSources.InputAuthority, targets: RpcTargets.StateAuthority)]
-	private void RPC_SendNameToHost(string name)
-	{
-		_playerName = name;
-		var stringName = _playerName.ToString();
-		PlayerList.Instance.AddName(stringName);
-		RPC_UpdatePlayerList(PlayerList.Instance.GetCurrentPlayers);
-
-		if (!_isNameMessageSend)
-		{
-			_killFeedController.SetKillFeed(stringName, "Joined the game");
-			_isNameMessageSend = true;
-		}
-	}
-
-	[Rpc(sources: RpcSources.StateAuthority, targets: RpcTargets.All)]
-	private void RPC_UpdatePlayerList(string[] newNames) 
-	{
-		PlayerList.Instance.UpdateList(newNames);
-	}
-
-	public void AddScore(int score)
-	{
-		_matchScore += score;
-		ScoreChanged?.Invoke(_matchScore, _matchKils);
-	}
-
-	public void AddKills(int kills = 1)
-	{
-		_matchKils += kills;
-
-		if (HasStateAuthority)
-		{
-			ScoreChanged?.Invoke(_matchScore, _matchKils);
-		}
-	}
-
-	public void AddDeath()
-	{
-		_matchDeaths++;	
-	}
-
-	private static void OnKillsChanged(Changed<PlayerScoreboardController> changed)
-	{
-		if (changed.Behaviour.HasStateAuthority)
-		{
-			changed.Behaviour.RPC_UpdateStatsUI();
-		}
-	}
-
-	private static void OnDeathsChanged(Changed<PlayerScoreboardController> changed)
-	{
-		if (changed.Behaviour.HasStateAuthority)
-		{
-			changed.Behaviour.RPC_UpdateStatsUI();
-		}
-	}
-
-
-	private static void OnScoreChanged(Changed<PlayerScoreboardController> changed)
-	{
-		if (changed.Behaviour.HasStateAuthority)
-		{
-			changed.Behaviour.RPC_UpdateStatsUI();
-		}
-	}
-
-	private static void OnNameChanged(Changed<PlayerScoreboardController> changed)
-	{
-		//TODO can this be a thing
-	}
-
-	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-	private void RPC_UpdateStatsUI()
-	{
-		PlayerList.Instance.UpdatePlayerStats(GetPlayerName, _matchScore, _matchKils, _matchDeaths);
-	}
-
-	public override void Despawned(NetworkRunner runner, bool hasState)
-	{
-		if (hasState && !MatchManager.Instance.IsGameOver)
-		{
-			_killFeedController?.SetKillFeed(GetPlayerName, "left the game"); //TODO change this code to something has left?
-			PlayerList.Instance.RemoveName(GetPlayerName);
-		} 
-	}
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        Players.Remove(this);
+        if (hasState && MatchManager.Instance && !MatchManager.Instance.IsGameOver)
+            GetComponent<NetworkedKillFeedController>()?.SetKillFeed(GetPlayerName, "left the game");
+    }
+    private void OnDestroy() => Players.Remove(this);
 }

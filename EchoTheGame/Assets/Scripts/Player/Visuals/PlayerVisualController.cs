@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using System;
+using Project.Echo.Menu;
 
 namespace Project.Echo.Player.Visuals
 {
@@ -15,11 +16,14 @@ namespace Project.Echo.Player.Visuals
 
 		private Renderer[] _renderers;
 		[Header("Player colors")]
-		[SerializeField, ColorUsage(false)] private Color _ownPlayerColor = Color.blue;
+		[SerializeField] private EchoMenuTheme _theme;
+		[SerializeField, ColorUsage(false)] private Color _ownPlayerColor = new Color32(155, 233, 226, 255);
 		[SerializeField, ColorUsage(false)] private Color _otherPlayerColor = Color.red;
 		[Tooltip("Optional colors by Fusion player ID, shared by submarine, projectiles and sonar. Set on the player prefab before starting a match.")]
 		[SerializeField] private PlayerColorOverride[] _playerColorOverrides = Array.Empty<PlayerColorOverride>();
 		private Color _playerColor;
+
+		public static Color DefaultPlayerColor => new Color32(155, 233, 226, 255);
 
 		public Color PlayerColor
 		{
@@ -39,7 +43,7 @@ namespace Project.Echo.Player.Visuals
 		{
 			_renderers = GetComponentsInChildren<Renderer>();
 
-			Color color = Object.HasInputAuthority ? _ownPlayerColor : _otherPlayerColor;
+			Color color = Object.HasInputAuthority ? (_theme ? _theme.seafoam : _ownPlayerColor) : _otherPlayerColor;
 			foreach (var entry in _playerColorOverrides)
 				if (entry.playerId == Object.InputAuthority.PlayerId)
 				{
