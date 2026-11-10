@@ -12,13 +12,6 @@ namespace Project.Echo.Projectiles.Behaviours
 {
     public class SimpleKinematicProjectile : KinematicProjectile
 {
-		[SerializeField]
-		private int _damage = 10;
-		[SerializeField]
-		private ProjectileHitType _hitType = ProjectileHitType.Projectile;
-		[SerializeField]
-		private LayerMask _hitMask;
-
 		public override void OnFixedUpdate(ProjectileContext context, ref ProjectileData data)
 		{
 			Vector3 previousPosition = GetMovePosition(context.Runner, ref data, context.Runner.Tick - 1);
@@ -35,17 +28,23 @@ namespace Project.Echo.Projectiles.Behaviours
 			}
 			direction /= distance;
 
-			if (_length > 0f)
+			float length = Tuning.length;
+			if (length > 0f)
 			{
 				float elapsedDistanceSqr = (previousPosition - data.FirePosition).sqrMagnitude;
-				float projectileLength = elapsedDistanceSqr > _length * _length ? _length : Mathf.Sqrt(elapsedDistanceSqr);
+				float projectileLength = Mathf.Min(length, Mathf.Sqrt(elapsedDistanceSqr));
 
 				previousPosition -= direction * projectileLength;
 				distance += projectileLength;
 			}
-			
 
-			if (ProjectileUtility.ProjectileCast(context.Runner, context.InputAuthority, previousPosition, direction, distance, _hitMask, out LagCompensatedHit hit) == true)
+			Sweep(context, ref data, previousPosition, direction, distance);
+			base.OnFixedUpdate(context, ref data);
+		}
+
+		protected void Sweep(ProjectileContext context, ref ProjectileData data, Vector3 origin, Vector3 direction, float distance)
+		{
+			if (ProjectileUtility.ProjectileCast(context.Runner, context.InputAuthority, origin, direction, distance, Tuning.hitMask, out LagCompensatedHit hit))
 			{
 				SpawnImpact(context, ref data, hit.Point, (hit.Normal + -direction) * 0.5f);
 
@@ -53,13 +52,12 @@ namespace Project.Echo.Projectiles.Behaviours
 
 				if (healthController != null)
 				{
-					healthController.HitPlayer(_damage, context.InputAuthority);
+					healthController.HitPlayer(Tuning.damage, context.InputAuthority);
 				}
 
 				data.IsFinished = true;
 			}
 
-			base.OnFixedUpdate(context, ref data);
 		}
 
 		protected override Vector3 GetRenderPosition(ProjectileContext context, ref ProjectileData data)

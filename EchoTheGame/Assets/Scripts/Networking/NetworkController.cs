@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Project.Echo.Player.Controls;
 using Project.Echo.Loading;
 using Project.Echo.Player;
+using Project.Echo.Tuning;
 
 namespace Project.Echo.Networking
 {
@@ -17,6 +18,9 @@ namespace Project.Echo.Networking
     {
         [SerializeField] private NetworkRunner _networkRunnerPrefab;
         private NetworkRunner _runner;
+        private bool _leaving;
+        private bool _starting = true;
+        private bool _handlingDisconnect;
 
         public static NetworkController Instance { get; private set; }
 
@@ -56,25 +60,45 @@ namespace Project.Echo.Networking
                 _eventHandler = _runner.GetComponent<NetworkEventHandler>();
                 LoadScreenController.SetLoadingText("Runner created and starting a game");
 
-                var result = await _runner.StartGame(new StartGameArgs()
+                bool joinRandom = sessionSettings.Mode == GameMode.Client && string.IsNullOrEmpty(sessionSettings.LobbyName);
+                var connection = SessionConnectionSettings.Default;
+                var start = _runner.StartGame(new StartGameArgs()
                 {
                     GameMode = sessionSettings.Mode,
-                    SessionName = sessionSettings.LobbyName,
+                    SessionName = joinRandom ? null : sessionSettings.LobbyName,
                     Scene = SceneManager.GetActiveScene().buildIndex,
                     SceneManager = _networkSceneManager,
                     Initialized = OnRunnerInitialized,
-                    ConnectionToken = GameManager.GetConnectionToken()
+                    ConnectionToken = GameManager.GetConnectionToken(),
+                    PlayerCount = sessionSettings.Mode == GameMode.Client ? (int?)null : MatchRules.FreeForAll.MaxPlayers,
+                    IsVisible = connection.showInPublicLobby,
+                    DisableClientSessionCreation = true
                 });
+                if (await Task.WhenAny(start, Task.Delay(TimeSpan.FromSeconds(connection.connectTimeoutSeconds))) != start)
+                {
+                    _starting = false;
+                    ReportDisconnect("Timeout");
+                    return;
+                }
+                var result = await start;
+                if (this == null || _leaving) return;
+                _starting = false;
                 if (!result.Ok)
                 {
-                    LoadScreenController.SetLoadingText($"Could not start session: {result.ShutdownReason}");
-                    Debug.LogError($"Could not start session: {result.ShutdownReason}");
+                    ReportDisconnect(joinRandom && result.ShutdownReason == ShutdownReason.GameNotFound
+                        ? "NO_OPEN_LOBBY" : result.ShutdownReason.ToString());
+                }
+                else if (joinRandom)
+                {
+                    Settings.Session = new SessionSettings(_runner.SessionInfo.Name, sessionSettings.Mode);
                 }
             }
 			catch (Exception e)
 			{
                 LoadScreenController.SetLoadingText($"Something went wrong starting the network {e}");
                 Debug.LogException(e);
+                _starting = false;
+                ReportDisconnect("ConnectionFailed");
 			}
 		}
 
@@ -179,13 +203,24 @@ namespace Project.Echo.Networking
 
         public async Task LeaveGame()
 		{
-            if (_runner == null || !_runner.IsRunning) return;
-            if (_runner.IsServer)
+            _leaving = true;
+            if (_runner == null) return;
+            if (_runner.IsRunning && _runner.IsServer)
             {
                 await _runner.PushHostMigrationSnapshot();
             }
            await _runner.Shutdown();
 		}
+
+        public async void ReportDisconnect(string reason)
+        {
+            if (_starting || _leaving || _handlingDisconnect) return;
+            _handlingDisconnect = true;
+            EchoFoundation.IsConnecting = false;
+            EchoFoundation.ConnectionMessage = reason;
+            try { await SessionNavigation.ReturnToMenuAsync(); }
+            catch (Exception exception) { Debug.LogException(exception); LoadScreenController.Hide(); }
+        }
 
         private void OnDestroy()
         {

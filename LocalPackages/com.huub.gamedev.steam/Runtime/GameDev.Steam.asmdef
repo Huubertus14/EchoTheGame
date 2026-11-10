@@ -1,0 +1,5 @@
+{
+  "name": "GameDev.Steam",
+  "references": ["GameDev.Foundation", "com.rlabrecque.steamworks.net"],
+  "includePlatforms": ["Editor", "WindowsStandalone64", "LinuxStandalone64", "macOSStandalone"]
+}

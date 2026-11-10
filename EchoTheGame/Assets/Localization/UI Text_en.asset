@@ -130,6 +130,268 @@ MonoBehaviour:
     m_Localized: Would you like to quit Echo?
     m_Metadata:
       m_Items: []
+  - m_Id: 713475856175104
+    m_Localized: CREW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729536
+    m_Localized: PAUSE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729537
+    m_Localized: SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729538
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729539
+    m_Localized: RESULTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729540
+    m_Localized: CAPTAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729541
+    m_Localized: LEAVE DIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729542
+    m_Localized: "ROOM CODE  ABC123     2/8\n\n\u203A Captain  [HOST]   READY\n   Explorer   WAITING"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729543
+    m_Localized: Ready up. The host starts the match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729544
+    m_Localized: READY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729545
+    m_Localized: START MATCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729546
+    m_Localized: COPY CODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729547
+    m_Localized: LEAVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729548
+    m_Localized: SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729549
+    m_Localized: The online match continues while this menu is open.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729550
+    m_Localized: RESUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729551
+    m_Localized: SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729552
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729553
+    m_Localized: PROFILE AND PROGRESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729554
+    m_Localized: LEAVE MATCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729555
+    m_Localized: DISPLAY MODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729556
+    m_Localized: RESOLUTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729557
+    m_Localized: QUALITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729558
+    m_Localized: FRAME LIMIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729559
+    m_Localized: V-SYNC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729560
+    m_Localized: LANGUAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729561
+    m_Localized: MASTER VOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729562
+    m_Localized: MUSIC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729563
+    m_Localized: EFFECTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729564
+    m_Localized: TOGGLE SOUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729565
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729566
+    m_Localized: APPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729567
+    m_Localized: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729568
+    m_Localized: "Controller: left stick move/turn \xB7 A fire \xB7 X sonar\nLB boost \xB7 Start pause \xB7 B back \xB7 View scoreboard"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729569
+    m_Localized: Vooruit    W
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729570
+    m_Localized: Achteruit    S
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729571
+    m_Localized: Links    A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729572
+    m_Localized: Rechts    D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729573
+    m_Localized: Boost    Left Shift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729574
+    m_Localized: Schieten    Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729575
+    m_Localized: Sonar    Left Control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729576
+    m_Localized: RESET KEYS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729577
+    m_Localized: FINAL STANDINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729578
+    m_Localized: NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729579
+    m_Localized: SCORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729580
+    m_Localized: K / D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729581
+    m_Localized: "+170 XP   \xB7   LEVEL 1   \xB7   170 XP total"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729582
+    m_Localized: PLAY AGAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729583
+    m_Localized: MAIN MENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729584
+    m_Localized: SAVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729585
+    m_Localized: "LEVEL 1   \xB7   170 XP\n\nPlayed  1    \xB7    Won  1\nKills  2    \xB7    Deaths  0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729586
+    m_Localized: Progress is saved locally.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729587
+    m_Localized: SYNC CLOUD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729588
+    m_Localized: KEEP LOCAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729589
+    m_Localized: USE CLOUD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729590
+    m_Localized: 'Leave this dive?
+
+      An unfinished match does not award XP.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729591
+    m_Localized: STAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729592
+    m_Localized: LEAVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729593
+    m_Localized: DIVE TOGETHER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729594
+    m_Localized: PLAYER NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729595
+    m_Localized: ROOM CODE (OPTIONAL)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729596
+    m_Localized: CREATE ROOM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729597
+    m_Localized: JOIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729598
+    m_Localized: MORE SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729599
+    m_Localized: PROFILE
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

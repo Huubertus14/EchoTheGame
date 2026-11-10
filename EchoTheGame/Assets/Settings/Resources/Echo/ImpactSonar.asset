@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dcff3881ff05c7da38df1c86b7a1823, type: 3}
+  m_Name: ImpactSonar
+  m_EditorClassIdentifier:
+  pulse:
+    range: 9
+    duration: 0.6
+    fadeDuration: 1.5
+    holdDuration: 2.5
+    frontWidth: 0.35
+    ringWidth: 0.12
+    ringFadeDuration: 0.15
+    ringHeight: 0.08
+    maxReflections: 8
+    maxBounces: 3
+    reflectionStrength: 0.55
+    reflectionHalfAngle: 12
+    radiusCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  emitterLifetime: 0.6
+  surfaceOffset: 0.08

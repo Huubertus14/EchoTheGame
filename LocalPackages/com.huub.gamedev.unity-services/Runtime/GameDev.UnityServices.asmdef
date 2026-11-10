@@ -1,0 +1,4 @@
+{
+  "name": "GameDev.UnityServices",
+  "references": ["GameDev.Foundation", "Unity.Services.Core", "Unity.Services.Authentication", "Unity.Services.CloudSave"]
+}

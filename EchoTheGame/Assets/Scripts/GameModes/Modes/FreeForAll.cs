@@ -5,15 +5,11 @@ using Fusion;
 using Project.Echo.Networking;
 using Project.Echo.Player;
 using Project.Echo.Loading;
+using Project.Echo.Tuning;
 using System;
 
 public class FreeForAll : MonoBehaviour, IGameMode
 {
-	private const float _timeLimitInSeconds = 120;
-
-	private int _killLimit = 3;
-	private float _matchStartTimer = 2;
-
 	private TickTimer _gameTimer { get; set; }
 
 	private TickTimer _pregameTimer { get; set; }
@@ -37,7 +33,6 @@ public class FreeForAll : MonoBehaviour, IGameMode
 		{
 			if (!SkipInit)
 			{
-			//	_pregameTimer = TickTimer.CreateFromSeconds(Runner, _matchStartTimer);
 				_gameTimer = TickTimer.None;
 			}
 			PlayerScoreboardController.ScoreChanged += OnScoreChanged;
@@ -63,7 +58,7 @@ public class FreeForAll : MonoBehaviour, IGameMode
 	/*	if (changed.Behaviour.IsGameStarted) //Game starts
 		{
 			Debug.Log("Game started");
-			changed.Behaviour._gameTimer = TickTimer.CreateFromSeconds(changed.Behaviour.Runner, _timeLimitInSeconds);
+			changed.Behaviour._gameTimer = TickTimer.CreateFromSeconds(changed.Behaviour.Runner, MatchRules.FreeForAll.timeLimitSeconds);
 			MatchManager.Instance.IsGameStarted = true;
 		}*/
 	}
@@ -116,7 +111,7 @@ public class FreeForAll : MonoBehaviour, IGameMode
 		{
 		//	return _pregameTimer.RemainingTime(Runner).Value;
 		}
-		return _matchStartTimer;
+		return MatchRules.FreeForAll.countdownSeconds;
 	}
 
 	public float GetGameSecondsLeft()
@@ -125,12 +120,12 @@ public class FreeForAll : MonoBehaviour, IGameMode
 		{
 		//	return _gameTimer.RemainingTime(Runner).Value;
 		}
-		return _timeLimitInSeconds;
+		return MatchRules.FreeForAll.timeLimitSeconds;
 	}
 
 	public void EvaluateGameScore(int score, int kills)
 	{
-		if (kills >= _killLimit)
+		if (MatchRules.FreeForAll.HasReachedLimit(score, kills))
 		{
 			GameOver();
 		}

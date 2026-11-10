@@ -50,6 +50,17 @@ namespace Project.Echo.Projectiles
 			AddProjectile(projectilePrefab, fireData, weaponAction);
 		}
 
+        public void ResetRound()
+        {
+            if (!HasStateAuthority) return;
+            for (int i = 0; i < _projectiles.Length; i++)
+            {
+                var data = _projectiles[i];
+                data.IsFinished = true;
+                _projectiles.Set(i, data);
+            }
+        }
+
 		public void AddProjectile(Projectile projectilePrefab, ProjectileData data, byte weaponAction = 0)
 		{
 			int prefabIndex = _projectilePrefabs.IndexOf(projectilePrefab);
@@ -120,6 +131,7 @@ namespace Project.Echo.Projectiles
 
 
 				var prefab = _projectilePrefabs[projectileData.PrefabId];
+				if (!HasStateAuthority && prefab.NeedsInterpolationData) continue;
 				prefab.OnFixedUpdate(_projectileContext, ref projectileData);
 
 				_projectiles.Set(i, projectileData);
@@ -137,7 +149,7 @@ namespace Project.Echo.Projectiles
 		}
 		private void RenderProjectiles()
 		{
-			_projectilesInterpolator.TryGetArray(_projectiles, out var fromProjectiles, out var toProjectiles, out float interpolationAlpha);
+			bool hasSnapshots = _projectilesInterpolator.TryGetArray(_projectiles, out var fromProjectiles, out var toProjectiles, out float interpolationAlpha);
 
 			var simulation = Runner.Simulation;
 			bool interpolate = IsProxy == true && _fullProxyPrediction == false;
@@ -211,7 +223,7 @@ namespace Project.Echo.Projectiles
 						continue;
 					}
 
-					bool interpolateProjectile = interpolate == true && projectile.NeedsInterpolationData;
+					bool interpolateProjectile = !HasStateAuthority && hasSnapshots && projectile.NeedsInterpolationData;
 
 					// Prepare interpolation data if needed
 					ProjectileInterpolationData interpolationData = default;

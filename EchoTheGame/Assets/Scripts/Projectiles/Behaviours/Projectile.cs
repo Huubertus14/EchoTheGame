@@ -1,6 +1,7 @@
 using Fusion;
 using Project.Echo.Projectiles.Contexts;
 using Project.Echo.Projectiles.Structs;
+using Project.Echo.Tuning;
 using UnityEngine;
 
 namespace Project.Echo.Projectiles.Behaviours
@@ -15,8 +16,8 @@ namespace Project.Echo.Projectiles.Behaviours
 
 		[SerializeField]
 		private GameObject _impactEffectPrefab;
-		[SerializeField]
-		private float _impactEffectReturnTime = 2f;
+		[SerializeField] private TorpedoSettings _settings;
+		protected TorpedoSettings Tuning => _settings;
 		[SerializeField, Tooltip("Standalone effect that will be spawned through NetworkRunner")]
 		private NetworkObject _impactObjectPrefab;
 		[SerializeField]private NetworkObject _spawnedObject;
@@ -128,7 +129,7 @@ namespace Project.Echo.Projectiles.Behaviours
 				impact.transform.SetPositionAndRotation(data.ImpactPosition, Quaternion.LookRotation(data.ImpactNormal));
 				context.Runner.MoveToRunnerScene(impact);
 
-				context.Cache.ReturnDeferred(impact, _impactEffectReturnTime);
+				context.Cache.ReturnDeferred(impact, Tuning.impactEffectReturnTime);
 			}
 		}
 	}

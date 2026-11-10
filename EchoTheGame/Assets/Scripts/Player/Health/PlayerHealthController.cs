@@ -6,6 +6,7 @@ using Fusion;
 using Project.Echo.Projectiles.Enums;
 using Project.Echo.Player.Visuals;
 using Project.Echo.Player;
+using Project.Echo.Tuning;
 using System;
 
 public class PlayerHealthController : NetworkBehaviour, IRespawnAble
@@ -20,7 +21,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 
 	private PlayerRef _lastHitByPlayer;
 
-	private int _maxHealth = 100;
+	public int MaxHealth => _playerNetworkController.Tuning.maxHealth;
 	private HealthBarPositionBehaviour _healthBarSlider;
 	private PlayerNetworkedController _playerNetworkController;
 	private NetworkedKillFeedController _killFeedController;
@@ -30,31 +31,44 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	public override void Spawned()
 	{
 		base.Spawned();
+		_playerNetworkController = GetComponent<PlayerNetworkedController>();
 
-		if (!SkipInit)
+		if (HasStateAuthority && !SkipInit)
 		{
-			PlayerHealth = _maxHealth;
+			PlayerHealth = MaxHealth;
+			Alive = true;
 		}
 
 		_killFeedController = GetComponent<NetworkedKillFeedController>();
 		_playerScoreBoard = GetComponent<PlayerScoreboardController>();
-		_playerNetworkController = GetComponentInChildren<PlayerNetworkedController>();
 		_healthBarSlider = Instantiate(_healthBarPrefab).GetComponentInChildren<HealthBarPositionBehaviour>();
-		_healthBarSlider.Init(GameManager.GetConnectionToken(),transform, _maxHealth);
-		Alive = true;
+		_healthBarSlider.Init(GameManager.GetConnectionToken(), transform, _playerNetworkController.Tuning);
+		_healthBarSlider.UpdateSlider(PlayerHealth);
+		_healthBarSlider.gameObject.SetActive(Alive);
+	}
+
+	public void SetContactVisible(bool visible)
+	{
+		if (_healthBarSlider) _healthBarSlider.gameObject.SetActive(visible && Alive);
 	}
 
 	public void Respawn()
 	{
-		Alive = true;
+		if (HasStateAuthority) ResetHealth();
 	}
+
+    public void ResetHealth()
+    {
+        if (!HasStateAuthority) return;
+        PlayerHealth = MaxHealth;
+        Alive = true;
+    }
 
 	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
 	private void RPC_OnRespawned()
 	{
-		PlayerHealth = _maxHealth;
 		_healthBarSlider.gameObject.SetActive(true);
-		_healthBarSlider.UpdateSlider(PlayerHealth);
+		_healthBarSlider.UpdateSlider(MaxHealth);
 	}
 
 	public void HitPlayer(int damage, PlayerRef hitByPlayer)
@@ -69,7 +83,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 {
 		_healthBarSlider.UpdateSlider(PlayerHealth);
 
-		if (PlayerHealth < 0)
+		if (PlayerHealth <= 0 && HasStateAuthority && Alive)
 		{
 			Alive = false;
 			if (HasStateAuthority)
@@ -78,7 +92,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 				if (Runner.TryGetPlayerObject(_lastHitByPlayer, out NetworkObject playerNetworkObject))
 				{
 					var playerScoreboard = playerNetworkObject.GetComponent<PlayerScoreboardController>();
-					playerScoreboard.AddScore(50);
+					playerScoreboard.AddScore(MatchRules.FreeForAll.pointsPerKill);
 					playerScoreboard.AddKills(1);
 					_killFeedController.SetKillFeed(playerScoreboard.GetPlayerName, $"Killed {_playerScoreBoard.GetPlayerName}");
 				}
@@ -115,7 +129,7 @@ public class PlayerHealthController : NetworkBehaviour, IRespawnAble
 	{
 		_healthBarSlider.gameObject.SetActive(false);
 		_playerNetworkController.DisablePlayer();
-		_playerNetworkController.RespawnPlayer(2.5f);
+		_playerNetworkController.RespawnPlayer();
 	}
 	
 	public override void FixedUpdateNetwork()

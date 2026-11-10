@@ -123,6 +123,266 @@ MonoBehaviour:
     m_Key: QUIT_DESCRIPTION
     m_Metadata:
       m_Items: []
+  - m_Id: 713475856175104
+    m_Key: SHELL_Heading0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729536
+    m_Key: SHELL_Heading1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729537
+    m_Key: SHELL_Heading2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729538
+    m_Key: SHELL_Heading3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729539
+    m_Key: SHELL_Heading4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729540
+    m_Key: SHELL_Heading5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729541
+    m_Key: SHELL_Heading6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729542
+    m_Key: SHELL_Crew
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729543
+    m_Key: SHELL_ReadyHint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729544
+    m_Key: SHELL_Ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729545
+    m_Key: SHELL_Start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729546
+    m_Key: SHELL_CopyCode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729547
+    m_Key: SHELL_LeaveLobby
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729548
+    m_Key: SHELL_LobbySettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729549
+    m_Key: SHELL_PauseHint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729550
+    m_Key: SHELL_Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729551
+    m_Key: SHELL_PauseSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729552
+    m_Key: SHELL_PauseControls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729553
+    m_Key: SHELL_PauseProfile
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729554
+    m_Key: SHELL_PauseLeave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729555
+    m_Key: SHELL_ScreenModeLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729556
+    m_Key: SHELL_ResolutionLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729557
+    m_Key: SHELL_QualityLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729558
+    m_Key: SHELL_FrameRateLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729559
+    m_Key: SHELL_VSyncLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729560
+    m_Key: SHELL_LanguageLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729561
+    m_Key: SHELL_MasterVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729562
+    m_Key: SHELL_MusicVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729563
+    m_Key: SHELL_EffectsVolume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729564
+    m_Key: SHELL_Mute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729565
+    m_Key: SHELL_OpenControls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729566
+    m_Key: SHELL_Apply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729567
+    m_Key: SHELL_Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729568
+    m_Key: SHELL_ControllerHint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729569
+    m_Key: SHELL_Binding0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729570
+    m_Key: SHELL_Binding1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729571
+    m_Key: SHELL_Binding2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729572
+    m_Key: SHELL_Binding3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729573
+    m_Key: SHELL_Binding4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729574
+    m_Key: SHELL_Binding5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729575
+    m_Key: SHELL_Binding6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729576
+    m_Key: SHELL_ResetKeys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729577
+    m_Key: SHELL_FinalStandings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729578
+    m_Key: SHELL_NameColumn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729579
+    m_Key: SHELL_ScoreColumn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729580
+    m_Key: SHELL_KdColumn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729581
+    m_Key: SHELL_EarnedXp
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729582
+    m_Key: SHELL_Rematch
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729583
+    m_Key: SHELL_ResultLeave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729584
+    m_Key: SHELL_SaveName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729585
+    m_Key: SHELL_ProfileStats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729586
+    m_Key: SHELL_CloudState
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729587
+    m_Key: SHELL_CloudSync
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729588
+    m_Key: SHELL_KeepLocal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729589
+    m_Key: SHELL_UseCloud
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729590
+    m_Key: SHELL_LeaveWarning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729591
+    m_Key: SHELL_Stay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729592
+    m_Key: SHELL_ConfirmLeave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729593
+    m_Key: SHELL_PlayHeading
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729594
+    m_Key: SHELL_PlayerNameLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729595
+    m_Key: SHELL_RoomCodeLabel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729596
+    m_Key: SHELL_Host
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729597
+    m_Key: SHELL_Join
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729598
+    m_Key: SHELL_ExtendedSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729599
+    m_Key: SHELL_OpenProfile
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

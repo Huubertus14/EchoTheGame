@@ -2,6 +2,7 @@
     "name": "Project.Menu",
     "rootNamespace": "",
     "references": [
+        "GameDev.Foundation",
         "Project.Localization",
         "Unity.Localization",
         "GUID:cdafb9568d2801045a46f7ec9fefc2c3",

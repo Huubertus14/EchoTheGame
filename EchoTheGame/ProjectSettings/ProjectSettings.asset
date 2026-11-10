@@ -779,7 +779,7 @@ PlayerSettings:
   webProgressiveAssetLoading: 0
   scriptingDefineSymbols:
     Android: FUSION_WEAVER
-    Standalone: FUSION_WEAVER
+    Standalone: FUSION_WEAVER;STEAMWORKS_NET
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

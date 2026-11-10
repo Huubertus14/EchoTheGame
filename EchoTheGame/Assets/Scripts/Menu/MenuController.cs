@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using GameDev.Foundation;
 
 namespace Project.Echo.Menu
 {
@@ -50,8 +51,10 @@ namespace Project.Echo.Menu
 
         private async void Start()
         {
-            // Local presentation values until a progression system supplies them.
-            SetProgress(1, 0, 0);
+            await EchoFoundation.InitializeAsync();
+            if (this == null) return;
+            EchoFoundation.Services.Store.Changed += RefreshProfile;
+            RefreshProfile();
             RefreshAudio();
             modal.SetActive(false);
             EventSystem.current?.SetSelectedGameObject(playButton.gameObject);
@@ -68,7 +71,8 @@ namespace Project.Echo.Menu
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && modal.activeSelf)
+            if (!GamePreferences.MenuOpen && GamePreferences.MenuInputFrame != Time.frameCount &&
+                (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton1)) && modal.activeSelf)
             {
                 if (languageDropdown != null && languageDropdown.IsExpanded) languageDropdown.Hide();
                 else if (currentPage == 5) ShowSettings();
@@ -82,6 +86,12 @@ namespace Project.Echo.Menu
             currentCurrency = Mathf.Max(0, currency);
             RefreshProgress();
             experienceFill.fillAmount = Mathf.Clamp01(experience);
+        }
+
+        private void RefreshProfile()
+        {
+            int xp = EchoFoundation.Services.Store.Profile.totalExperience;
+            SetProgress(EchoFoundation.Rules.Level(xp), 0, EchoFoundation.Rules.Progress(xp));
         }
 
         public void ShowPlay() => OpenPanel(0);
@@ -172,6 +182,9 @@ namespace Project.Echo.Menu
         {
             bool fullscreen = !Screen.fullScreen;
             Screen.fullScreen = fullscreen;
+            PlayerPrefs.SetInt("GameDev.ScreenMode", fullscreen ? 1 : 0);
+            PlayerPrefs.SetInt("GameDev.Width", Screen.width);
+            PlayerPrefs.SetInt("GameDev.Height", Screen.height);
             // The screen mode is applied at the end of the frame.
             UpdateFullscreenLabel(fullscreen);
         }
@@ -196,6 +209,7 @@ namespace Project.Echo.Menu
         {
             EchoLocalization.Changed -= RefreshLanguage;
             AudioPreferences.Changed -= RefreshAudio;
+            if (EchoFoundation.Services != null) EchoFoundation.Services.Store.Changed -= RefreshProfile;
             PlayerPrefs.Save();
         }
     }

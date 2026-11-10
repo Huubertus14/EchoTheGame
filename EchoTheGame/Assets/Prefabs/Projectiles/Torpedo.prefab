@@ -47,20 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _impactEffectPrefab: {fileID: 4224505710453463651, guid: 3edb31f1beeef094dafa8c49abdf193a, type: 3}
-  _impactEffectReturnTime: 2
+  _settings: {fileID: 11400000, guid: 1c549c1b9920673b659118450d1079dd, type: 2}
   _impactObjectPrefab: {fileID: 4735837525799989418, guid: d70fe81183c141f46a1bdbbc930aaf3f, type: 3}
   _renderers: []
-  _startSpeed: 15
-  _length: 1
-  _maxDistance: 200
-  _maxTime: 15
-  _interpolationDuration: 0.3
-  _interpolationEase: 1
-  _damage: 60
-  _hitType: 1
-  _hitMask:
-    serializedVersion: 2
-    m_Bits: 9
 --- !u!1 &6605877754943492271
 GameObject:
   m_ObjectHideFlags: 0

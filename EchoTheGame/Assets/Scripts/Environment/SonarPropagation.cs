@@ -10,6 +10,7 @@ public static class SonarPropagation
     public const float SurfaceBias = 0.03f;
     private static readonly Dictionary<UnityEngine.Object, int> identities = new();
     private static int nextIdentity = 1;
+    private static readonly RaycastHit[] sightHits = new RaycastHit[32];
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetIdentities() { identities.Clear(); nextIdentity = 1; }
@@ -94,6 +95,19 @@ public static class SonarPropagation
     {
         if (!collider.enabled || collider.isTrigger || collider.attachedRigidbody) return false;
         return collider.GetComponentInParent<UnderwaterArena>() || collider.GetComponentInParent<SonarObject>();
+    }
+
+    public static bool HasClearPath(PhysicsScene scene, Vector3 origin, Vector3 target)
+    {
+        Vector3 delta = target - origin;
+        float distance = delta.magnitude;
+        if (distance <= SurfaceBias) return true;
+        int count = scene.Raycast(origin, delta / distance, sightHits, distance,
+            Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        if (count == sightHits.Length) return false;
+        for (int i = 0; i < count; i++)
+            if (IsObstacle(sightHits[i].collider)) return false;
+        return true;
     }
 
     public static Vector3 Reflect(Vector3 incident, Vector3 normal)

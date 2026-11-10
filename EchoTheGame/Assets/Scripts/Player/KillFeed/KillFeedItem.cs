@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Project.Echo.Tuning;
 
 public class KillFeedItem : MonoBehaviour
 {
-	[SerializeField]private AnimationCurve _fadeInCurve;
-	[SerializeField] private AnimationCurve _fadeOutCurve;
+	[SerializeField] private KillFeedSettings _settings;
 
 	[SerializeField] private TextMeshProUGUI _messageText;
 
@@ -18,7 +18,7 @@ public class KillFeedItem : MonoBehaviour
 		_messageText = GetComponentInChildren<TextMeshProUGUI>();
 	}
 
-	internal void SetText(string v, float visibleTime = 1.5f)
+	internal void SetText(string v)
 	{
 		_messageText.text = v;
 		enabled = true;
@@ -38,13 +38,13 @@ public class KillFeedItem : MonoBehaviour
 
 	private IEnumerator FadeTextIn()
 	{
-		float duration= 0.2f;
+		float duration = _settings.fadeInSeconds;
 
 		float evaluate = 0;
 		while (evaluate <1)
 		{
 			evaluate+= Time.deltaTime / duration;
-			var alpha = _fadeInCurve.Evaluate(evaluate);
+			var alpha = _settings.fadeInCurve.Evaluate(evaluate);
 			_messageText.alpha = alpha;
 			yield return 0;
 		}
@@ -55,13 +55,13 @@ public class KillFeedItem : MonoBehaviour
 
 	private IEnumerator FadeTextOut()
 	{
-		float duration = 3.8f;
+		float duration = _settings.fadeOutSeconds;
 		float evaluate = 0;
 
 		while (evaluate < 1)
 		{
 			evaluate += Time.deltaTime / duration;
-			var alpha = _fadeOutCurve.Evaluate(evaluate);
+			var alpha = _settings.fadeOutCurve.Evaluate(evaluate);
 			_messageText.alpha = alpha;
 			yield return 0;
 		}

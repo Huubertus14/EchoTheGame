@@ -1,0 +1,12 @@
+{
+  "name": "com.huub.gamedev.unity-services",
+  "version": "0.1.0",
+  "displayName": "Game Dev Unity Services",
+  "description": "Unity Authentication identity and Cloud Save adapter for Game Dev Foundation.",
+  "unity": "6000.0",
+  "dependencies": {
+    "com.huub.gamedev.foundation": "0.1.0",
+    "com.unity.services.authentication": "3.6.1",
+    "com.unity.services.cloudsave": "3.4.0"
+  }
+}

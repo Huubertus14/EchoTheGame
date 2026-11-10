@@ -4884,3 +4884,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
+  settings: {fileID: 11400000, guid: ede169c916077444dbb329298eab5000, type: 2}

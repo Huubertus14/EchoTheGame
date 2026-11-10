@@ -1,4 +1,5 @@
 using Fusion;
+using Project.Echo.Tuning;
 using Project.Echo.Player.Visuals;
 using System;
 using Project.Echo.Setting;
@@ -14,6 +15,8 @@ namespace Project.Echo.Player
 		public static PlayerNetworkedController LocalPlayer;
 		public static Action<NetworkRunner> LocalPlayerSpawned;
 		public PlayerSettings PlayerSettings => Settings.Player;
+		[SerializeField] private SubmarineSettings _settings;
+		public SubmarineSettings Tuning => _settings;
 
 		[Networked]
 		public NetworkString<_32> PlayerName { get; set; }
@@ -63,6 +66,14 @@ namespace Project.Echo.Player
 			_isPlayerActive = true;
 		}
 
+        public void ResetForRound()
+        {
+            if (!HasStateAuthority) return;
+            _respawnTimer = TickTimer.None;
+            foreach (var respawnable in _respawnAbles) respawnable.Respawn();
+            EnablePlayer();
+        }
+
 		[Rpc(sources: RpcSources.InputAuthority, RpcTargets.StateAuthority)]
 		private void RPC_SetName(string Name)
 		{
@@ -94,9 +105,9 @@ namespace Project.Echo.Player
 			_isPlayerActive = false;
 		}
 
-		public void RespawnPlayer(float delaySeconds)
+		public void RespawnPlayer()
 		{
-			_respawnTimer = TickTimer.CreateFromSeconds(Runner, delaySeconds);
+			_respawnTimer = TickTimer.CreateFromSeconds(Runner, Tuning.respawnDelay);
 			OnPlayerDied?.Invoke();
 		}
 	}

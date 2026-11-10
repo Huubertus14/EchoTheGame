@@ -1,5 +1,7 @@
 # Echo — UI-huisstijl
 
+De nieuwe lobby-, pauze-, instellingen-, resultaat- en profielvensters staan beschreven in [GAME_FOUNDATION.md](GAME_FOUNDATION.md). Ze gebruiken dezelfde theme-asset, losse achtergrond en bewerkbare Unity UI. De profielbadge toont nu opgeslagen level-/XP-data; valuta blijft een beginwaarde.
+
 De goedgekeurde richting is het top-down hoofdmenu uit de ontwerpsessie: een donkere oceaan, een eenvoudige onderzeeër en cyaan sonarpulsen die de zeebodem als lichtpuntjes onthullen.
 
 ## Kleuren en typografie
@@ -49,3 +51,7 @@ De kolommen zijn rang, naam, score, kills, deaths, K/D en ping. Sortering: score
 De lijst leest gerepliceerde spelerdata op objectidentiteit, zodat gelijke namen aparte rijen houden en laat aangesloten spelers bestaande scores ontvangen. De oude GameInfo-Canvas en automatische eindpopup zijn uit de game scene verwijderd; resultaten blijven na afloop via Tab beschikbaar. Escape behoudt de bestaande terugkeer naar het hoofdmenu. De aparte MainMenu-scene blijft de start- en verbindingsroute.
 
 `Echo / Build Game Scoreboard` bouwt de opgeslagen game-UI opnieuw en maakt voorbeeldrenders op 16:9 en 5:4 in `docs/`. Dit vervangt de bestaande screen-space Canvas-objecten in Game; handmatige aanpassingen daaraan worden overschreven. De huidige scene is direct bruikbaar en hoeft niet opnieuw opgebouwd te worden.
+
+## Compacte match-HUD
+
+Linksonder in `Game.unity` staat een afzonderlijk, bewerkbaar `Match HUD`-Canvas met kills van de lokale speler, resterende matchtijd en de score van de koploper. Sta je zelf bovenaan volgens de scorebordsortering, dan toont het laatste veld `NUMMER 2` met diens score. Zonder tegenstander verschijnt `--`. Voor de match toont de timer `START OVER`, na afloop `AFGELOPEN` en bij een onbeperkte match `GEEN LIMIET` met een oneindigheidsteken. Het paneel gebruikt het gedeelde theme, staat 32 referentiepixels van de linker- en onderrand en onderschept geen input. `Echo / Build Match HUD` vervangt alleen deze HUD; de volledige scorebordbuilder neemt hem ook mee.

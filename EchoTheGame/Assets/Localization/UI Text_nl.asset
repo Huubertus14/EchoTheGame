@@ -128,6 +128,268 @@ MonoBehaviour:
     m_Localized: Wil je Echo afsluiten?
     m_Metadata:
       m_Items: []
+  - m_Id: 713475856175104
+    m_Localized: BEMANNING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729536
+    m_Localized: PAUZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729537
+    m_Localized: INSTELLINGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729538
+    m_Localized: BESTURING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729539
+    m_Localized: RESULTATEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729540
+    m_Localized: KAPITEIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729541
+    m_Localized: DUIK VERLATEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729542
+    m_Localized: "KAMERCODE  ABC123     2/8\n\n\u203A Kapitein  [HOST]   GEREED\n   Verkenner   WACHT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729543
+    m_Localized: Iedereen gereed? De host start de wedstrijd.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729544
+    m_Localized: GEREED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729545
+    m_Localized: START WEDSTRIJD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729546
+    m_Localized: KOPIEER CODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729547
+    m_Localized: VERLATEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729548
+    m_Localized: INSTELLINGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729549
+    m_Localized: De online wedstrijd gaat door terwijl dit menu openstaat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729550
+    m_Localized: VERDER SPELEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729551
+    m_Localized: INSTELLINGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729552
+    m_Localized: BESTURING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729553
+    m_Localized: PROFIEL EN VOORTGANG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729554
+    m_Localized: WEDSTRIJD VERLATEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729555
+    m_Localized: SCHERMMODUS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729556
+    m_Localized: RESOLUTIE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729557
+    m_Localized: BEELDKWALITEIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729558
+    m_Localized: FPS-LIMIET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729559
+    m_Localized: V-SYNC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729560
+    m_Localized: TAAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729561
+    m_Localized: MASTERVOLUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729562
+    m_Localized: MUZIEK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729563
+    m_Localized: EFFECTEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729564
+    m_Localized: GELUID AAN / UIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729565
+    m_Localized: BESTURING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729566
+    m_Localized: TOEPASSEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729567
+    m_Localized: TERUG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729568
+    m_Localized: "Controller: linker stick varen/draaien \xB7 A schieten \xB7 X sonar\nLB boost \xB7 Start pauze \xB7 B terug \xB7 View scorebord"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729569
+    m_Localized: Vooruit    W
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729570
+    m_Localized: Achteruit    S
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729571
+    m_Localized: Links    A
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729572
+    m_Localized: Rechts    D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729573
+    m_Localized: Boost    Left Shift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729574
+    m_Localized: Schieten    Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729575
+    m_Localized: Sonar    Left Control
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729576
+    m_Localized: HERSTEL TOETSEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729577
+    m_Localized: EINDSTAND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729578
+    m_Localized: NAAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729579
+    m_Localized: SCORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729580
+    m_Localized: K / D
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729581
+    m_Localized: "+170 XP   \xB7   LEVEL 1   \xB7   170 XP totaal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729582
+    m_Localized: OPNIEUW SPELEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729583
+    m_Localized: HOOFDMENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729584
+    m_Localized: OPSLAAN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729585
+    m_Localized: "LEVEL 1   \xB7   170 XP\n\nGespeeld  1    \xB7    Gewonnen  1\nKills  2    \xB7    Deaths  0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729586
+    m_Localized: Voortgang wordt lokaal opgeslagen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729587
+    m_Localized: CLOUD SYNCHRONISEREN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729588
+    m_Localized: BEHOUD LOKAAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729589
+    m_Localized: GEBRUIK CLOUD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729590
+    m_Localized: 'Wil je deze duik verlaten?
+
+      Een onafgemaakte wedstrijd levert geen XP op.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729591
+    m_Localized: BLIJVEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729592
+    m_Localized: VERLATEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729593
+    m_Localized: SAMEN DUIKEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729594
+    m_Localized: SPELERSNAAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729595
+    m_Localized: KAMERCODE (OPTIONEEL)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729596
+    m_Localized: KAMER MAKEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729597
+    m_Localized: AANSLUITEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729598
+    m_Localized: MEER INSTELLINGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 713475889729599
+    m_Localized: PROFIEL
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

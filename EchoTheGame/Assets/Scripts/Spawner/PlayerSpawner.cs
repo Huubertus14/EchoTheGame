@@ -1,5 +1,6 @@
 using Fusion;
 using Project.Echo.Player;
+using Project.Echo.Tuning;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -55,17 +56,18 @@ namespace Project.Echo.Spawner
 				throw new System.InvalidOperationException("The game scene needs player spawn points.");
 			int best = -1;
 			float bestScore = float.NegativeInfinity;
+			var settings = ArenaSettings.Default;
 			for (int i = 0; i < _instance._allSpawnPoints.Length; i++)
 			{
 				Vector3 position = _instance._allSpawnPoints[i].transform.position;
 				var arena = Project.Echo.Environment.UnderwaterArena.Instance;
 				if (arena != null && !arena.IsSpawnClear(position)) continue;
-				float nearest = 30f;
+				float nearest = settings.preferredSpawnSeparation;
 				foreach (var character in _instance._spawnedCharacters.Values)
 					if (character != null && character.transform != respawningPlayer)
 						nearest = Mathf.Min(nearest, Vector3.Distance(position, character.transform.position));
 				// Prefer separation; break ties by least recently used, including respawns.
-				float score = nearest + Mathf.Min(100, _instance._spawnSequence - _instance._lastUsed[i]) * 0.05f;
+				float score = nearest + Mathf.Min(100, _instance._spawnSequence - _instance._lastUsed[i]) * settings.spawnReuseWeight;
 				if (score > bestScore) { best = i; bestScore = score; }
 			}
 			if (best < 0) throw new System.InvalidOperationException("No spawn point lies inside the arena.");

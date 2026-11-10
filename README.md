@@ -1,5 +1,7 @@
 # EchoTheGame
 
+De nieuwe lobby met kamercodes, pauzemenu, uitgebreide instellingen, resultaten en opgeslagen profiel/XP staan in [Game Foundation](docs/GAME_FOUNDATION.md). De herbruikbare platformfuncties zijn lokale Unity-packages in [LocalPackages](LocalPackages/README.md). De oudere herstelnotities hieronder beschrijven de oorspronkelijke Host/Join-testopzet; gebruik voor de huidige menu's de Game Foundation-handleiding.
+
 ## Lokalisatie, geluid en ontwikkelstatus
 
 Het menu heeft Nederlandse en Engelse vertaaltabellen via Unity Localization, een opgeslagen taalkeuze en een apart geluidsvenster met mute, mastervolume, achtergrondmuziek en effecten. Nieuwe talen uit Unity's Available Locales verschijnen automatisch in de keuzelijst. Koppel toekomstige muziek/effecten via het component `AudioChannel`.

@@ -180,6 +180,8 @@ public static class EchoSettingsInstaller
         audio.gameObject.SetActive(false);
         controller.ClosePanel();
         EditorUtility.SetDirty(controller);
+        EchoFoundationInstaller.ApplyToOpenScene(true);
+        EchoFoundationInstaller.InstallTranslations();
     }
 
     private static void Bind(SerializedObject target, string name, UnityEngine.Object value) => target.FindProperty(name).objectReferenceValue = value;

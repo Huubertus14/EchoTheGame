@@ -6,9 +6,12 @@
   <Project Path="Fusion.Addressables.csproj" />
   <Project Path="Project.Settings.csproj" />
   <Project Path="ParrelSync.csproj" />
+  <Project Path="GameDev.Foundation.csproj" />
   <Project Path="Fusion.Editor.csproj" />
+  <Project Path="GameDev.Steam.csproj" />
   <Project Path="Project.Menu.csproj" />
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="Project.Loading.csproj" />
+  <Project Path="GameDev.UnityServices.csproj" />
   <Project Path="Project.Localization.csproj" />
 </Solution>

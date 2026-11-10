@@ -80,6 +80,12 @@ public class PlayerScoreboardController : NetworkBehaviour
     }
     public void AddDeath() { if (HasStateAuthority) _matchDeaths++; }
 
+    public void ResetRound()
+    {
+        if (!HasStateAuthority) return;
+        _matchScore = 0; _matchKils = 0; _matchDeaths = 0;
+    }
+
     public override void Despawned(NetworkRunner runner, bool hasState)
     {
         Players.Remove(this);

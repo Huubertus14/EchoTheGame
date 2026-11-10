@@ -35,7 +35,7 @@ public class PlayerList : MonoBehaviour
 #elif ENABLE_LEGACY_INPUT_MANAGER
         held = Input.GetKey(KeyCode.Tab) || Input.GetKey(KeyCode.JoystickButton6);
 #endif
-        bool visible = _focused && held;
+        bool visible = _focused && held && !GameDev.Foundation.GamePreferences.InputBlocked;
         if (_overlay.activeSelf != visible)
         {
             _overlay.SetActive(visible);

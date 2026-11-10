@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "com.huub.gamedev.foundation": "file:../../LocalPackages/com.huub.gamedev.foundation",
+    "com.huub.gamedev.steam": "file:../../LocalPackages/com.huub.gamedev.steam",
+    "com.huub.gamedev.unity-services": "file:../../LocalPackages/com.huub.gamedev.unity-services",
+    "com.rlabrecque.steamworks.net": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net#2025.164.1",
     "com.unity.ai.navigation": "2.0.16",
     "com.unity.collab-proxy": "2.13.6",
     "com.unity.ide.rider": "3.1.0",

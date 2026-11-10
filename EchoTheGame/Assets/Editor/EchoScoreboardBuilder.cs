@@ -74,10 +74,60 @@ public static class EchoScoreboardBuilder
         Set(controller, "_content", content); Set(controller, "_scroll", scroll);
         Set(controller, "_matchText", match); Set(controller, "_emptyText", empty);
         overlay.gameObject.SetActive(false);
+        BuildHud();
+        EchoFoundationInstaller.ApplyToOpenScene(false);
         EditorSceneManager.SaveScene(scene);
         AssetDatabase.SaveAssets();
         ValidateAndPreview(controller, overlay, template);
         Debug.Log("ECHO_SCOREBOARD_OK: Game scene saved; editable UI, theme bindings, hidden overlay, 16:9 and 5:4 previews.");
+    }
+
+    [MenuItem("Echo/Build Match HUD")]
+    public static void BuildMatchHud()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Stop Play Mode first.");
+        if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+        theme = AssetDatabase.LoadAssetAtPath<EchoMenuTheme>("Assets/UI/Echo/EchoMenuTheme.asset");
+        if (!theme) throw new InvalidOperationException("Missing Echo UI theme.");
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/Game.unity");
+        BuildHud();
+        EditorSceneManager.SaveScene(scene);
+        AssetDatabase.SaveAssets();
+        Debug.Log("ECHO_MATCH_HUD_OK: editable bottom-left HUD saved with shared theme and no input interception.");
+    }
+
+    private static void BuildHud()
+    {
+        foreach (var hud in Object.FindObjectsByType<MatchHud>(FindObjectsInactive.Include))
+            Object.DestroyImmediate(hud.gameObject);
+        var root = new GameObject("Match HUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(MatchHud));
+        root.layer = 5;
+        root.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+        root.GetComponent<Canvas>().sortingOrder = 10;
+        var scaler = root.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920, 1080);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+        var panel = Rect("Compact match instruments", root.transform, 0, 0, 352, 88);
+        panel.anchorMin = panel.anchorMax = panel.pivot = Vector2.zero;
+        panel.anchoredPosition = new Vector2(32, 32);
+        Fill(panel, new Color(theme.panel.r, theme.panel.g, theme.panel.b, 0.8f));
+        Line(panel, 0, 0, 352, 1, new Color(theme.seafoam.r, theme.seafoam.g, theme.seafoam.b, 0.35f));
+        var hudController = root.GetComponent<MatchHud>();
+        string[] labels = { "KILLS", "RESTEREND", "KOPLOPER" };
+        string[] fields = { "_killsText", "_timeText", "_rivalText" };
+        for (int i = 0; i < 3; i++)
+        {
+            float x = 18 + i * 112;
+            var label = Text(labels[i] + " label", panel, labels[i], 12, theme.muted, x, 12, 104, 20);
+            label.characterSpacing = 1.5f;
+            var value = Text(labels[i] + " value", panel, i == 1 ? "--:--" : "--", 26, theme.seafoam, x, 34, 104, 36);
+            Set(hudController, fields[i], value);
+            if (i == 1) Set(hudController, "_timeLabel", label);
+            if (i == 2) Set(hudController, "_rivalLabel", label);
+        }
+        foreach (var graphic in root.GetComponentsInChildren<Graphic>(true))
+            if (graphic.raycastTarget) throw new Exception("Match HUD must not intercept gameplay input.");
     }
 
     private static PlayerListItem BuildRow(Transform parent)

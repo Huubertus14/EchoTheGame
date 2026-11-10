@@ -1,5 +1,36 @@
 {
   "dependencies": {
+    "com.huub.gamedev.foundation": {
+      "version": "file:../../LocalPackages/com.huub.gamedev.foundation",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.huub.gamedev.steam": {
+      "version": "file:../../LocalPackages/com.huub.gamedev.steam",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.huub.gamedev.foundation": "0.1.0"
+      }
+    },
+    "com.huub.gamedev.unity-services": {
+      "version": "file:../../LocalPackages/com.huub.gamedev.unity-services",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.huub.gamedev.foundation": "0.1.0",
+        "com.unity.services.authentication": "3.6.1",
+        "com.unity.services.cloudsave": "3.4.0"
+      }
+    },
+    "com.rlabrecque.steamworks.net": {
+      "version": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net#2025.164.1",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "c21a8f0e31c56ae8707130967faf491f7dd7c0d8"
+    },
     "com.unity.addressables": {
       "version": "2.11.2",
       "depth": 1,
@@ -167,6 +198,39 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.services.authentication": {
+      "version": "3.8.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.services.core": "1.18.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.2",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.services.cloudsave": {
+      "version": "3.4.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.services.core": "1.12.5",
+        "com.unity.services.authentication": "3.3.1"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.services.core": {
+      "version": "1.18.0",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.nuget.newtonsoft-json": "3.2.2",
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {

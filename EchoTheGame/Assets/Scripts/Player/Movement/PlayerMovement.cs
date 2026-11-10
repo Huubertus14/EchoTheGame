@@ -34,7 +34,7 @@ namespace Project.Echo.Player.Controls
                 _rigidBody.Sleep();
                 Vector3 e = transform.position;
                 var q = transform.rotation.eulerAngles;
-                q.y += data.Rotation + Runner.DeltaTime;
+                q.y += data.Rotation;
                 Vector3 target = e + transform.forward * data.Speed * Runner.DeltaTime;
                 var contact = default(Project.Echo.Environment.UnderwaterArena.MovementContact);
                 e = Project.Echo.Environment.UnderwaterArena.Instance != null

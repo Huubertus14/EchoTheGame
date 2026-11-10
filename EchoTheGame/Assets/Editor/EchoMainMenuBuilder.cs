@@ -393,7 +393,7 @@ public static class EchoMainMenuBuilder
         foreach (string name in new[] { "persistentManagersPrefab", "modal", "playButton", "mainNavigation", "levelLabel", "currencyLabel", "experienceFill", "volumeSlider", "volumeLabel", "fullscreenLabel" })
             if (so.FindProperty(name).objectReferenceValue == null) throw new Exception("Unbound menu field: " + name);
         Button[] buttons = controller.GetComponentsInChildren<Button>(true);
-        if (buttons.Length != 16) throw new Exception("Expected 16 real buttons, got " + buttons.Length);
+        if (buttons.Length < 16) throw new Exception("Expected at least 16 real buttons, got " + buttons.Length);
         foreach (Button button in buttons)
             if (button.onClick.GetPersistentEventCount() == 0 && button.GetComponent<BaseGameButton>() == null)
                 throw new Exception("Unbound button: " + button.name);

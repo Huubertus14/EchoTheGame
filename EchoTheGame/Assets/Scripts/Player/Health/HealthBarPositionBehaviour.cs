@@ -5,24 +5,25 @@ using UnityEngine.UI;
 using Fusion;
 using System;
 using Project.Echo.Menu;
+using Project.Echo.Tuning;
 
 public class HealthBarPositionBehaviour : MonoBehaviour
 {
 	public byte[] connectionToken { get; private set; }
 	private Transform _followTarget;
 	private Slider _healthSlider;
-	[SerializeField] private Vector3 _positionOffset;
+	private SubmarineSettings _settings;
 	[SerializeField] private EchoMenuTheme _theme;
 	[SerializeField] private Image _fill;
 
-	public void Init(byte[] connectionToken,Transform target, int maxHealth)
+	public void Init(byte[] connectionToken, Transform target, SubmarineSettings settings)
 	{
 		this.connectionToken = connectionToken;
 		_followTarget = target;
+		_settings = settings;
 		_healthSlider = GetComponentInChildren<Slider>();
-		_healthSlider.maxValue = maxHealth;
-		_healthSlider.value = maxHealth;
-		UpdateSlider(maxHealth);
+		_healthSlider.maxValue = settings.maxHealth;
+		UpdateSlider(settings.maxHealth);
 	}
 
 	public void UpdateSlider(int health)
@@ -30,12 +31,12 @@ public class HealthBarPositionBehaviour : MonoBehaviour
 		if (!_healthSlider) return;
 		_healthSlider.value = Mathf.Clamp(health, 0, _healthSlider.maxValue);
 		if (_fill && _theme)
-			_fill.color = _healthSlider.normalizedValue <= 0.25f ? _theme.amber : _theme.seafoam;
+			_fill.color = _healthSlider.normalizedValue <= _settings.lowHealthThreshold ? _theme.amber : _theme.seafoam;
 	}
 
 	internal void SetPosition()
 	{
-		if (_followTarget) transform.position = _followTarget.position + _positionOffset;
+		if (_followTarget) transform.position = _followTarget.position + _settings.healthBarOffset;
 	}
 
 	private void LateUpdate() => SetPosition();

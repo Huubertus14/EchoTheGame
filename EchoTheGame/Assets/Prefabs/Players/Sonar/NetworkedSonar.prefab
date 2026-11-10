@@ -97,19 +97,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
   _SonarColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &3440104499969329360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6910267677939364530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0ab0fb4e620498488cb5b8f7e57ed84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _lifeTime: 0.6
 --- !u!114 &4735837525799989418
 MonoBehaviour:
   m_ObjectHideFlags: 0

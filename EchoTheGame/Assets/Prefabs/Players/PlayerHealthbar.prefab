@@ -856,7 +856,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c1c4e55bf41be741bfd776fd649deac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _positionOffset: {x: 0, y: 0.9, z: -1.5}
   _theme: {fileID: 11400000, guid: aed109a2e4a678049bd73e6fc5546da9, type: 2}
   _fill: {fileID: 6358846475918912414}
 --- !u!1 &7055972894745576672

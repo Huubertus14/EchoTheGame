@@ -1,41 +1,46 @@
 using Project.Echo.Player.Controls.Data;
 using UnityEngine;
+using GameDev.Foundation;
+using Project.Echo.Tuning;
 
 namespace Project.Echo.Player.Controls
 {
     public class PlayerMovementController 
     {
-        public float _movement = 2.5f;
-        public float _rotation = 6f;
-
-        public NetworkPlayerMovementData GetInput()
+        public NetworkPlayerMovementData GetInput(SubmarineSettings tuning)
 		{
             NetworkPlayerMovementData data = new();
 
-            if (Input.GetKey(KeyCode.A))
+            if (GamePreferences.Held(2))
             {
-                data.Rotation = -_rotation;
+                data.Rotation = -tuning.rotationPerTick;
             }
-            if (Input.GetKey(KeyCode.D))
+            if (GamePreferences.Held(3))
             {
-                data.Rotation = _rotation;
+                data.Rotation = tuning.rotationPerTick;
             }
 
-            if (Input.GetKey(KeyCode.W))
+            if (GamePreferences.Held(0))
             {
-                data.Speed = _movement;
+                data.Speed = tuning.movementSpeed;
             }
-            if (Input.GetKey(KeyCode.S))
+            if (GamePreferences.Held(1))
             {
-                data.Speed = -_movement;
+                data.Speed = -tuning.movementSpeed;
             }
-			if (Input.GetKey(KeyCode.LeftShift))
+            bool gamepadBoost = Input.GetKey(KeyCode.JoystickButton4);
+			if (GamePreferences.Held(4) || gamepadBoost)
 			{
-                data.Speed *= 4;
+                data.Speed *= tuning.boostMultiplier;
 			}
 
-            data.IsShooting = Input.GetKey(KeyCode.Space);
-            data.IsPing = Input.GetKey(KeyCode.LeftControl);
+            float vertical = Input.GetAxisRaw("GamepadVertical"), horizontal = Input.GetAxisRaw("GamepadHorizontal");
+            if (Mathf.Abs(vertical) > tuning.gamepadDeadZone && data.Speed == 0)
+                data.Speed = vertical * tuning.movementSpeed * (gamepadBoost ? tuning.boostMultiplier : 1f);
+            if (Mathf.Abs(horizontal) > tuning.gamepadDeadZone && data.Rotation == 0)
+                data.Rotation = horizontal * tuning.rotationPerTick;
+            data.IsShooting = GamePreferences.Held(5) || Input.GetKey(KeyCode.JoystickButton0);
+            data.IsPing = GamePreferences.Held(6) || Input.GetKey(KeyCode.JoystickButton2);
             return data;
 		}
     }

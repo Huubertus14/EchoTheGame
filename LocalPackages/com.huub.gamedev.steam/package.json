@@ -1,0 +1,8 @@
+{
+  "name": "com.huub.gamedev.steam",
+  "version": "0.1.0",
+  "displayName": "Game Dev Steam",
+  "description": "Optional desktop Steam identity and achievement adapter. Requires Steamworks.NET 2025.164.1.",
+  "unity": "6000.0",
+  "dependencies": { "com.huub.gamedev.foundation": "0.1.0" }
+}

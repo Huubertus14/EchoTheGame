@@ -1,12 +1,23 @@
 using UnityEngine;
 using Fusion;
 using Project.Echo.Player.Visuals;
+using Project.Echo.Tuning;
 
 [RequireComponent(typeof(ParticleSystem))]
 public class SonarImpact : NetworkBehaviour
 {
-    [SerializeField] private WorldSonarPulse.Settings pulse = new WorldSonarPulse.Settings { range = 9f, duration = 0.6f };
+    [Networked] private TickTimer Lifetime { get; set; }
     private bool emitted;
+
+    public override void Spawned()
+    {
+        if (HasStateAuthority) Lifetime = TickTimer.CreateFromSeconds(Runner, ImpactSonarSettings.Default.emitterLifetime);
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (HasStateAuthority && Lifetime.Expired(Runner)) Runner.Despawn(Object);
+    }
 
     private void Awake()
     {
@@ -21,12 +32,13 @@ public class SonarImpact : NetworkBehaviour
     {
         if (emitted) return;
         emitted = true;
-        Color color = new Color(0.6078f, 0.9137f, 0.8863f);
+        Color color = PlayerVisualController.DefaultPlayerColor;
         if (Runner.TryGetPlayerObject(player, out NetworkObject networkObject))
         {
             var visual = networkObject.GetComponentInChildren<PlayerVisualController>();
             if (visual != null) color = visual.PlayerColor;
         }
-        WorldSonarPulse.Emit(transform.position + surfaceNormal.normalized * 0.08f, color, pulse);
+        var settings = ImpactSonarSettings.Default;
+        WorldSonarPulse.Emit(transform.position + surfaceNormal.normalized * settings.surfaceOffset, color, settings.pulse);
     }
 }

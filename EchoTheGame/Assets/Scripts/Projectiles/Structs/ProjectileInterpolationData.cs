@@ -29,9 +29,8 @@ namespace Project.Echo.Projectiles.Structs
 		[FieldOffset(43)]
 		public Vector3 ImpactNormal;
 
-		// Custom projectile data
-		[FieldOffset(55)]
-		public KinematicData Kinematic;
+		[FieldOffset(56)]
+		public GuidanceData Guidance;
 	}
 
 	public struct ProjectileInterpolationData
@@ -40,11 +39,10 @@ namespace Project.Echo.Projectiles.Structs
 		public ProjectileData To;
 		public float Alpha;
 	}
-	public struct KinematicData : INetworkStruct
+	public struct GuidanceData : INetworkStruct
 	{
-		public NetworkBool HasStopped;
-		public Vector3 FinishedPosition;
-		public int StartTick;
-		public byte BounceCount;
+		public Vector3 Position;
+		public Vector3 Direction;
+		public PlayerRef Target;
 	}
 }

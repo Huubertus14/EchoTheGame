@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Project.Echo.Networking;
+using Project.Echo.Tuning;
 using System.Threading.Tasks;
 using System;
 
@@ -12,10 +13,9 @@ namespace Project.Echo.Player.Cameras
     {
 		[SerializeField]Transform _playerTransform;
 
-		[SerializeField] private Vector3 _offset = new Vector3(0,30,0);
-
 		private void Awake()
 		{
+			GetComponent<Camera>().fieldOfView = ArenaSettings.Default.cameraFieldOfView;
 			enabled = false;
 			PlayerNetworkedController.LocalPlayerSpawned += OnLocalPlayerSpawned;
 			NetworkController.OnHostMigrationDone += OnHostMigrated;
@@ -48,7 +48,7 @@ namespace Project.Echo.Player.Cameras
 		{
 			if (_playerTransform != null)
 			{
-				transform.position = _playerTransform.position + _offset;
+				transform.position = _playerTransform.position + ArenaSettings.Default.cameraOffset;
 			}
 			else
 			{

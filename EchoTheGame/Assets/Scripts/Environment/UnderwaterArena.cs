@@ -1,4 +1,5 @@
 using UnityEngine;
+using Project.Echo.Tuning;
 
 namespace Project.Echo.Environment
 {
@@ -7,7 +8,6 @@ namespace Project.Echo.Environment
     {
         public static UnderwaterArena Instance { get; private set; }
         public Vector2[] shoreline;
-        public const float PlayerRadius = 0.85f;
         public struct MovementContact
         {
             public bool blocked;
@@ -20,7 +20,9 @@ namespace Project.Echo.Environment
         private void Awake() => Instance = this;
         private void OnDestroy() { if (Instance == this) Instance = null; }
 
-        public bool Contains(Vector3 position, float margin = PlayerRadius)
+        public bool Contains(Vector3 position) => Contains(position, ArenaSettings.Default.playerRadius);
+
+        public bool Contains(Vector3 position, float margin)
         {
             Vector2 p = new Vector2(position.x, position.z);
             for (int i = 0; i < shoreline.Length; i++)
@@ -32,7 +34,9 @@ namespace Project.Echo.Environment
             return true;
         }
 
-        public Vector3 Constrain(Vector3 position, float margin = PlayerRadius)
+        public Vector3 Constrain(Vector3 position) => Constrain(position, ArenaSettings.Default.playerRadius);
+
+        public Vector3 Constrain(Vector3 position, float margin)
         {
             Vector2 p = new Vector2(position.x, position.z);
             for (int pass = 0; pass < 64; pass++)
@@ -56,38 +60,41 @@ namespace Project.Echo.Environment
         public Vector3 Move(Vector3 origin, Vector3 target, out MovementContact contact)
         {
             contact = default;
-            origin = Constrain(origin);
-            Vector3 constrained = Constrain(target);
+            var settings = ArenaSettings.Default;
+            float playerRadius = settings.playerRadius;
+            origin = Constrain(origin, playerRadius);
+            Vector3 constrained = Constrain(target, playerRadius);
             Vector3 boundaryNormal = constrained - target;
             boundaryNormal.y = 0;
             if (boundaryNormal.sqrMagnitude > 0.000001f)
                 contact = new MovementContact { blocked = true, normal = boundaryNormal.normalized,
-                    point = constrained - boundaryNormal.normalized * PlayerRadius };
+                    point = constrained - boundaryNormal.normalized * playerRadius };
             target = constrained;
             Vector3 delta = target - origin;
             float distance = delta.magnitude;
             if (distance < 0.0001f) return origin;
-            int count = Physics.SphereCastNonAlloc(origin, PlayerRadius, delta / distance, hits,
+            int count = Physics.SphereCastNonAlloc(origin, playerRadius, delta / distance, hits,
                 distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             if (count == hits.Length) return origin;
             float allowed = distance;
             for (int i = 0; i < count; i++)
                 if (hits[i].collider.transform.IsChildOf(transform))
                 {
-                    float safeDistance = Mathf.Max(0, hits[i].distance - 0.02f);
+                    float safeDistance = Mathf.Max(0, hits[i].distance - settings.collisionClearance);
                     if (safeDistance < allowed)
                     {
                         allowed = safeDistance;
                         contact = new MovementContact { blocked = true, point = hits[i].point, normal = hits[i].normal };
                     }
                 }
-            return Constrain(origin + delta / distance * allowed);
+            return Constrain(origin + delta / distance * allowed, playerRadius);
         }
 
         public bool IsSpawnClear(Vector3 position)
         {
-            if (!Contains(position, 2f)) return false;
-            int count = Physics.OverlapSphereNonAlloc(position, 2f, overlaps,
+            float clearance = Mathf.Max(ArenaSettings.Default.spawnClearance, ArenaSettings.Default.playerRadius);
+            if (!Contains(position, clearance)) return false;
+            int count = Physics.OverlapSphereNonAlloc(position, clearance, overlaps,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             if (count == overlaps.Length) return false;
             for (int i = 0; i < count; i++)

@@ -10,15 +10,31 @@ public sealed class WorldSonarPulse : MonoBehaviour
     [Serializable]
     public sealed class Settings
     {
+        [Tooltip("Maximaal bereik van de puls in Unity-eenheden.")]
         [Min(0.1f)] public float range = 27.75f;
+        [Tooltip("Aantal seconden waarin de puls vanuit zijn oorsprong tot het maximale bereik groeit.")]
         [Min(0.05f)] public float duration = 1.85f;
+        [Tooltip("Aantal seconden waarin opgelichte oppervlakken na de vasthoudtijd terug vervagen.")]
         [Min(0.05f)] public float fadeDuration = 1.5f;
+        [Tooltip("Aantal seconden waarin een geraakt oppervlak oplicht voordat het vervaagt. Bij 0 begint het vervagen direct.")]
         [Min(0)] public float holdDuration = 2.5f;
+        [Tooltip("Breedte van het golffront voor het oplichten van oppervlakken, in Unity-eenheden.")]
         [Min(0.01f)] public float frontWidth = 0.35f;
-        [Range(0, 12)] public int maxReflections = 8;
-        [Range(1, 4)] public int maxBounces = 3;
+        [Tooltip("Lijndikte van de zichtbare sonarring in Unity-eenheden.")]
+        [Min(0.01f)] public float ringWidth = 0.12f;
+        [Tooltip("Aantal seconden waarin de zichtbare ring aan het einde van de puls vervaagt.")]
+        [Min(0.01f)] public float ringFadeDuration = 0.15f;
+        [Tooltip("Hoogte van de zichtbare ring langs de Y-as, in Unity-eenheden.")]
+        public float ringHeight = 0.08f;
+        [Tooltip("Maximum aantal weerkaatsingen van de eerste puls. Een weerkaatste puls kan er hooguit twee maken. Bij 0 zijn reflecties uit.")]
+        public int maxReflections = 8;
+        [Tooltip("Maximum aantal opeenvolgende weerkaatsingen langs één pad. Bij 1 weerkaatst alleen de eerste puls.")]
+        public int maxBounces = 3;
+        [Tooltip("Helderheid die bij elke weerkaatsing overblijft. 1 behoudt de oorspronkelijke helderheid.")]
         [Range(0, 1)] public float reflectionStrength = 0.55f;
+        [Tooltip("Openingshoek in graden aan elke kant van het midden van een weerkaatste puls.")]
         [Range(1, 60)] public float reflectionHalfAngle = 12;
+        [Tooltip("Groei van de puls. X is de verstreken fractie van de duur en Y de bereikte fractie van het bereik.")]
         public AnimationCurve radiusCurve = AnimationCurve.Linear(0, 0, 1, 1);
 
         public float Radius(float age)
@@ -118,7 +134,7 @@ public sealed class WorldSonarPulse : MonoBehaviour
         ring.useWorldSpace = true;
         ring.loop = !reflected;
         ring.positionCount = RingSegments;
-        ring.widthMultiplier = 0.12f;
+        ring.widthMultiplier = settings.ringWidth;
         ring.shadowCastingMode = ShadowCastingMode.Off;
         ring.receiveShadows = false;
         float halfAngle = reflected ? settings.reflectionHalfAngle : 180;
@@ -183,7 +199,7 @@ public sealed class WorldSonarPulse : MonoBehaviour
             p.ring.SetPropertyBlock(p.properties);
             p.ring.enabled = age < p.settings.duration && wave.x > 0;
             Color ringColor = p.color;
-            ringColor.a *= Mathf.Clamp01((p.settings.duration - age) / 0.15f);
+            ringColor.a *= Mathf.Clamp01((p.settings.duration - age) / p.settings.ringFadeDuration);
             p.ring.startColor = p.ring.endColor = ringColor;
             int points = p.points.Length;
             p.ring.positionCount = points;
@@ -194,7 +210,7 @@ public sealed class WorldSonarPulse : MonoBehaviour
                     ? heading + Mathf.Lerp(-profile.halfAngle, profile.halfAngle, j / (float)(points - 1)) * Mathf.Deg2Rad
                     : j * Mathf.PI * 2 / points;
                 p.points[j] = new Vector3(p.origin.x + Mathf.Cos(angle) * wave.x,
-                    0.08f, p.origin.z + Mathf.Sin(angle) * wave.x);
+                    p.settings.ringHeight, p.origin.z + Mathf.Sin(angle) * wave.x);
             }
             p.ring.SetPositions(p.points);
         }

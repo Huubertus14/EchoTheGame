@@ -47,7 +47,6 @@ public static class EchoHealthBarBuilder
             var serialized=new SerializedObject(behaviour);
             serialized.FindProperty("_theme").objectReferenceValue=theme;
             serialized.FindProperty("_fill").objectReferenceValue=fill;
-            serialized.FindProperty("_positionOffset").vector3Value=new Vector3(0,0.9f,-1.5f);
             serialized.ApplyModifiedPropertiesWithoutUndo();
             PrefabUtility.SaveAsPrefabAsset(root,path);
             Debug.Log("HEALTH BAR STYLED: persistent editable segmented navy/seafoam world UI using EchoMenuTheme.");

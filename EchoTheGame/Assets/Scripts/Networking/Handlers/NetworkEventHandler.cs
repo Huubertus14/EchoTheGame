@@ -7,6 +7,7 @@ using Project.Echo.Player.Controls;
 using Project.Echo.Spawner;
 using Project.Echo.Player;
 using System.Threading.Tasks;
+using GameDev.Foundation;
 
 namespace Project.Echo.Networking.Handlers
 {
@@ -74,17 +75,23 @@ namespace Project.Echo.Networking.Handlers
 
         public void OnInput(NetworkRunner runner, NetworkInput input) 
         {
-            if (MatchManager.Instance != null && MatchManager.Instance.IsGameStarted)
+            var data = new Player.Controls.Data.NetworkPlayerMovementData();
+            if (!GamePreferences.InputBlocked && MatchManager.Instance != null && MatchManager.Instance.IsGameStarted &&
+                PlayerNetworkedController.LocalPlayer != null && PlayerNetworkedController.LocalPlayer.GetComponent<PlayerHealthController>().Alive)
             {
-				Player.Controls.Data.NetworkPlayerMovementData data = _movementController.GetInput();
-                input.Set(data);
+                data = _movementController.GetInput(PlayerNetworkedController.LocalPlayer.Tuning);
             }
+            input.Set(data);
         }
 
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+        public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+        {
+            if (shutdownReason != ShutdownReason.HostMigration)
+                NetworkController.Instance?.ReportDisconnect(shutdownReason.ToString());
+        }
         public void OnConnectedToServer(NetworkRunner runner) { }
-        public void OnDisconnectedFromServer(NetworkRunner runner) { }
+        public void OnDisconnectedFromServer(NetworkRunner runner) => NetworkController.Instance?.ReportDisconnect("Disconnected");
 		public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
         public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
         public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }

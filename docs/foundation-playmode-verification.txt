@@ -1,0 +1,2 @@
+PASS: settings/dropdown/nested navigation; local Fusion lobby readiness; countdown/start; pause/resume; Jager torpedo/sonar input and 65 HP respawn; results; single XP award; rematch reset.
+This does not verify two-client networking or native/cloud services.

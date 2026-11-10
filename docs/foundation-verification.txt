@@ -1,0 +1,2 @@
+13 foundation checks passed.
+Local save/recovery, duplicate XP, level thresholds, provider fallback, cloud conflicts/write locks/account isolation and achievement retries.

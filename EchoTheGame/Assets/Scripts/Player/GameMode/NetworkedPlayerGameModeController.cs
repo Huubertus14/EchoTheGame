@@ -1,151 +1,137 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using Fusion;
 using Project.Echo.Loading;
-using System;
+using Project.Echo.Setting;
+using Project.Echo.Tuning;
+using UnityEngine;
 
+/// <summary>One coordinator on the host's player owns lobby and round transitions.</summary>
 public class NetworkedPlayerGameModeController : NetworkBehaviour
 {
-	public bool SkipInit;
+    public bool SkipInit;
+    [Networked] public NetworkBool IsCoordinator { get; private set; }
+    [Networked] public NetworkBool Ready { get; private set; }
+    [Networked] public int Phase { get; private set; }
+    [Networked] public NetworkString<_32> RoundId { get; private set; }
+    [Networked] private TickTimer Countdown { get; set; }
+    [Networked] private TickTimer RoundTimer { get; set; }
+    [Networked] public float SecondsLeft { get; private set; }
+    [Networked] public float CountdownLeft { get; private set; }
+    public static NetworkedPlayerGameModeController Coordinator { get; private set; }
+    public int MaxPlayers => Runner.GameMode != GameMode.Single && Runner.SessionInfo.IsValid && Runner.SessionInfo.MaxPlayers > 0
+        ? Runner.SessionInfo.MaxPlayers
+        : MatchRules.FreeForAll.MaxPlayers;
+    private readonly List<PlayerScoreboardController> players = new();
+    private MatchStatus? restored;
 
-	private int _killLimit  =2; 
-	[SerializeField, Min(0), Tooltip("Match duration in seconds. Set to 0 for unlimited testing.")]
-	private float _timeLimitInSeconds = 0;
-	private float _matchTimeToSet;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatic() => Coordinator = null;
 
-	[Networked(OnChanged =nameof(GameOverChanged))]
-	private NetworkBool _gameOver { get; set; }
-
-	[Networked(OnChanged = nameof(GameStartedChanged))]
-	private NetworkBool _gameStarted { get; set; }
-
-	[Networked]
-	private TickTimer _preGameCountdown { get; set; }
-
-	[Networked(OnChanged =nameof(PreGameTimerChanged))]
-	public float _networkedPreGameTime { get; set; }
-
-	[Networked]
-	private TickTimer _gameTimer { get; set; }
-
-	[Networked(OnChanged =nameof(GameTimeChanged))]
-	public float _networkedTime { get; set; }
-
-	public override void Spawned()
-	{
-		if (HasInputAuthority)
-		{
-			if (HasStateAuthority)
-			{
-				if (!SkipInit)
-				{
-					MatchManager.Instance.IsGameOver = false;
-					MatchManager.Instance.IsGameStarted = false;
-					_matchTimeToSet = _timeLimitInSeconds;
-					PlayerScoreboardController.ScoreChanged += OnScoreChanged;
-				}
-
-				_preGameCountdown = TickTimer.CreateFromSeconds(Runner, 5f);//Create pregame countdown
-			}
-		}
-		LoadScreenController.Hide();
-	}
-
-	private static void PreGameTimerChanged(Changed<NetworkedPlayerGameModeController> changed)
-	{
-		MatchManager.Instance.PreGameTime = changed.Behaviour._networkedPreGameTime;
-	}
-
-	private static void GameTimeChanged(Changed<NetworkedPlayerGameModeController> changed)
-	{
-		MatchManager.Instance.TimeLeft = changed.Behaviour._networkedTime;
-	}
-
-	private static void GameStartedChanged(Changed<NetworkedPlayerGameModeController> changed)
-	{
-		MatchManager.Instance.IsGameStarted = changed.Behaviour._gameStarted;
-	}
-
-	private static void GameOverChanged(Changed<NetworkedPlayerGameModeController> changed)
-	{
-		MatchManager.Instance.IsGameOver = changed.Behaviour._gameOver;
-
-		if (MatchManager.Instance.IsGameOver) //Game Over
-		{
-			MatchManager.Instance.ShowEndScreen();
-			//Project.Echo.Player.PlayerNetworkedController.LocalPlayer.Runner.Shutdown();
-		}
-	}
-
-	private void OnScoreChanged(int score, int kills)
-	{
-		if (kills >= _killLimit)
-		{
-			GameOver();
-		}
-	}
-
-	public override void FixedUpdateNetwork()
-	{
-		if (HasInputAuthority && HasStateAuthority)
-		{
-			if (!_gameOver)
-			{
-				if (!_gameStarted && _preGameCountdown.IsRunning) //Match not started. Do countdown
-				{
-					_networkedPreGameTime = _preGameCountdown.RemainingTime(Runner).Value;
-
-					if (_preGameCountdown.Expired(Runner))
-					{
-						StartGame();
-					}
-					return;
-				}
-
-				if (_gameStarted && _gameTimer.IsRunning)
-				{
-					_networkedTime = _gameTimer.RemainingTime(Runner).Value;
-
-					if (_gameTimer.Expired(Runner))
-					{
-						GameOver();
-					}
-				}
-			}
-		}
-	}
-
-	private void StartGame()
-	{
-		_gameStarted = true; 
-		_gameTimer = _matchTimeToSet > 0
-			? TickTimer.CreateFromSeconds(Runner, _matchTimeToSet)
-			: TickTimer.None;
-		_networkedTime = _matchTimeToSet > 0 ? _matchTimeToSet : -1;
-		_preGameCountdown = TickTimer.None;
-	}
-
-	public void SetMatchValues(MatchStatus matchData)
-	{
-		_matchTimeToSet = matchData.TimeLeft;
-		_gameStarted = false;
-		_gameOver = matchData.GameOver;
-		//_preGameCountdown = matchData.PreGameTime;
-	}
-
-	private void GameOver()
-	{
-		_gameStarted = false;
-		_gameOver = true;
-		_gameTimer = TickTimer.None;
-	}
-
-	public override void Despawned(NetworkRunner runner, bool hasState)
-	{
-		if (HasStateAuthority)
-		{
-			PlayerScoreboardController.ScoreChanged -= OnScoreChanged;
-		}
-	}
+    public override void Spawned()
+    {
+        if (HasStateAuthority && HasInputAuthority)
+        {
+            IsCoordinator = true;
+            if (restored.HasValue)
+            {
+                var match = restored.Value;
+                Phase = match.GameOver ? 3 : match.GameStarted ? 2 : 0;
+                RoundId = match.RoundId ?? "";
+                SecondsLeft = match.TimeLeft;
+                RoundTimer = match.GameStarted && match.TimeLeft > 0 ? TickTimer.CreateFromSeconds(Runner, match.TimeLeft) : TickTimer.None;
+            }
+            if (!SkipInit) Ready = false;
+        }
+        LoadScreenController.Hide();
+        EchoFoundation.IsConnecting = false;
+    }
+    public override void Render()
+    {
+        if (!IsCoordinator || MatchManager.Instance == null) return;
+        Coordinator = this;
+        MatchManager.Instance.IsGameStarted = Phase == 2;
+        MatchManager.Instance.IsGameOver = Phase == 3;
+        MatchManager.Instance.TimeLeft = SecondsLeft;
+        MatchManager.Instance.PreGameTime = CountdownLeft;
+        MatchManager.Instance.RoundId = RoundId.ToString();
+        EchoFoundation.MatchId = RoundId.ToString();
+    }
+    public bool AllReady()
+    {
+        PlayerScoreboardController.GetSortedPlayers(players);
+        int count = 0;
+        foreach (var player in players)
+        {
+            if (!player.Object || !player.Object.IsValid) continue;
+            var lobby = player.GetComponent<NetworkedPlayerGameModeController>();
+            if (lobby == null || !lobby.Ready) return false;
+            count++;
+        }
+        int connected = 0;
+        foreach (var player in Runner.ActivePlayers) connected++;
+        return count >= MatchRules.FreeForAll.MinPlayers && count == connected;
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_SetReady(bool value)
+    {
+        if (Coordinator == null || Coordinator.Phase == 0) Ready = value;
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_StartRound()
+    {
+        if (!IsCoordinator || Phase != 0 || !AllReady()) return;
+        RoundId = Guid.NewGuid().ToString("N");
+        CountdownLeft = MatchRules.FreeForAll.countdownSeconds;
+        Phase = 1;
+        Countdown = TickTimer.CreateFromSeconds(Runner, Mathf.Max(Runner.DeltaTime, CountdownLeft));
+        Runner.SessionInfo.IsOpen = false;
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_ReturnToLobby()
+    {
+        if (!IsCoordinator || Phase != 3) return;
+        PlayerScoreboardController.GetSortedPlayers(players);
+        foreach (var player in players)
+        {
+            player.ResetRound();
+            player.GetComponent<Project.Echo.Projectiles.ProjectileManager>().ResetRound();
+            player.GetComponent<NetworkedPlayerGameModeController>().Ready = false;
+            player.GetComponent<Project.Echo.Player.PlayerNetworkedController>().ResetForRound();
+        }
+        Phase = 0; Countdown = TickTimer.None; RoundTimer = TickTimer.None;
+        float timeLimit = MatchRules.FreeForAll.timeLimitSeconds;
+        SecondsLeft = timeLimit > 0f ? timeLimit : -1f;
+        CountdownLeft = 0;
+        Runner.SessionInfo.IsOpen = true;
+    }
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasStateAuthority || !IsCoordinator) return;
+        Coordinator = this;
+        if (Phase == 1)
+        {
+            if (!AllReady()) { Phase = 0; Countdown = TickTimer.None; Runner.SessionInfo.IsOpen = true; return; }
+            CountdownLeft = Mathf.Max(0, Countdown.RemainingTime(Runner) ?? 0);
+            if (Countdown.Expired(Runner))
+            {
+                Phase = 2; Countdown = TickTimer.None;
+                float timeLimit = MatchRules.FreeForAll.timeLimitSeconds;
+                SecondsLeft = timeLimit > 0f ? timeLimit : -1f;
+                RoundTimer = timeLimit > 0f
+                    ? TickTimer.CreateFromSeconds(Runner, Mathf.Max(Runner.DeltaTime, timeLimit))
+                    : TickTimer.None;
+            }
+        }
+        else if (Phase == 2)
+        {
+            if (RoundTimer.IsRunning) SecondsLeft = Mathf.Max(0, RoundTimer.RemainingTime(Runner) ?? 0);
+            PlayerScoreboardController.GetSortedPlayers(players);
+            bool ended = RoundTimer.Expired(Runner);
+            foreach (var player in players) ended |= MatchRules.FreeForAll.HasReachedLimit(player.Score, player.Kills);
+            if (ended) { Phase = 3; RoundTimer = TickTimer.None; }
+        }
+    }
+    public void SetMatchValues(MatchStatus matchData) => restored = matchData;
+    public override void Despawned(NetworkRunner runner, bool hasState) { if (Coordinator == this) Coordinator = null; }
 }

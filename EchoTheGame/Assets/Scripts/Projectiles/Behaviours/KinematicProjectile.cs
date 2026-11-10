@@ -8,53 +8,33 @@ namespace Project.Echo.Projectiles.Behaviours
 {
     public abstract class KinematicProjectile : Projectile
     {
-		// PRIVATE MEMBERS
-
-		[SerializeField]
-		protected float _startSpeed = 40f;
-		[SerializeField, Tooltip("Projectile length improves hitting moving targets")]
-		protected float _length = 0f;
-		[SerializeField]
-		private float _maxDistance = 200f;
-		[SerializeField]
-		private float _maxTime = 5f;
-		[SerializeField, Tooltip("Time for interpolation between barrel position and actual fire path of the projectile")]
-		private float _interpolationDuration = 0.3f;
-		[SerializeField]
-		private Ease _interpolationEase = Ease.OutSine;
-
 		private Vector3 _startOffset;
 		private float _interpolationTime;
-
-		private int _maxLiveTimeTicks = -1;
 
 		// Projectile INTERFACE
 
 		public override ProjectileData GetFireData(NetworkRunner runner, Vector3 firePosition, Vector3 fireDirection)
 		{
-			if (_maxLiveTimeTicks < 0)
-			{
-				int maxDistanceTicks = Mathf.RoundToInt((_maxDistance / _startSpeed) * runner.Simulation.Config.TickRate);
-				int maxTimeTicks = Mathf.RoundToInt(_maxTime * runner.Simulation.Config.TickRate);
-
-				// GetFireData is called on prefab directly, but it is safe to save
-				// the value here as it does not change for different instances
-				_maxLiveTimeTicks = maxDistanceTicks > 0 && maxTimeTicks > 0 ? Mathf.Min(maxDistanceTicks, maxTimeTicks) : (maxDistanceTicks > 0 ? maxDistanceTicks : maxTimeTicks);
-			}
-
 			return new ProjectileData()
 			{
 				FirePosition = firePosition,
-				FireVelocity = fireDirection * _startSpeed,
+				FireVelocity = fireDirection * Tuning.startSpeed,
 			};
 		}
 
 		public override void OnFixedUpdate(ProjectileContext context, ref ProjectileData data)
 		{
-			if (context.Runner.Tick >= data.FireTick + _maxLiveTimeTicks)
+			if (HasExpired(context.Runner, data))
 			{
 				data.IsFinished = true;
 			}
+		}
+
+		protected bool HasExpired(NetworkRunner runner, ProjectileData data)
+		{
+			float lifetime = Mathf.Min(Tuning.maxTime, Tuning.maxDistance / data.FireVelocity.magnitude);
+			int lifetimeTicks = Mathf.Max(1, Mathf.RoundToInt(lifetime * runner.Simulation.Config.TickRate));
+			return runner.Tick >= data.FireTick + lifetimeTicks;
 		}
 
 		protected override void OnActivated(ProjectileContext context, ref ProjectileData data)
@@ -85,10 +65,12 @@ namespace Project.Echo.Projectiles.Behaviours
 			{
 				// Do not start interpolation until projectile should actually move
 				_interpolationTime += Time.deltaTime;
-				interpolationProgress = Mathf.Clamp01(_interpolationTime / _interpolationDuration);
+				interpolationProgress = Tuning.interpolationDuration > 0f
+					? Mathf.Clamp01(_interpolationTime / Tuning.interpolationDuration)
+					: 1f;
 			}
 
-			interpolationProgress =  DOVirtual.EasedValue(0f, 1f, interpolationProgress, _interpolationEase);
+			interpolationProgress = DOVirtual.EasedValue(0f, 1f, interpolationProgress, Tuning.interpolationEase);
 			var offset = Vector3.Lerp(_startOffset, Vector3.zero, interpolationProgress);
 
 			var previousPosition = transform.position;
